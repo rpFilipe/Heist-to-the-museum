@@ -3,14 +3,21 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.mycompany.heist;
+package monitors;
 
 /**
  *
  * @author Ricardo Filipe
  */
-public class MonGRI {
+public class MonAssaultParty {
     
-    int [][] assaultParty = new int [Constants.N_ASSAULT_PARTIES][Constants.N_ORD_THIEVES];
     
+    
+    public synchronized void crawlIn(){
+        
+    }
+    
+    public synchronized void crawlOut(){
+        
+    }
 }

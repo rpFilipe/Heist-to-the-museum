@@ -3,21 +3,20 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.mycompany.heist;
+package monitors;
 
 /**
  *
  * @author Ricardo Filipe
  */
-public class MonAssaultParty {
+public class MonOrdinaryThievesCS {
     
-    
-    
-    public synchronized void crawlIn(){
+    public synchronized void handACanvas(){
         
     }
     
-    public synchronized void crawlOut(){
+    public synchronized void amINeeded(){
         
     }
+    
 }
