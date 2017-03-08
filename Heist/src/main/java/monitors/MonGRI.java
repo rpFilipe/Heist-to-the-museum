@@ -15,4 +15,5 @@ public class MonGRI {
     
     int [][] assaultParty = new int [Constants.N_ASSAULT_PARTIES][Constants.N_ORD_THIEVES];
     
+    
 }
