@@ -3,17 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package monitors;
-
-import com.mycompany.heist.Constants;
+package States;
 
 /**
  *
  * @author Ricardo Filipe
  */
-public class MonGRI {
-    
-    int [][] assaultParty = new int [Constants.N_ASSAULT_PARTIES][Constants.N_ORD_THIEVES];
-    
+public class RoomStates {
+     public final static int ROOM_EMPTY = 0,
+                             BEING_STOLEN = 1,
+                             ROB_AGAIN = 3,
+                             NOT_VISITED = 2;
     
 }

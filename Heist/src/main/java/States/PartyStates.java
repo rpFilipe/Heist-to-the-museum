@@ -3,20 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package monitors;
+package States;
 
 /**
  *
  * @author Ricardo Filipe
  */
-public class MonOrdinaryThievesCS {
-    
-    public synchronized void handACanvas(){
-        
-    }
-    
-    public synchronized void amINeeded(){
-        
-    }
+public class PartyStates {
+     public final static int DEPLOYED = 0,
+                             EMPTY = 1;
     
 }

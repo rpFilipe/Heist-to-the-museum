@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.mycompany.heist;
+package main;
 
 /**
  *
@@ -19,4 +19,5 @@ public final class Constants {
     public static final int ASSAULT_PARTY_SIZE = 3;
     public static final int N_ASSAULT_PARTIES = N_ORD_THIEVES/ASSAULT_PARTY_SIZE;
     public static final int MAX_CRAWL_DISTANCE = 3;
+    public static final int MAX_DISTANCE_BETWEEN_THIVES = 5;
 }

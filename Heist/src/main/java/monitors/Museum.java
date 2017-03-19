@@ -5,15 +5,22 @@
  */
 package monitors;
 
-import com.mycompany.heist.Constants;
+import main.Constants;
 import java.util.Random;
+import main.OrdinaryThief;
 
 /**
  *
  * @author Ricardo Filipe
  */
-public class MonMuseum{
+public class Museum{
     private Room rooms[] =  new Room[Constants.N_ROOMS];
+    
+    public Museum(){
+        for (int i = 0; i < Constants.N_ROOMS; i++) {
+            rooms[i] = new Room();
+        }
+    }
     
     private class Room{
         private int distance; 
@@ -29,9 +36,19 @@ public class MonMuseum{
            paintings--;
            return res;
         }
+        
+        public int getDistance() {
+            return distance;
+        }
     }
     
     public boolean rollACanvas(int room){
+        System.out.println("monitors.Museum.rollACanvas() - " + room);
+       // ((OrdinaryThief) Thread.currentThread()).s
         return rooms[room].rollACanvas();
+    }
+    
+    public int getRoomDistance(int id){
+        return rooms[id].getDistance();
     }
 }
