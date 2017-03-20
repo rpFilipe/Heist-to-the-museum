@@ -11,6 +11,7 @@ package States;
  */
 public class PartyStates {
      public final static int DEPLOYED = 0,
+                             BEING_FORMED = 2,
                              EMPTY = 1;
     
 }

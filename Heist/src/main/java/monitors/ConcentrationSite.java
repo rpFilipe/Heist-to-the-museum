@@ -1,10 +1,8 @@
 package monitors;
 
-import States.RoomStates;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import main.Constants;
-import heisttothemuseum.memFIFO.MemFIFO;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -122,7 +120,7 @@ public class ConcentrationSite {
         }
     }
     
-    public int getNumberThivesWaiting(){
+    public synchronized int getNumberThivesWaiting(){
         System.out.println("monitors.ConcentrationSite.getNumberThivesWaiting()");
         return thievesWaiting.size();
     }

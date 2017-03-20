@@ -32,9 +32,13 @@ public class ControlAndCollectionSite {
     private boolean thiefArrived;
     private int targetRoom;
     private int partyToDeploy;
+    private int[] partyArrivedThiefs;
+    private boolean partyFree;
 
     public ControlAndCollectionSite() {
         roomStates = new int[Constants.N_ROOMS];
+        partyFree = true;
+        partyArrivedThiefs = new int[Constants.N_ASSAULT_PARTIES];
         canvasToCollect = 0;
         partyStates = new int[Constants.N_ASSAULT_PARTIES];
         masterThiefBusy = false;
@@ -49,26 +53,32 @@ public class ControlAndCollectionSite {
     }
     
     public synchronized int appraiseSit(int nWaitingThieves){
-        System.out.println("monitors.ControlAndCollectionSite.appraiseSit()");
+        System.out.printf("monitors.ControlAndCollectionSite.appraiseSit() - %d\n", nWaitingThieves);
         int nextState;
         
         if (canvasToCollect > 0)
+        {
+            System.out.printf("canvasToCollect - %d\n", canvasToCollect);
             nextState = MasterThiefStates.WAITING_FOR_GROUP_ARRIVAL;
+        }
         
         else if(isHeistCompleted(nWaitingThieves))
             nextState = MasterThiefStates.PRESENTING_THE_REPORT;
         
         
         else if(nWaitingThieves < Constants.ASSAULT_PARTY_SIZE)
+        {
             nextState = MasterThiefStates.WAITING_FOR_GROUP_ARRIVAL;
+            System.out.println("nWaitingThieves");
+        }
         
         else{
             targetRoom = chooseTargetRoom();
-            if(targetRoom == -1){
+            partyToDeploy = choosePartyToDeploy();
+            if(targetRoom == -1 || partyToDeploy == -1){
                 nextState = MasterThiefStates.WAITING_FOR_GROUP_ARRIVAL;
             }
             else{
-            partyToDeploy = choosePartyToDeploy();
             nextState = MasterThiefStates.ASSEMBLING_A_GROUP;
             }    
         }
@@ -117,7 +127,9 @@ public class ControlAndCollectionSite {
         else if(roomStates[roomId] != RoomStates.ROOM_EMPTY)
             roomStates[roomId] = RoomStates.ROB_AGAIN;
         
-        partyStates[partyId] = PartyStates.EMPTY;
+        partyArrivedThiefs[partyId]++;
+        if(partyArrivedThiefs[partyId] == Constants.ASSAULT_PARTY_SIZE)
+            partyStates[partyId] = PartyStates.EMPTY;
         
         thiefArrived = true;
         notifyAll();
@@ -133,7 +145,7 @@ public class ControlAndCollectionSite {
         return  this.partyToDeploy;
     }
     
-    private int chooseTargetRoom(){
+    private synchronized int chooseTargetRoom(){
         for (int i = 0; i < Constants.N_ROOMS; i++) {
             if(roomStates[i] == RoomStates.NOT_VISITED || roomStates[i] == RoomStates.ROB_AGAIN)
             {
@@ -145,14 +157,15 @@ public class ControlAndCollectionSite {
         return -1;
     }
     
-    private int choosePartyToDeploy(){
+    private synchronized int  choosePartyToDeploy()
+    {
         System.out.println("monitors.ControlAndCollectionSite.getPartyToDeploy()");
         for (int i = 0; i < Constants.N_ASSAULT_PARTIES; i++) {
             if(partyStates[i] == PartyStates.EMPTY){
-                partyStates[i] = PartyStates.DEPLOYED;
+                partyStates[i] = PartyStates.BEING_FORMED;
+                partyArrivedThiefs[i] = 0;
                 return i;
-            }
-                
+            }       
         }
         return -1;
     }
