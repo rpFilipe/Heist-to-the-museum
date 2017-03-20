@@ -66,7 +66,7 @@ public class MasterThief extends Thread {
                     this.state = MasterThiefStates.DECIDING_WHAT_TO_DO;
                     break;
                 case MasterThiefStates.PRESENTING_THE_REPORT:
-                    System.out.println("ReportReady - " + nThivesWaiting);
+                    //System.out.println("ReportReady - " + nThivesWaiting);
                     concentrationSite.sumUpResults();
                     System.out.println("HEIST MOTHER FUCKONG COMPLETE");
                     heistCompletes = true;
