@@ -18,9 +18,10 @@ import monitors.Museum;
  * @author Ricardo Filipe
  */
 public class Main {
+    private static final int N_RUNS = 50000;
 
     public static void main(String[] args) {
-        for (int j = 1; j <= 2000; j++) {
+        for (int j = 1; j <= N_RUNS; j++) {
 
             // Initializing the monitors
             GeneralRepository genRepo = new GeneralRepository();

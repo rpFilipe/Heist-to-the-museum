@@ -12,33 +12,24 @@ import java.util.Queue;
  */
 public class ConcentrationSite {
     
-    private int nWaitingThieves;
     private boolean partyReady;
-    private Queue<Integer> thievesWaiting;
-    private boolean[] isNeeded;
+    private  Queue<Integer> thievesWaiting;
+    private  boolean[] isNeeded;
     private boolean resultsReady;
-    private boolean masterStartSignal;
     private int nThievesInParty;
     private int[] thiefAssaultParty = new int[Constants.N_ORD_THIEVES];
     
     public ConcentrationSite() {
-        nWaitingThieves = 0;
         thievesWaiting = new LinkedList<>();
         isNeeded = new boolean[Constants.N_ORD_THIEVES];
         resultsReady = false;
         partyReady = false;
         nThievesInParty = 0;
-        masterStartSignal = false;
     }
     
-    /**
-     *
-     * @param id
-     */
     public synchronized boolean amINeeded(int id){
-        System.out.println("monitors.ConcentrationSite.amINeeded()");
+        //System.out.println("monitors.ConcentrationSite.amINeeded()");
         thievesWaiting.add(id);
-        nWaitingThieves++;
         notifyAll();
         
         while(!isNeeded[id] && !resultsReady){
@@ -50,20 +41,10 @@ public class ConcentrationSite {
             }
         } isNeeded[id] = false;
         
-        if (resultsReady)
-            return false;
-        return true;
+        return !resultsReady;
     }
     
-    /**
-     *
-     * @param roomId
-     */
     public synchronized void prepareExcursion(int thiefId){
-        System.out.println("monitors.ConcentrationSite.prepareExcursion()");
-        // TODO
-        // Bloqueia e o ultimo antes de bloquear acorda o MASTER
-        
         nThievesInParty++;
         if(nThievesInParty == Constants.ASSAULT_PARTY_SIZE)
         {
@@ -73,11 +54,7 @@ public class ConcentrationSite {
         }
     }
     
-    /**
-     *
-     */
     public synchronized void prepareAssaultParty(int partyId){
-        System.out.println("monitors.ConcentrationSite.prepareAssaultParty()");
         
         for (int i = 0; i < Constants.ASSAULT_PARTY_SIZE; i++) {
             int thiefToWake = thievesWaiting.poll();
@@ -96,20 +73,21 @@ public class ConcentrationSite {
             }
         } partyReady = false;
     }
-    /**
-     *
-     */
+
     public synchronized void sumUpResults(){
         System.out.println("monitors.ConcentrationSite.sumUpResults()");
+        while(thievesWaiting.size() != Constants.N_ORD_THIEVES){
+            try {
+                wait();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(ConcentrationSite.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
         resultsReady = true;
         notifyAll();
     }
     
-    /**
-     *
-     */
     public synchronized void startOperations(){
-        System.out.println("monitors.ConcentrationSite.startOperations()");
         while(thievesWaiting.size() < Constants.N_ORD_THIEVES){
             try {
                 wait();
@@ -121,11 +99,10 @@ public class ConcentrationSite {
     }
     
     public synchronized int getNumberThivesWaiting(){
-        System.out.println("monitors.ConcentrationSite.getNumberThivesWaiting()");
         return thievesWaiting.size();
     }
     
-    public int getPartyId(int thiefId){
+    public synchronized int getPartyId(int thiefId){
         return thiefAssaultParty[thiefId];
     }
 }

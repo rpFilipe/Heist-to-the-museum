@@ -43,8 +43,6 @@ public class Museum{
     }
     
     public boolean rollACanvas(int room){
-        System.out.println("monitors.Museum.rollACanvas() - " + room);
-       // ((OrdinaryThief) Thread.currentThread()).s
         return rooms[room].rollACanvas();
     }
     

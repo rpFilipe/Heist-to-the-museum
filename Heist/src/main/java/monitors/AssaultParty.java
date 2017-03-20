@@ -37,16 +37,13 @@ public class AssaultParty {
     }
 
     public synchronized void sendAssaultParty() {
-        System.out.printf("monitors.ConcentrationSite.sendAssaultParty( %d - %d)\n", teamId, roomId);
         // TODO
-        System.out.println(crawlingQueue.peek());
         thiefCrawlongIdx = crawlingQueue.peek().id;
         notifyAll();
     }
 
     public synchronized void crawlIn(int id, int speed) {
 
-        System.out.printf("monitors.AssaultParty.crawlIn(( %d - %d - %d)\n", teamId, roomId, id);
         while (!roomReached) {
             while (thiefCrawlongIdx != id && !roomReached) {
                 try {
@@ -77,7 +74,6 @@ public class AssaultParty {
     }
 
     public synchronized void crawlOut(int id, int speed) {
-        System.out.printf("monitors.AssaultParty.crawlOut( %d - %d - %d)\n", teamId, roomId, id);
         while (!roomReached) {
             while (thiefCrawlongIdx != id && !roomReached) {
                 try {
@@ -109,14 +105,12 @@ public class AssaultParty {
     }
 
     public synchronized void joinParty(int id, int speed) {
-        System.out.printf("monitors.AssaultParty.joinParty() - %d - %d\n", id, teamId);
         ThiefInfo ti = new ThiefInfo(id, speed, positionInArray);
         crawlingQueue.add(ti);
         positionInArray++;
     }
 
     public void setRoom(int id, int distance) {
-        System.out.println("monitors.AssaultParty.setRoom()");
         this.roomDistance = distance;
         this.roomReached = false;
         this.roomId = id;
@@ -132,7 +126,6 @@ public class AssaultParty {
     }
 
     public synchronized void reverseDirection(int thiefId) {
-        System.out.println("monitors.AssaultParty.reverseDirection()");
         nThievesReadyToReturn++;
 
         if (nThievesReadyToReturn == Constants.ASSAULT_PARTY_SIZE) {

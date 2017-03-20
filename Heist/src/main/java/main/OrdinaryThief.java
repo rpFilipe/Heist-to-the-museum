@@ -21,9 +21,9 @@ public class OrdinaryThief extends Thread {
     private final int id;
     private final int speed;
     private AssaultParty[] assaultGroup; //TODO fazer isto mas para as interfaces
-    private final monitors.Museum museum;
-    private final monitors.ControlAndCollectionSite controlAndCollectionSite;
-    private final monitors.ConcentrationSite concentrationSite;
+    private  monitors.Museum museum;
+    private  monitors.ControlAndCollectionSite controlAndCollectionSite;
+    private  monitors.ConcentrationSite concentrationSite;
     private int state;
 
     public OrdinaryThief(int id, Museum museum,
