@@ -24,7 +24,7 @@ import monitors.GeneralRepository;
 public class ControlAndCollectionSite {
 
     private boolean heistCompleted;
-    private int canvasCollected = 0;
+    private int canvasCollected;
     private int canvasToCollect;
     private int[] roomStates;
     private int[] partyStates;
@@ -40,6 +40,7 @@ public class ControlAndCollectionSite {
         partyFree = true;
         partyArrivedThiefs = new int[Constants.N_ASSAULT_PARTIES];
         canvasToCollect = 0;
+        canvasCollected = 0;
         partyStates = new int[Constants.N_ASSAULT_PARTIES];
         masterThiefBusy = false;
         for (int i = 0; i < Constants.N_ROOMS; i++) {
@@ -58,11 +59,14 @@ public class ControlAndCollectionSite {
         targetRoom = chooseTargetRoom();
         partyToDeploy = choosePartyToDeploy();
         
-        if(isHeistCompleted(nWaitingThieves)){
+        //System.out.printf("targetRoom = %d | partyID = %d", targetRoom, partyToDeploy);
+        
+        if(isHeistCompleted()){
+            System.out.printf("Stolen paitings = %d\n", canvasCollected);
             return MasterThiefStates.PRESENTING_THE_REPORT;
         }
         
-        if(canvasToCollect > 0 || partyToDeploy == -1){
+        if(canvasToCollect > 0 || partyToDeploy == -1 || targetRoom == -1 || nWaitingThieves < Constants.ASSAULT_PARTY_SIZE){
             return MasterThiefStates.WAITING_FOR_GROUP_ARRIVAL;
         }
         
@@ -72,6 +76,9 @@ public class ControlAndCollectionSite {
             return MasterThiefStates.ASSEMBLING_A_GROUP;
         }*/
         
+        
+        roomStates[targetRoom] = RoomStates.BEING_STOLEN;
+        partyStates[partyToDeploy] = PartyStates.BEING_FORMED;
         return MasterThiefStates.ASSEMBLING_A_GROUP;
     }
 
@@ -106,6 +113,11 @@ public class ControlAndCollectionSite {
             }
         }
         masterThiefBusy = true;
+        
+        if(hasCanvas){
+            canvasCollected++;
+        }
+            
 
         if (!hasCanvas) {
             roomStates[roomId] = RoomStates.ROOM_EMPTY;
@@ -159,9 +171,9 @@ public class ControlAndCollectionSite {
         return true;
     }
 
-    private boolean isHeistCompleted(int nWaitingThives) {
+    private boolean isHeistCompleted() {
         if(targetRoom == -1 && allPartiesFree())
-            return false;
-        return true;
+            return true;
+        return false;
     }
 }

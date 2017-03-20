@@ -60,7 +60,6 @@ public class OrdinaryThief extends Thread {
             this.state = OrdinaryThiefState.CRAWLING_OUTWARDS;
             
             assaultGroup[partyId].crawlOut(this.id, this.speed);
-
             controlAndCollectionSite.handACanvas(canvas, roomId, partyId);
         }
     }

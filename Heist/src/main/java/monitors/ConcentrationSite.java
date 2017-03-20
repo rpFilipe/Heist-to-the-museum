@@ -75,7 +75,7 @@ public class ConcentrationSite {
     }
 
     public synchronized void sumUpResults(){
-        System.out.println("monitors.ConcentrationSite.sumUpResults()");
+        //System.out.println("monitors.ConcentrationSite.sumUpResults()");
         /*while(thievesWaiting.size() != Constants.N_ORD_THIEVES){
             try {
                 wait();

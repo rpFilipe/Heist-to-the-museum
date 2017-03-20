@@ -1,13 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package monitors;
 
 import main.Constants;
 import java.util.Random;
-import main.OrdinaryThief;
 
 /**
  *
@@ -15,11 +9,17 @@ import main.OrdinaryThief;
  */
 public class Museum{
     private Room rooms[] =  new Room[Constants.N_ROOMS];
+    private int totalPaitings = 0;
     
+    /**
+     *  Constructor to create a new Museum
+     */
     public Museum(){
         for (int i = 0; i < Constants.N_ROOMS; i++) {
             rooms[i] = new Room();
+            totalPaitings += rooms[i].paintings;
         }
+        System.out.printf("The museum has %d paitings", totalPaitings);
     }
     
     private class Room{
@@ -42,10 +42,20 @@ public class Museum{
         }
     }
     
+    /**
+     * This method is used to get a canvas from a room.
+     * @param room
+     * @return true if the room still has canvas to be stolen.
+     */
     public boolean rollACanvas(int room){
         return rooms[room].rollACanvas();
     }
     
+    /**
+     * This method returns the distance of a room to the outside.
+     * @param id of the room
+     * @return
+     */
     public int getRoomDistance(int id){
         return rooms[id].getDistance();
     }
