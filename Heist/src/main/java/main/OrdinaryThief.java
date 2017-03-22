@@ -49,7 +49,7 @@ public class OrdinaryThief extends Thread {
             this.state = OrdinaryThiefState.CRAWLING_INWARDS;
             concentrationSite.prepareExcursion(this.id);
             
-            assaultGroup[partyId].crawlIn(this.id, this.speed);
+            assaultGroup[partyId].crawlIn(this.id);
             int roomId = assaultGroup[partyId].getTargetRoom();
             
             this.state = OrdinaryThiefState.AT_A_ROOM;
@@ -59,7 +59,7 @@ public class OrdinaryThief extends Thread {
             
             this.state = OrdinaryThiefState.CRAWLING_OUTWARDS;
             
-            assaultGroup[partyId].crawlOut(this.id, this.speed);
+            assaultGroup[partyId].crawlOut(this.id);
             controlAndCollectionSite.handACanvas(canvas, roomId, partyId);
         }
     }

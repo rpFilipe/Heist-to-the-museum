@@ -4,7 +4,6 @@
  * and open the template in the editor.
  */
 package States;
-
 /**
  *
  * @author Ricardo Filipe

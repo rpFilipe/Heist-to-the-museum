@@ -22,7 +22,6 @@ public class MasterThief extends Thread {
     private  ControlAndCollectionSite controlAndCollectionSite;
     private  ConcentrationSite concentrationSite;
     private  AssaultParty[] assaultParty;
-    private boolean heistCompletes = false;
 
     public MasterThief(Museum museum,
             ConcentrationSite concentrationSite,
@@ -37,15 +36,14 @@ public class MasterThief extends Thread {
 
     @Override
     public void run() {
-        int nThivesWaiting = 0;
-        while (!heistCompletes) {
+        while (true) {
             switch (state) {
                 case MasterThiefStates.PLANNING_THE_HEIST:
                     concentrationSite.startOperations();
                     state = MasterThiefStates.DECIDING_WHAT_TO_DO;
                     break;
                 case MasterThiefStates.DECIDING_WHAT_TO_DO:
-                    nThivesWaiting = concentrationSite.getNumberThivesWaiting();
+                    int nThivesWaiting = concentrationSite.getNumberThivesWaiting();
                     this.state = controlAndCollectionSite.appraiseSit(nThivesWaiting);
                     break;
                 case MasterThiefStates.ASSEMBLING_A_GROUP:
@@ -69,8 +67,7 @@ public class MasterThief extends Thread {
                     //System.out.println("ReportReady - " + nThivesWaiting);
                     concentrationSite.sumUpResults();
                     //System.out.println("HEIST MOTHER FUCKONG COMPLETE");
-                    heistCompletes = true;
-                    break;
+                    return;
             }
         }
     }

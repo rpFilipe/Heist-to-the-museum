@@ -8,13 +8,9 @@ package monitors;
 import States.MasterThiefStates;
 import States.PartyStates;
 import States.RoomStates;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import main.Constants;
-import main.MasterThief;
 import monitors.GeneralRepository;
 
 /**
@@ -23,7 +19,6 @@ import monitors.GeneralRepository;
  */
 public class ControlAndCollectionSite {
 
-    private boolean heistCompleted;
     private int canvasCollected;
     private int canvasToCollect;
     private int[] roomStates;

@@ -28,7 +28,6 @@ public class ConcentrationSite {
     }
     
     public synchronized boolean amINeeded(int id){
-        //System.out.println("monitors.ConcentrationSite.amINeeded()");
         thievesWaiting.add(id);
         notifyAll();
         
@@ -75,14 +74,6 @@ public class ConcentrationSite {
     }
 
     public synchronized void sumUpResults(){
-        //System.out.println("monitors.ConcentrationSite.sumUpResults()");
-        /*while(thievesWaiting.size() != Constants.N_ORD_THIEVES){
-            try {
-                wait();
-            } catch (InterruptedException ex) {
-                Logger.getLogger(ConcentrationSite.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }*/
         resultsReady = true;
         notifyAll();
     }

@@ -42,7 +42,7 @@ public class AssaultParty {
         notifyAll();
     }
 
-    public synchronized void crawlIn(int id, int speed) {
+    public synchronized void crawlIn(int id) {
 
         while (!roomReached) {
             while (thiefCrawlongIdx != id && !roomReached) {
@@ -73,7 +73,7 @@ public class AssaultParty {
         }
     }
 
-    public synchronized void crawlOut(int id, int speed) {
+    public synchronized void crawlOut(int id) {
         while (!roomReached) {
             while (thiefCrawlongIdx != id && !roomReached) {
                 try {
