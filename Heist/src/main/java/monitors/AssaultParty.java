@@ -75,7 +75,9 @@ public class AssaultParty {
             }
             
             currentThiefInfo = crawlingQueue.poll();
-            positions[currentThiefInfo.positionInArray]++;
+            positions[currentThiefInfo.positionInArray]+=currentThiefInfo.speed;
+            if(positions[currentThiefInfo.positionInArray] > roomDistance)
+                positions[currentThiefInfo.positionInArray] = roomDistance;
             genRepo.updateThiefPosition(thiefCrawlongIdx, positions[currentThiefInfo.positionInArray]);
             crawlingQueue.add(currentThiefInfo);
             thiefCrawlongIdx = (crawlingQueue.peek()).id;
@@ -109,9 +111,11 @@ public class AssaultParty {
                 return;
             }
 
-            positions[currentThiefInfo.positionInArray]--;
-            genRepo.updateThiefPosition(thiefCrawlongIdx, positions[currentThiefInfo.positionInArray]);
             currentThiefInfo = crawlingQueue.poll();
+            positions[currentThiefInfo.positionInArray]-=currentThiefInfo.speed;
+            if(positions[currentThiefInfo.positionInArray] <0)
+                positions[currentThiefInfo.positionInArray] = 0;
+            genRepo.updateThiefPosition(thiefCrawlongIdx, positions[currentThiefInfo.positionInArray]);
             crawlingQueue.add(currentThiefInfo);
             thiefCrawlongIdx = (crawlingQueue.peek()).id;
 
