@@ -19,7 +19,7 @@ import monitors.Museum;
  */
 public class Main {
     private static final int N_RUNS = 5000000;
-
+    // P1G9
     public static void main(String[] args) {
         for (int j = 1; j <= N_RUNS; j++) {
 

@@ -31,7 +31,7 @@ public class OrdinaryThief extends Thread {
             ControlAndCollectionSite controlAndCollectionSite,
             AssaultParty[] assaultGroup) {
         this.id = id;
-        this.speed = new Random().nextInt(Constants.MAX_CRAWL_DISTANCE) + 1;
+        this.speed = new Random().nextInt(Constants.MAX_THIEF_SPEED - Constants.MIN_THIEF_SPEED) + Constants.MIN_THIEF_SPEED;
         this.museum = museum;
         this.concentrationSite = concentrationSite;
         this.controlAndCollectionSite = controlAndCollectionSite;

@@ -19,6 +19,9 @@ public class ConcentrationSite {
     private int nThievesInParty;
     private int[] thiefAssaultParty = new int[Constants.N_ORD_THIEVES];
     
+    /**
+     *  Create a new Concentration Site.
+     */
     public ConcentrationSite() {
         thievesWaiting = new LinkedList<>();
         isNeeded = new boolean[Constants.N_ORD_THIEVES];
@@ -27,6 +30,11 @@ public class ConcentrationSite {
         nThievesInParty = 0;
     }
     
+    /**
+     * Method to check if the Ordinary Thief id needed.
+     * @param id of the Ordinary Thief.
+     * @return is the Ordinary Thief needed.
+     */
     public synchronized boolean amINeeded(int id){
         thievesWaiting.add(id);
         notifyAll();
@@ -43,6 +51,10 @@ public class ConcentrationSite {
         return !resultsReady;
     }
     
+    /**
+     * Method to signal thar the Ordinary Thief has joined the Assault Party.
+     * @param thiefId Id of the Ordinary Thief.
+     */
     public synchronized void prepareExcursion(int thiefId){
         nThievesInParty++;
         if(nThievesInParty == Constants.ASSAULT_PARTY_SIZE)
@@ -53,6 +65,10 @@ public class ConcentrationSite {
         }
     }
     
+    /**
+     * Wake up the Ordinary Thieves necessary to join the Assault Party.
+     * @param partyId Id of the target Assault Party.
+     */
     public synchronized void prepareAssaultParty(int partyId){
         
         for (int i = 0; i < Constants.ASSAULT_PARTY_SIZE; i++) {
@@ -73,11 +89,17 @@ public class ConcentrationSite {
         } partyReady = false;
     }
 
+    /**
+     * Notify that the assault has ended.
+     */
     public synchronized void sumUpResults(){
         resultsReady = true;
         notifyAll();
     }
     
+    /**
+     * Wait for all the Ordinary Thieves to be Outside and start the assault.
+     */
     public synchronized void startOperations(){
         while(thievesWaiting.size() < Constants.N_ORD_THIEVES){
             try {
@@ -89,10 +111,19 @@ public class ConcentrationSite {
         }
     }
     
+    /**
+     * Get the number of Ordinary Thieves that are idling.
+     * @return number of Ordinary Thieves waiting.
+     */
     public synchronized int getNumberThivesWaiting(){
         return thievesWaiting.size();
     }
     
+    /**
+     * Get the id of the Assault Party associated with a Ordinary Thief.
+     * @param thiefId Id of the Thief.
+     * @return the Assault Party id.
+     */
     public synchronized int getPartyId(int thiefId){
         return thiefAssaultParty[thiefId];
     }

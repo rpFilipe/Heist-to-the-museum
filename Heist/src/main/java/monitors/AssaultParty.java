@@ -23,25 +23,38 @@ public class AssaultParty {
     private int roomId;
     private int positionInArray;
     private int[] positions;
+    private int[] testPositions;
     private int nThievesReadyToReturn;
     private Queue<ThiefInfo> crawlingQueue;
     private boolean roomReached = false;
     private ThiefInfo currentThiefInfo;
     private int thiefCrawlongIdx = -1;
 
+    /**
+     * Create a new Assault Party
+     * @param tid - Party Identifier
+     */
     public AssaultParty(int tid) {
         crawlingQueue = new LinkedList<>();
         positions = new int[Constants.ASSAULT_PARTY_SIZE];
+        testPositions = new int[Constants.ASSAULT_PARTY_SIZE];
         teamId = tid;
         nThievesReadyToReturn = 0;
     }
 
+    /**
+     * Method to signal the first Ordinary Thief that joined the party party to start crawling inwards.
+     */
     public synchronized void sendAssaultParty() {
         // TODO
         thiefCrawlongIdx = crawlingQueue.peek().id;
         notifyAll();
     }
 
+    /**
+     * Method to Thieves crawl from the Concentration Site to the Museum interior.
+     * @param id of the Ordinary Thief that invoked the method.
+     */
     public synchronized void crawlIn(int id) {
 
         while (!roomReached) {
@@ -57,7 +70,7 @@ public class AssaultParty {
             if (roomReached) {
                 return;
             }
-
+            
             currentThiefInfo = crawlingQueue.poll();
             positions[currentThiefInfo.positionInArray]++;
             crawlingQueue.add(currentThiefInfo);
@@ -73,6 +86,10 @@ public class AssaultParty {
         }
     }
 
+    /**
+     * Method to Thieves crawl from the Museum to the Concentration Site.
+     * @param id of the Ordinary Thief that invoked the method.
+     */
     public synchronized void crawlOut(int id) {
         while (!roomReached) {
             while (thiefCrawlongIdx != id && !roomReached) {
@@ -104,12 +121,22 @@ public class AssaultParty {
 
     }
 
+    /**
+     * Method to add a Ordinary Thief joins this Assault Party.
+     * @param id of the Ordinary Thief that invoked the method.
+     * @param speed maximum crawling distance per step.
+     */
     public synchronized void joinParty(int id, int speed) {
         ThiefInfo ti = new ThiefInfo(id, speed, positionInArray);
         crawlingQueue.add(ti);
         positionInArray++;
     }
 
+    /**
+     *  Method to set the target room parameters to this Assault Party.
+     * @param id id of the Room.
+     * @param distance from the Concentration Site to the Room.
+     */
     public void setRoom(int id, int distance) {
         this.roomDistance = distance;
         this.roomReached = false;
@@ -121,10 +148,18 @@ public class AssaultParty {
         positionInArray = 0;
     }
 
+    /**
+     * Get the current target room assigned to this Assault Party.
+     * @return Room id
+     */
     public int getTargetRoom() {
         return this.roomId;
     }
 
+    /**
+     * Method to change the direction in crawling.
+     * @param thiefId
+     */
     public synchronized void reverseDirection(int thiefId) {
         nThievesReadyToReturn++;
 
@@ -132,6 +167,15 @@ public class AssaultParty {
             thiefCrawlongIdx = crawlingQueue.peek().id;
             notifyAll();
         }
+    }
+    
+    private boolean isDisplacementValid(){
+        for (int i = 0; i < Constants.ASSAULT_PARTY_SIZE-1; i++) {
+            int displacement = Math.abs(testPositions[i+1] - testPositions[i]);
+            if(displacement > Constants.MAX_DISPLACEMENT)
+                return false;
+        }
+            return true;
     }
 
     private class ThiefInfo {

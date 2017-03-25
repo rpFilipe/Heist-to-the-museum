@@ -30,6 +30,9 @@ public class ControlAndCollectionSite {
     private int[] partyArrivedThiefs;
     private boolean partyFree;
 
+    /**
+     * Create a Control And Collection Instance.
+     */
     public ControlAndCollectionSite() {
         roomStates = new int[Constants.N_ROOMS];
         partyFree = true;
@@ -48,13 +51,15 @@ public class ControlAndCollectionSite {
         targetRoom = 0;
     }
 
+    /**
+     * Method to decide what is the next action of the Master Thief.
+     * @param nWaitingThieves Number of Ordinary Thieves idling outside.
+     * @return next Master Thief State.
+     */
     public synchronized int appraiseSit(int nWaitingThieves) {
-        //System.out.printf("monitors.ControlAndCollectionSite.appraiseSit(%d)\n", nWaitingThieves);
 
         targetRoom = chooseTargetRoom();
         partyToDeploy = choosePartyToDeploy();
-        
-        //System.out.printf("targetRoom = %d | partyID = %d", targetRoom, partyToDeploy);
         
         if(isHeistCompleted()){
             System.out.printf("Stolen paitings = %d\n", canvasCollected);
@@ -64,19 +69,16 @@ public class ControlAndCollectionSite {
         if(canvasToCollect > 0 || partyToDeploy == -1 || targetRoom == -1 || nWaitingThieves < Constants.ASSAULT_PARTY_SIZE){
             return MasterThiefStates.WAITING_FOR_GROUP_ARRIVAL;
         }
-        
-        /*if(targetRoom != -1 && partyToDeploy != -1){
-            roomStates[targetRoom] = RoomStates.BEING_STOLEN;
-            partyStates[partyToDeploy] = PartyStates.BEING_FORMED;
-            return MasterThiefStates.ASSEMBLING_A_GROUP;
-        }*/
-        
-        
+       
         roomStates[targetRoom] = RoomStates.BEING_STOLEN;
         partyStates[partyToDeploy] = PartyStates.BEING_FORMED;
         return MasterThiefStates.ASSEMBLING_A_GROUP;
     }
 
+    /**
+     * Method to send the Master Thief to a idle state waiting for a Ordinary
+     * Thief to return from the Museum.
+     */
     public synchronized void takeARest() {
         masterThiefBusy = false;
         notifyAll();
@@ -86,16 +88,24 @@ public class ControlAndCollectionSite {
                 wait();
             } catch (InterruptedException ex) {
                 Logger.getLogger(ControlAndCollectionSite.class.getName()).log(Level.SEVERE, null, ex);
-                System.out.println("Error Take a rest");
             }
         }
         thiefArrived = false;
     }
 
+    /**
+     * Method to get the canvas from the Ordinary Thief.
+     */
     public synchronized void collectCanvas() {
         canvasToCollect--;
     }
 
+    /**
+     * Method used to give the content of the canvas cylinder to the Master Thief.
+     * @param hasCanvas Content of the cylinder.
+     * @param roomId Id of the Room that was being target.
+     * @param partyId Id of the Assault Party that Ordinary Thief belonged to.
+     */
     public synchronized void handACanvas(boolean hasCanvas, int roomId, int partyId) {
         canvasToCollect++;
 
@@ -109,16 +119,14 @@ public class ControlAndCollectionSite {
         }
         masterThiefBusy = true;
         
-        if(hasCanvas){
+        if(hasCanvas)
             canvasCollected++;
-        }
             
 
-        if (!hasCanvas) {
+        if (!hasCanvas) 
             roomStates[roomId] = RoomStates.ROOM_EMPTY;
-        } else if (roomStates[roomId] != RoomStates.ROOM_EMPTY) {
+        else if (roomStates[roomId] != RoomStates.ROOM_EMPTY) 
             roomStates[roomId] = RoomStates.ROB_AGAIN;
-        }
 
         partyArrivedThiefs[partyId]++;
         
@@ -131,19 +139,26 @@ public class ControlAndCollectionSite {
         notifyAll();
     }
 
+    /**
+     * Method to get the next Room to target.
+     * @return Id of the target Room.
+     */
     public synchronized int getTargetRoom() {
         return this.targetRoom;
     }
 
+    /**
+     * Method to get the Assault Party to be deployed.. 
+     * @return Id of the Assault Party to be prepared.
+     */
     public synchronized int getPartyToDeploy() {
         return this.partyToDeploy;
     }
 
     private int chooseTargetRoom() {
         for (int i = 0; i < Constants.N_ROOMS; i++) {
-            if (roomStates[i] == RoomStates.NOT_VISITED || roomStates[i] == RoomStates.ROB_AGAIN) {
+            if (roomStates[i] == RoomStates.NOT_VISITED || roomStates[i] == RoomStates.ROB_AGAIN)
                 return i;
-            }
         }
         return -1;
     }
@@ -167,8 +182,6 @@ public class ControlAndCollectionSite {
     }
 
     private boolean isHeistCompleted() {
-        if(targetRoom == -1 && allPartiesFree())
-            return true;
-        return false;
+        return targetRoom == -1 && allPartiesFree();
     }
 }
