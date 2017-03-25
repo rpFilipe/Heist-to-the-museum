@@ -8,13 +8,16 @@ import java.util.Random;
  * @author Ricardo Filipe
  */
 public class Museum{
+    private static int roomsCreated = 0;
     private Room rooms[] =  new Room[Constants.N_ROOMS];
     private int totalPaitings = 0;
+    private GeneralRepository genRepo;
     
     /**
      *  Constructor to create a new Museum
      */
-    public Museum(){
+    public Museum(GeneralRepository genRepo){
+        this.genRepo = genRepo;
         for (int i = 0; i < Constants.N_ROOMS; i++) {
             rooms[i] = new Room();
             totalPaitings += rooms[i].paintings;
@@ -25,15 +28,22 @@ public class Museum{
     private class Room{
         private int distance; 
         private int paintings;
+        private int id;
         
         public Room() {
             this.distance = new Random().nextInt(Constants.MAX_ROOM_DISTANCE-Constants.MIN_ROOM_DISTANCE) + Constants.MIN_ROOM_DISTANCE;
             this.paintings = new Random().nextInt(Constants.MAX_PAITING_PER_ROOM-Constants.MIN_PAITING_PER_ROOM) + Constants.MIN_PAITING_PER_ROOM;
+            this.id = roomsCreated;
+            genRepo.setRoomAtributs(id, distance, paintings);
+            roomsCreated++;
         }
              
         private synchronized boolean rollACanvas(){
            boolean res = paintings > 0;
            paintings--;
+           if(paintings < 0)
+               paintings = 0;
+           genRepo.setRoomCanvas(id, paintings);
            return res;
         }
         

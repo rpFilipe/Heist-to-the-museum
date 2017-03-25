@@ -9,11 +9,9 @@ package States;
  * @author Ricardo Filipe
  */
 public final class OrdinaryThiefState {
-    public final static int  OUTSIDE = 0,
-                             CRAWLING_INWARDS = 1,
-                             AT_A_ROOM = 2,
-                             CRAWLING_OUTWARDS = 3,
-                             AT_COLLECTION_SITE = 4,
-                             HEIST_END = 5;
+    public final static int  OUTSIDE = 1000,
+                             CRAWLING_INWARDS = 2000,
+                             AT_A_ROOM = 3000,
+                             CRAWLING_OUTWARDS = 4000;
     
 }

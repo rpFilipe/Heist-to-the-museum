@@ -9,6 +9,7 @@ import States.MasterThiefStates;
 import monitors.AssaultParty;
 import monitors.ConcentrationSite;
 import monitors.ControlAndCollectionSite;
+import monitors.GeneralRepository;
 import monitors.Museum;
 
 /**
@@ -22,21 +23,24 @@ public class MasterThief extends Thread {
     private  ControlAndCollectionSite controlAndCollectionSite;
     private  ConcentrationSite concentrationSite;
     private  AssaultParty[] assaultParty;
+    private  GeneralRepository genRepo;
 
     public MasterThief(Museum museum,
             ConcentrationSite concentrationSite,
             ControlAndCollectionSite controlAndCollectionSite,
-            AssaultParty[] assaultParty) {
+            AssaultParty[] assaultParty,
+            GeneralRepository genRepo) {
         this.museum = museum;
         this.concentrationSite = concentrationSite;
         this.controlAndCollectionSite = controlAndCollectionSite;
         this.assaultParty = assaultParty;
-
+        this.genRepo = genRepo;
     }
 
     @Override
     public void run() {
         while (true) {
+            genRepo.updateMThiefState(state);
             switch (state) {
                 case MasterThiefStates.PLANNING_THE_HEIST:
                     concentrationSite.startOperations();
@@ -65,6 +69,7 @@ public class MasterThief extends Thread {
                     break;
                 case MasterThiefStates.PRESENTING_THE_REPORT:
                     //System.out.println("ReportReady - " + nThivesWaiting);
+                    genRepo.writeEnd();
                     concentrationSite.sumUpResults();
                     //System.out.println("HEIST MOTHER FUCKONG COMPLETE");
                     return;

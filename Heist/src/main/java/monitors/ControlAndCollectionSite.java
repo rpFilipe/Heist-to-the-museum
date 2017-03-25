@@ -29,11 +29,12 @@ public class ControlAndCollectionSite {
     private int partyToDeploy;
     private int[] partyArrivedThiefs;
     private boolean partyFree;
+    private GeneralRepository genRepo;
 
     /**
      * Create a Control And Collection Instance.
      */
-    public ControlAndCollectionSite() {
+    public ControlAndCollectionSite(GeneralRepository genRepo) {
         roomStates = new int[Constants.N_ROOMS];
         partyFree = true;
         partyArrivedThiefs = new int[Constants.N_ASSAULT_PARTIES];
@@ -49,6 +50,7 @@ public class ControlAndCollectionSite {
         }
         thiefArrived = false;
         targetRoom = 0;
+        this.genRepo = genRepo;
     }
 
     /**
@@ -62,6 +64,7 @@ public class ControlAndCollectionSite {
         partyToDeploy = choosePartyToDeploy();
         
         if(isHeistCompleted()){
+            genRepo.setCollectedCanvas(canvasCollected);
             System.out.printf("Stolen paitings = %d\n", canvasCollected);
             return MasterThiefStates.PRESENTING_THE_REPORT;
         }
@@ -132,6 +135,7 @@ public class ControlAndCollectionSite {
         
         if (partyArrivedThiefs[partyId] == Constants.ASSAULT_PARTY_SIZE) {
             partyStates[partyId] = PartyStates.EMPTY;
+            genRepo.clearParty(partyId);
             partyArrivedThiefs[partyId] = 0;
         }
 

@@ -27,19 +27,22 @@ public class AssaultParty {
     private int nThievesReadyToReturn;
     private Queue<ThiefInfo> crawlingQueue;
     private boolean roomReached = false;
+    private boolean outsideReached = false;
     private ThiefInfo currentThiefInfo;
     private int thiefCrawlongIdx = -1;
+    private GeneralRepository genRepo;
 
     /**
      * Create a new Assault Party
      * @param tid - Party Identifier
      */
-    public AssaultParty(int tid) {
+    public AssaultParty(int tid, GeneralRepository genRepo) {
         crawlingQueue = new LinkedList<>();
         positions = new int[Constants.ASSAULT_PARTY_SIZE];
         testPositions = new int[Constants.ASSAULT_PARTY_SIZE];
         teamId = tid;
         nThievesReadyToReturn = 0;
+        this.genRepo = genRepo;
     }
 
     /**
@@ -73,6 +76,7 @@ public class AssaultParty {
             
             currentThiefInfo = crawlingQueue.poll();
             positions[currentThiefInfo.positionInArray]++;
+            genRepo.updateThiefPosition(thiefCrawlongIdx, positions[currentThiefInfo.positionInArray]);
             crawlingQueue.add(currentThiefInfo);
             thiefCrawlongIdx = (crawlingQueue.peek()).id;
 
@@ -91,8 +95,8 @@ public class AssaultParty {
      * @param id of the Ordinary Thief that invoked the method.
      */
     public synchronized void crawlOut(int id) {
-        while (!roomReached) {
-            while (thiefCrawlongIdx != id && !roomReached) {
+        while (!outsideReached) {
+            while (thiefCrawlongIdx != id && !outsideReached) {
                 try {
                     wait();
                 } catch (InterruptedException ex) {
@@ -101,11 +105,12 @@ public class AssaultParty {
                 }
             }
 
-            if (roomReached) {
+            if (outsideReached) {
                 return;
             }
 
             positions[currentThiefInfo.positionInArray]--;
+            genRepo.updateThiefPosition(thiefCrawlongIdx, positions[currentThiefInfo.positionInArray]);
             currentThiefInfo = crawlingQueue.poll();
             crawlingQueue.add(currentThiefInfo);
             thiefCrawlongIdx = (crawlingQueue.peek()).id;
@@ -113,7 +118,7 @@ public class AssaultParty {
             // Check if all thieves arrived to the room
             int sum = IntStream.of(positions).sum();
             if (sum == 0) {
-                roomReached = true;
+                outsideReached = true;
                 thiefCrawlongIdx = -1;
             }
             notifyAll();
@@ -130,6 +135,7 @@ public class AssaultParty {
         ThiefInfo ti = new ThiefInfo(id, speed, positionInArray);
         crawlingQueue.add(ti);
         positionInArray++;
+        genRepo.updateThiefSituation(id, 'P');
     }
 
     /**
@@ -140,12 +146,15 @@ public class AssaultParty {
     public void setRoom(int id, int distance) {
         this.roomDistance = distance;
         this.roomReached = false;
+        this.outsideReached = false;
         this.roomId = id;
+        this.nThievesReadyToReturn = 0;
         this.crawlingQueue.clear();
         for (int i = 0; i < positions.length; i++) {
             positions[i] = 0;
         }
         positionInArray = 0;
+        genRepo.setRoomIdAP(teamId, roomId);
     }
 
     /**
@@ -162,7 +171,7 @@ public class AssaultParty {
      */
     public synchronized void reverseDirection(int thiefId) {
         nThievesReadyToReturn++;
-
+        roomReached = false;
         if (nThievesReadyToReturn == Constants.ASSAULT_PARTY_SIZE) {
             thiefCrawlongIdx = crawlingQueue.peek().id;
             notifyAll();

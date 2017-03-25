@@ -18,16 +18,18 @@ public class ConcentrationSite {
     private boolean resultsReady;
     private int nThievesInParty;
     private int[] thiefAssaultParty = new int[Constants.N_ORD_THIEVES];
+    private GeneralRepository genRepo;
     
     /**
      *  Create a new Concentration Site.
      */
-    public ConcentrationSite() {
+    public ConcentrationSite(GeneralRepository genRepo) {
         thievesWaiting = new LinkedList<>();
         isNeeded = new boolean[Constants.N_ORD_THIEVES];
         resultsReady = false;
         partyReady = false;
         nThievesInParty = 0;
+        this.genRepo = genRepo;
     }
     
     /**
@@ -74,6 +76,7 @@ public class ConcentrationSite {
         for (int i = 0; i < Constants.ASSAULT_PARTY_SIZE; i++) {
             int thiefToWake = thievesWaiting.poll();
             thiefAssaultParty[thiefToWake] = partyId;
+            genRepo.setPartyElement(partyId, thiefToWake, i);
             isNeeded[thiefToWake] = true;
         }
         notifyAll();
