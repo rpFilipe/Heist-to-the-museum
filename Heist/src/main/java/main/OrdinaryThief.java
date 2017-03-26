@@ -81,8 +81,11 @@ public class OrdinaryThief extends Thread {
             genRepo.updateThiefState(id, state);
             
             assaultGroup[partyId].crawlOut(this.id);
-            controlAndCollectionSite.handACanvas(id, canvas, roomId, partyId);
             this.state = OrdinaryThiefState.OUTSIDE;
+            genRepo.updateThiefState(id, state);
+            genRepo.updateThiefCylinder(id, false);
+            genRepo.updateThiefSituation(id, 'W');
+            controlAndCollectionSite.handACanvas(id, canvas, roomId, partyId);
         }
     }
 }

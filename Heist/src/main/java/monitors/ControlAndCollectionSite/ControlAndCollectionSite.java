@@ -148,9 +148,9 @@ public class ControlAndCollectionSite implements IotControlAndCollectionSite, Im
             partyArrivedThiefs[partyId] = 0;
         }
 
-        genRepo.updateThiefState(thiefId, OrdinaryThiefState.OUTSIDE);
-        genRepo.updateThiefCylinder(thiefId, false);
-        genRepo.updateThiefSituation(thiefId, 'W');
+        //genRepo.updateThiefState(thiefId, OrdinaryThiefState.OUTSIDE);
+        //genRepo.updateThiefCylinder(thiefId, false);
+        //genRepo.updateThiefSituation(thiefId, 'W');
         thiefArrived = true;
         notifyAll();
     }

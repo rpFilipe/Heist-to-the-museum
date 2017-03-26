@@ -141,10 +141,10 @@ public class ConcentrationSite implements IotConcentrationSite, ImtConcentration
      * Get the number of Ordinary Thieves that are idling.
      * @return number of Ordinary Thieves waiting.
      */
-    @Override
+    /*@Override
     public synchronized int getNumberThivesWaiting(){
         return thievesWaiting.size();
-    }
+    }*/
     
     /**
      * Get the id of the Assault Party associated with a Ordinary Thief.

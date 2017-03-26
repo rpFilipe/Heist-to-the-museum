@@ -21,7 +21,7 @@ public interface ImtConcentrationSite {
      * Get the number of Ordinary Thieves that are idling.
      * @return number of Ordinary Thieves waiting.
      */
-    public int getNumberThivesWaiting();
+    //public int getNumberThivesWaiting();
 
     /**
      * Wake up the Ordinary Thieves necessary to join the Assault Party.
