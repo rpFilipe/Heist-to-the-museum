@@ -58,8 +58,12 @@ public class ControlAndCollectionSite implements IotControlAndCollectionSite, Im
         this.genRepo = genRepo;
     }
     
+    /**
+     * Evaluates the situation and decide what to do next.
+     * @return Master Thief next state
+     */
     @Override
-    public synchronized int appraiseSit(int nWaitingThieves) {
+    public synchronized int appraiseSit() {
 
         targetRoom = chooseTargetRoom();
         partyToDeploy = choosePartyToDeploy();
@@ -108,13 +112,13 @@ public class ControlAndCollectionSite implements IotControlAndCollectionSite, Im
 
     /**
      * Method used to give the content of the canvas cylinder to the Master Thief.
-     * @param id
+     * @param thiefId Id of the Thief that invoked the method.
      * @param hasCanvas Content of the cylinder.
      * @param roomId Id of the Room that was being target.
      * @param partyId Id of the Assault Party that Ordinary Thief belonged to.
      */
     @Override
-    public synchronized void handACanvas(int id, boolean hasCanvas, int roomId, int partyId) {
+    public synchronized void handACanvas(int thiefId, boolean hasCanvas, int roomId, int partyId) {
         canvasToCollect++;
 
         while (masterThiefBusy) {
@@ -144,9 +148,9 @@ public class ControlAndCollectionSite implements IotControlAndCollectionSite, Im
             partyArrivedThiefs[partyId] = 0;
         }
 
-        genRepo.updateThiefState(id, OrdinaryThiefState.OUTSIDE);
-        genRepo.updateThiefCylinder(id, false);
-        genRepo.updateThiefSituation(id, 'W');
+        genRepo.updateThiefState(thiefId, OrdinaryThiefState.OUTSIDE);
+        genRepo.updateThiefCylinder(thiefId, false);
+        genRepo.updateThiefSituation(thiefId, 'W');
         thiefArrived = true;
         notifyAll();
     }
@@ -168,10 +172,6 @@ public class ControlAndCollectionSite implements IotControlAndCollectionSite, Im
     public synchronized int getPartyToDeploy() {
         return this.partyToDeploy;
     }
-    
-    public synchronized int canvasToCollect(){
-        return canvasToCollect;
-    }
 
     private int chooseTargetRoom() {
         for (int i = 0; i < Constants.N_ROOMS; i++) {
@@ -190,22 +190,12 @@ public class ControlAndCollectionSite implements IotControlAndCollectionSite, Im
         }
         return -1;
     }
-    
-    @Override
-    public boolean arePartiesFree(){
-        for (int i = 0; i < Constants.N_ASSAULT_PARTIES; i++) {
-            if(partyStates[i] == PartyStates.EMPTY)
-                return true;
-        }
-        return false;
-    }
 
     private boolean isHeistCompleted() {
         return allRoomsEmpty() && allPartiesFree();
     }
 
-    @Override
-    public boolean allRoomsEmpty() {
+    private boolean allRoomsEmpty() {
         for (int i = 0; i < roomStates.length; i++) {
             if(roomStates[i] != RoomStates.ROOM_EMPTY)
                 return false;
@@ -213,21 +203,11 @@ public class ControlAndCollectionSite implements IotControlAndCollectionSite, Im
         return true;
     }
     
-    public boolean allPartiesFree(){
+    private boolean allPartiesFree(){
         for (int i = 0; i < partyStates.length; i++) {
             if(partyStates[i] != PartyStates.EMPTY)
                 return false;
         }
         return true;
-    }
-
-    @Override
-    public synchronized void setPartyState(int partyId, int state) {
-        partyStates[partyId] = state;
-    }
-
-    @Override
-    public synchronized void setRoomState(int targetRoom, int state) {
-        roomStates[targetRoom] = state;
     }
 }

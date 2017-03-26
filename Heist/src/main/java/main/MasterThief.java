@@ -56,8 +56,8 @@ public class MasterThief extends Thread {
                     state = MasterThiefStates.DECIDING_WHAT_TO_DO;
                     break;
                 case MasterThiefStates.DECIDING_WHAT_TO_DO:
-                    int nwating = concentrationSite.getNumberThivesWaiting();
-                    this.state = controlAndCollectionSite.appraiseSit(nwating);
+                    //int nwating = concentrationSite.getNumberThivesWaiting();
+                    this.state = controlAndCollectionSite.appraiseSit();
                     break;
                 case MasterThiefStates.ASSEMBLING_A_GROUP:
                     int targetRoom = controlAndCollectionSite.getTargetRoom();

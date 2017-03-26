@@ -34,14 +34,10 @@ public interface ImtControlAndCollectionSite {
      */
     public void collectCanvas();
 
-    public boolean arePartiesFree();
-
-    public boolean allRoomsEmpty();
-
-    public void setPartyState(int partyToDeploy, int DEPLOYED);
-
-    public void setRoomState(int targetRoom, int BEING_STOLEN);
-
-    public int appraiseSit(int nwating);
+    /**
+     * Evaluates the situation and decide what to do next.
+     * @return Master Thief next state
+     */
+    public int appraiseSit();
     
 }

@@ -14,6 +14,7 @@ public interface IotControlAndCollectionSite {
 
     /**
      * Method used to give the content of the canvas cylinder to the Master Thief.
+     * @param id
      * @param canvas
      * @param roomId Id of the Room that was being target.
      * @param partyId Id of the Assault Party that Ordinary Thief belonged to.
