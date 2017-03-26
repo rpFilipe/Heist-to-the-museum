@@ -7,7 +7,6 @@ package monitors;
 
 import States.MasterThiefStates;
 import States.OrdinaryThiefState;
-import monitors.AssaultParty;
 import com.sun.javafx.binding.Logging;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -107,37 +106,24 @@ public class GeneralRepository {
         pw.printf("\n%4d",masterThiefState);
         for(int i=0; i< Constants.N_ORD_THIEVES; i++){
             currentT = thiefMap.get(i);
-            //pw.printf("    %4d %1s %2d", thiefStates[i],thiefSituation[i] ,thiefSpeed[i]);
             pw.printf("    %4d %1c %2d", currentT.state,currentT.situation ,currentT.speed);
         }
-        /*head = "Stat  ";
-            for(int i=1; i<=Constants.N_ORD_THIEVES; i++){
-                head += "Stat S MD";
-                head += "    ";
-            }
-            pw.println(head)*/
     }
     
     public synchronized void SecondLine(){
         Thief currentT;
-        int id, position, canvas;
         pw.printf("   ");
         for(int i =0; i < Constants.N_ASSAULT_PARTIES; i++){
             pw.printf(" %3d ", roomId[i]+1);
             for(int j = 0; j < Constants.ASSAULT_PARTY_SIZE; j++){
                 if(partyElement[i][j] == -1)
                 {
-                    id= -1;
-                    position = -1;
-                    canvas = -1;
+                    pw.printf("           ");
                 }
                 else{
                     currentT = thiefMap.get(partyElement[i][j]);
-                    id= currentT.id+1;
-                    position = currentT.position;
-                    canvas = currentT.canvas;
+                    pw.printf(" %2d %3d %2d ", currentT.id+1, currentT.position, currentT.canvas);
                 }
-                pw.printf(" %2d %3d %2d ", id, position, canvas);
             }
         }
         pw.printf(" ");
@@ -176,28 +162,13 @@ public class GeneralRepository {
     public synchronized void setRoomIdAP(int partyId,int room){
         roomId[partyId] = room;
         printStatus();
-    }/*
-    
-    public synchronized void setMemberIdAP(int partId, int member){
-        memberId[partId] = member;
-        FirstLine();
     }
-    
-    public synchronized void setPositionAP(int partyId, int thiefId, int posi){
-        pos[partyId][thiefId] = posi;
-        FirstLine();
-    }
-    
-    public synchronized void setCanvasAP(int partId, int thiefId, int canvas){
-        collectedCanvas[partId][thiefId] = canvas;
-        FirstLine();
-    }*/
     
     public synchronized void setCollectedCanvas(int toalCanvas){
         canvasCollected = toalCanvas;
     }
     
-    public synchronized void setRoomAtributs(int roomId, int distance, int paitings) {
+    public synchronized void setRoomAtributes(int roomId, int distance, int paitings) {
         rooms[roomId] = new Room(paitings, distance);
     }
     
@@ -229,12 +200,16 @@ public class GeneralRepository {
     }
     
     private synchronized void printStatus(){
+        if(Constants.DEBUG)
+            return;
         FirstLine();
         pw.println();
         SecondLine();
     }
     
-    private void writeInit(){
+    private synchronized void writeInit(){
+        if(Constants.DEBUG)
+            return;
         try{
             pw = new PrintWriter(log);
             pw.println("                               Heist to the Museum - Description of the internal state ");
@@ -303,6 +278,8 @@ public class GeneralRepository {
         }
     }
     public synchronized void writeEnd(){
+        if(Constants.DEBUG)
+            return;
         pw.printf("My friends, tonight's effort produced %2d priceless paintings!", canvasCollected);
         pw.println("\nLegend:");
         pw.println("MstT Sta – state of the master thief");

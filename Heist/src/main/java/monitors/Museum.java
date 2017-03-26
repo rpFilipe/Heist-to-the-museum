@@ -10,13 +10,15 @@ import java.util.Random;
 public class Museum{
     private static int roomsCreated = 0;
     private Room rooms[] =  new Room[Constants.N_ROOMS];
-    private int totalPaitings = 0;
+    private int totalPaitings;
     private GeneralRepository genRepo;
     
     /**
      *  Constructor to create a new Museum
      */
     public Museum(GeneralRepository genRepo){
+        totalPaitings = 0;
+        roomsCreated = 0;
         this.genRepo = genRepo;
         for (int i = 0; i < Constants.N_ROOMS; i++) {
             rooms[i] = new Room();
@@ -34,7 +36,7 @@ public class Museum{
             this.distance = new Random().nextInt(Constants.MAX_ROOM_DISTANCE-Constants.MIN_ROOM_DISTANCE) + Constants.MIN_ROOM_DISTANCE;
             this.paintings = new Random().nextInt(Constants.MAX_PAITING_PER_ROOM-Constants.MIN_PAITING_PER_ROOM) + Constants.MIN_PAITING_PER_ROOM;
             this.id = roomsCreated;
-            genRepo.setRoomAtributs(id, distance, paintings);
+            genRepo.setRoomAtributes(id, distance, paintings);
             roomsCreated++;
         }
              

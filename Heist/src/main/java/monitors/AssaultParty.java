@@ -78,6 +78,7 @@ public class AssaultParty {
             positions[currentThiefInfo.positionInArray]+=currentThiefInfo.speed;
             if(positions[currentThiefInfo.positionInArray] > roomDistance)
                 positions[currentThiefInfo.positionInArray] = roomDistance;
+            //positions[currentThiefInfo.positionInArray]++;
             genRepo.updateThiefPosition(thiefCrawlongIdx, positions[currentThiefInfo.positionInArray]);
             crawlingQueue.add(currentThiefInfo);
             thiefCrawlongIdx = (crawlingQueue.peek()).id;
@@ -115,6 +116,7 @@ public class AssaultParty {
             positions[currentThiefInfo.positionInArray]-=currentThiefInfo.speed;
             if(positions[currentThiefInfo.positionInArray] <0)
                 positions[currentThiefInfo.positionInArray] = 0;
+            //positions[currentThiefInfo.positionInArray]--;
             genRepo.updateThiefPosition(thiefCrawlongIdx, positions[currentThiefInfo.positionInArray]);
             crawlingQueue.add(currentThiefInfo);
             thiefCrawlongIdx = (crawlingQueue.peek()).id;
@@ -175,7 +177,7 @@ public class AssaultParty {
      */
     public synchronized void reverseDirection(int thiefId) {
         nThievesReadyToReturn++;
-        roomReached = false;
+        //outsideReached = false;
         if (nThievesReadyToReturn == Constants.ASSAULT_PARTY_SIZE) {
             thiefCrawlongIdx = crawlingQueue.peek().id;
             notifyAll();

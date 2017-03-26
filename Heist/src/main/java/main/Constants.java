@@ -24,4 +24,5 @@ public final class Constants {
     public static final int MAX_DISTANCE_BETWEEN_THIVES = 5;
     public static final String LOG_FILE_NAME = "log";
     public static final String LOG_FILE_PATH = "..\\";
+    public static final boolean DEBUG = false;
 }
