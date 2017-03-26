@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package monitors;
+package monitors.AssaultParty;
 
 import java.util.LinkedList;
 import main.Constants;
@@ -11,12 +11,14 @@ import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
+import monitors.GeneralRepository.GeneralRepository;
 
 /**
  *
  * @author Ricardo Filipe
+ * @author Marc Wagner
  */
-public class AssaultParty {
+public class AssaultParty implements IotAssaultParty, ImtAssaultParty{
 
     private int teamId;
     private int roomDistance;
@@ -34,7 +36,8 @@ public class AssaultParty {
 
     /**
      * Create a new Assault Party
-     * @param tid - Party Identifier
+     * @param tid Party Identifier
+     * @param genRepo instance of the General Repository
      */
     public AssaultParty(int tid, GeneralRepository genRepo) {
         crawlingQueue = new LinkedList<>();
@@ -48,8 +51,8 @@ public class AssaultParty {
     /**
      * Method to signal the first Ordinary Thief that joined the party party to start crawling inwards.
      */
+    @Override
     public synchronized void sendAssaultParty() {
-        // TODO
         thiefCrawlongIdx = crawlingQueue.peek().id;
         notifyAll();
     }
@@ -58,6 +61,7 @@ public class AssaultParty {
      * Method to Thieves crawl from the Concentration Site to the Museum interior.
      * @param id of the Ordinary Thief that invoked the method.
      */
+    @Override
     public synchronized void crawlIn(int id) {
 
         while (!roomReached) {
@@ -97,6 +101,7 @@ public class AssaultParty {
      * Method to Thieves crawl from the Museum to the Concentration Site.
      * @param id of the Ordinary Thief that invoked the method.
      */
+    @Override
     public synchronized void crawlOut(int id) {
         while (!outsideReached) {
             while (thiefCrawlongIdx != id && !outsideReached) {
@@ -137,6 +142,7 @@ public class AssaultParty {
      * @param id of the Ordinary Thief that invoked the method.
      * @param speed maximum crawling distance per step.
      */
+    @Override
     public synchronized void joinParty(int id, int speed) {
         ThiefInfo ti = new ThiefInfo(id, speed, positionInArray);
         crawlingQueue.add(ti);
@@ -149,6 +155,7 @@ public class AssaultParty {
      * @param id id of the Room.
      * @param distance from the Concentration Site to the Room.
      */
+    @Override
     public void setRoom(int id, int distance) {
         this.roomDistance = distance;
         this.roomReached = false;
@@ -167,15 +174,16 @@ public class AssaultParty {
      * Get the current target room assigned to this Assault Party.
      * @return Room id
      */
+    @Override
     public int getTargetRoom() {
         return this.roomId;
     }
 
     /**
      * Method to change the direction in crawling.
-     * @param thiefId
      */
-    public synchronized void reverseDirection(int thiefId) {
+    @Override
+    public synchronized void reverseDirection() {
         nThievesReadyToReturn++;
         //outsideReached = false;
         if (nThievesReadyToReturn == Constants.ASSAULT_PARTY_SIZE) {

@@ -6,30 +6,39 @@
 package main;
 
 import States.MasterThiefStates;
-import monitors.AssaultParty;
-import monitors.ConcentrationSite;
-import monitors.ControlAndCollectionSite;
-import monitors.GeneralRepository;
-import monitors.Museum;
+import monitors.AssaultParty.ImtAssaultParty;
+import monitors.ConcentrationSite.ImtConcentrationSite;
+import monitors.ControlAndCollectionSite.ImtControlAndCollectionSite;
+import monitors.GeneralRepository.ImtGeneralRepository;
+import monitors.Museum.ImtMuseum;
 
 /**
  *
  * @author Ricardo Filipe
+ * @author Marc Wagner
  */
 public class MasterThief extends Thread {
 
     private int state = MasterThiefStates.PLANNING_THE_HEIST;
-    private  Museum museum;
-    private  ControlAndCollectionSite controlAndCollectionSite;
-    private  ConcentrationSite concentrationSite;
-    private  AssaultParty[] assaultParty;
-    private  GeneralRepository genRepo;
+    private  ImtMuseum museum;
+    private  ImtControlAndCollectionSite controlAndCollectionSite;
+    private  ImtConcentrationSite concentrationSite;
+    private  ImtAssaultParty[] assaultParty;
+    private  ImtGeneralRepository genRepo;
 
-    public MasterThief(Museum museum,
-            ConcentrationSite concentrationSite,
-            ControlAndCollectionSite controlAndCollectionSite,
-            AssaultParty[] assaultParty,
-            GeneralRepository genRepo) {
+    /**
+     * Create a new MasterThief
+     * @param museum museum interface
+     * @param concentrationSite ConcentrationSite interface
+     * @param controlAndCollectionSite ControlAndCollectionSite interface
+     * @param assaultParty AssaultParty interface
+     * @param genRepo GeneralRepository interface
+     */
+    public MasterThief(ImtMuseum museum,
+            ImtConcentrationSite concentrationSite,
+            ImtControlAndCollectionSite controlAndCollectionSite,
+            ImtAssaultParty[] assaultParty,
+            ImtGeneralRepository genRepo) {
         this.museum = museum;
         this.concentrationSite = concentrationSite;
         this.controlAndCollectionSite = controlAndCollectionSite;
@@ -47,19 +56,18 @@ public class MasterThief extends Thread {
                     state = MasterThiefStates.DECIDING_WHAT_TO_DO;
                     break;
                 case MasterThiefStates.DECIDING_WHAT_TO_DO:
-                    int nThivesWaiting = concentrationSite.getNumberThivesWaiting();
-                    this.state = controlAndCollectionSite.appraiseSit(nThivesWaiting);
+                    int nwating = concentrationSite.getNumberThivesWaiting();
+                    this.state = controlAndCollectionSite.appraiseSit(nwating);
                     break;
                 case MasterThiefStates.ASSEMBLING_A_GROUP:
                     int targetRoom = controlAndCollectionSite.getTargetRoom();
-                    int partyId = controlAndCollectionSite.getPartyToDeploy();
-
+                    int partyToDeploy = controlAndCollectionSite.getPartyToDeploy();
+                    
                     int roomDistance = museum.getRoomDistance(targetRoom);
+                    assaultParty[partyToDeploy].setRoom(targetRoom, roomDistance);
+                    concentrationSite.prepareAssaultParty(partyToDeploy);
 
-                    assaultParty[partyId].setRoom(targetRoom, roomDistance);
-                    concentrationSite.prepareAssaultParty(partyId);
-
-                    assaultParty[partyId].sendAssaultParty();
+                    assaultParty[partyToDeploy].sendAssaultParty();
                     state = MasterThiefStates.DECIDING_WHAT_TO_DO;
                     break;
                 case MasterThiefStates.WAITING_FOR_GROUP_ARRIVAL:
@@ -68,10 +76,8 @@ public class MasterThief extends Thread {
                     this.state = MasterThiefStates.DECIDING_WHAT_TO_DO;
                     break;
                 case MasterThiefStates.PRESENTING_THE_REPORT:
-                    //System.out.println("ReportReady - " + nThivesWaiting);
-                    genRepo.writeEnd();
                     concentrationSite.sumUpResults();
-                    //System.out.println("HEIST MOTHER FUCKONG COMPLETE");
+                    genRepo.writeEnd();
                     return;
             }
         }

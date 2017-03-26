@@ -8,12 +8,12 @@ package States;
 /**
  *
  * @author Ricardo Filipe
+ * @author Marc Wagner
  */
 public final class MasterThiefStates {
-    // Estados do MasterThief
     public final static int PLANNING_THE_HEIST = 1000,
-                            DECIDING_WHAT_TO_DO=2000,
-                            ASSEMBLING_A_GROUP = 3000,
-                            WAITING_FOR_GROUP_ARRIVAL = 4000,
-                            PRESENTING_THE_REPORT = 5000;   
+    DECIDING_WHAT_TO_DO=2000,
+    ASSEMBLING_A_GROUP = 3000,
+    WAITING_FOR_GROUP_ARRIVAL = 4000,
+    PRESENTING_THE_REPORT = 5000;   
 }

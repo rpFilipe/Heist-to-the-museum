@@ -1,16 +1,18 @@
-package monitors;
+package monitors.ConcentrationSite;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import main.Constants;
 import java.util.LinkedList;
 import java.util.Queue;
+import monitors.GeneralRepository.GeneralRepository;
 
 /**
  *
  * @author Ricardo Filipe
+ * @author Marc Wagner
  */
-public class ConcentrationSite {
+public class ConcentrationSite implements IotConcentrationSite, ImtConcentrationSite{
     
     private boolean partyReady;
     private  Queue<Integer> thievesWaiting;
@@ -22,6 +24,7 @@ public class ConcentrationSite {
     
     /**
      *  Create a new Concentration Site.
+     * @param genRepo
      */
     public ConcentrationSite(GeneralRepository genRepo) {
         thievesWaiting = new LinkedList<>();
@@ -37,6 +40,7 @@ public class ConcentrationSite {
      * @param id of the Ordinary Thief.
      * @return is the Ordinary Thief needed.
      */
+    @Override
     public synchronized boolean amINeeded(int id){
         thievesWaiting.add(id);
         notifyAll();
@@ -57,6 +61,7 @@ public class ConcentrationSite {
      * Method to signal thar the Ordinary Thief has joined the Assault Party.
      * @param thiefId Id of the Ordinary Thief.
      */
+    @Override
     public synchronized void prepareExcursion(int thiefId){
         nThievesInParty++;
         if(nThievesInParty == Constants.ASSAULT_PARTY_SIZE)
@@ -71,7 +76,16 @@ public class ConcentrationSite {
      * Wake up the Ordinary Thieves necessary to join the Assault Party.
      * @param partyId Id of the target Assault Party.
      */
+    @Override
     public synchronized void prepareAssaultParty(int partyId){
+        
+        while(thievesWaiting.size() < Constants.ASSAULT_PARTY_SIZE){
+            try {
+                wait();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(ConcentrationSite.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
         
         for (int i = 0; i < Constants.ASSAULT_PARTY_SIZE; i++) {
             int thiefToWake = thievesWaiting.poll();
@@ -95,7 +109,15 @@ public class ConcentrationSite {
     /**
      * Notify that the assault has ended.
      */
+    @Override
     public synchronized void sumUpResults(){
+        while(thievesWaiting.size() < Constants.N_ORD_THIEVES){
+            try {
+                wait();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(ConcentrationSite.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
         resultsReady = true;
         notifyAll();
     }
@@ -103,6 +125,7 @@ public class ConcentrationSite {
     /**
      * Wait for all the Ordinary Thieves to be Outside and start the assault.
      */
+    @Override
     public synchronized void startOperations(){
         while(thievesWaiting.size() < Constants.N_ORD_THIEVES){
             try {
@@ -118,6 +141,7 @@ public class ConcentrationSite {
      * Get the number of Ordinary Thieves that are idling.
      * @return number of Ordinary Thieves waiting.
      */
+    @Override
     public synchronized int getNumberThivesWaiting(){
         return thievesWaiting.size();
     }
@@ -127,6 +151,7 @@ public class ConcentrationSite {
      * @param thiefId Id of the Thief.
      * @return the Assault Party id.
      */
+    @Override
     public synchronized int getPartyId(int thiefId){
         return thiefAssaultParty[thiefId];
     }

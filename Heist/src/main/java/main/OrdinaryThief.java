@@ -7,32 +7,45 @@ package main;
 
 import States.OrdinaryThiefState;
 import java.util.Random;
-import monitors.AssaultParty;
-import monitors.Museum;
-import monitors.ConcentrationSite;
-import monitors.ControlAndCollectionSite;
-import monitors.GeneralRepository;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import monitors.AssaultParty.IotAssaultParty;
+import monitors.ConcentrationSite.IotConcentrationSite;
+import monitors.ControlAndCollectionSite.IotControlAndCollectionSite;
+import monitors.GeneralRepository.IotGeneralRepository;
+import monitors.Museum.IotMuseum;
 
 /**
  *
  * @author Ricardo Filipe
+ * @author Marc Wagner
  */
 public class OrdinaryThief extends Thread {
 
     private final int id;
     private final int speed;
-    private AssaultParty[] assaultGroup; //TODO fazer isto mas para as interfaces
-    private  monitors.Museum museum;
-    private  monitors.ControlAndCollectionSite controlAndCollectionSite;
-    private  monitors.ConcentrationSite concentrationSite;
+    private IotAssaultParty[] assaultGroup; //TODO fazer isto mas para as interfaces
+    private IotMuseum museum;
+    private IotControlAndCollectionSite controlAndCollectionSite;
+    private IotConcentrationSite concentrationSite;
+    private IotGeneralRepository genRepo;
     private int state;
-    private GeneralRepository genRepo;
 
-    public OrdinaryThief(int id, Museum museum,
-            ConcentrationSite concentrationSite,
-            ControlAndCollectionSite controlAndCollectionSite,
-            AssaultParty[] assaultGroup,
-            GeneralRepository genRepo) {
+    /**
+     * Create a new OrdinaryThief
+     * @param id of the OrdinaryThief
+     * @param museum museum interface
+     * @param concentrationSite ConcentrationSite interface
+     * @param controlAndCollectionSite ControlAndCollectionSite interface
+     * @param assaultGroup AssaultParty interface
+     * @param genRepo GeneralRepository interface
+     */
+    public OrdinaryThief(int id,
+            IotMuseum museum,
+            IotConcentrationSite concentrationSite,
+            IotControlAndCollectionSite controlAndCollectionSite,
+            IotAssaultParty[] assaultGroup,
+            IotGeneralRepository genRepo) {
         this.id = id;
         this.speed = new Random().nextInt(Constants.MAX_THIEF_SPEED - Constants.MIN_THIEF_SPEED) + Constants.MIN_THIEF_SPEED;
         this.museum = museum;
@@ -41,13 +54,11 @@ public class OrdinaryThief extends Thread {
         this.assaultGroup = assaultGroup;
         this.genRepo = genRepo;
         this.genRepo.addThief(id, speed);
-        //this.genRepo.setThiefSpeed(id, speed);
     }
 
     @Override
     public void run() {
         this.state = OrdinaryThiefState.OUTSIDE;
-        //genRepo.updateThiefState(id, state);
         while (concentrationSite.amINeeded(this.id)) {
             int partyId = concentrationSite.getPartyId(id);
             assaultGroup[partyId].joinParty(id, speed);
@@ -64,17 +75,14 @@ public class OrdinaryThief extends Thread {
             
             boolean canvas = museum.rollACanvas(roomId);
             genRepo.updateThiefCylinder(id, canvas);
-            assaultGroup[partyId].reverseDirection(this.id);
+            assaultGroup[partyId].reverseDirection();
             
             this.state = OrdinaryThiefState.CRAWLING_OUTWARDS;
             genRepo.updateThiefState(id, state);
             
             assaultGroup[partyId].crawlOut(this.id);
-            controlAndCollectionSite.handACanvas(canvas, roomId, partyId);
+            controlAndCollectionSite.handACanvas(id, canvas, roomId, partyId);
             this.state = OrdinaryThiefState.OUTSIDE;
-            genRepo.updateThiefState(id, state);
-            genRepo.updateThiefCylinder(id, false);
-            genRepo.updateThiefSituation(id, 'W');
         }
     }
 }

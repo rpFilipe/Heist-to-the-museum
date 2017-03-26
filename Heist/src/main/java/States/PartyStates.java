@@ -8,10 +8,10 @@ package States;
 /**
  *
  * @author Ricardo Filipe
+ * @author Marc Wagner
  */
 public class PartyStates {
-     public final static int DEPLOYED = 0,
-                             BEING_FORMED = 2,
-                             EMPTY = 1;
-    
+    public final static int DEPLOYED = 0,
+    BEING_FORMED = 2,
+    EMPTY = 1;
 }

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package monitors;
+package monitors.GeneralRepository;
 
 import States.MasterThiefStates;
 import States.OrdinaryThiefState;
@@ -23,7 +23,7 @@ import main.Constants;
  * General Repository Instance.
  * @author Tiago Henriques nmec: 73046; Miguel Oliveira nmec: 72638
  */
-public class GeneralRepository {
+public class GeneralRepository implements ImtGeneralRepository, IotGeneralRepository{
     
     private static PrintWriter pw;
     private final File log;
@@ -101,7 +101,7 @@ public class GeneralRepository {
 
     }
     
-    public synchronized void FirstLine(){
+    private synchronized void FirstLine(){
         Thief currentT;
         pw.printf("\n%4d",masterThiefState);
         for(int i=0; i< Constants.N_ORD_THIEVES; i++){
@@ -110,7 +110,7 @@ public class GeneralRepository {
         }
     }
     
-    public synchronized void SecondLine(){
+    private synchronized void SecondLine(){
         Thief currentT;
         pw.printf("   ");
         for(int i =0; i < Constants.N_ASSAULT_PARTIES; i++){
@@ -133,7 +133,12 @@ public class GeneralRepository {
         pw.println();
     }
     
-
+    /**
+     * Update the State of the Ordinary Thief and print the updated Status in the log file.
+     * @param thiefId Id of the Ordinary Thief 
+     * @param state updated State
+     */
+    @Override
     public synchronized void updateThiefState(int thiefId, int state ){
         Thief t = thiefMap.get(thiefId);
         t.state = state;
@@ -141,45 +146,81 @@ public class GeneralRepository {
         
     }
     
+    /**
+     * Method to update state the Master Thief in the General Repository.
+     * @param state Current state the Master Thief.
+     */
+    @Override
     public synchronized void updateMThiefState(int state ){
         masterThiefState = state;
         printStatus();
         
     }
-    /*
-     public synchronized void setThiefSpeed(int thiefId, int speed ){
-        thiefSpeed[thiefId] = speed;
-        FirstLine();
-        
-    }*/
     
+    /**
+     * Method to update state the Thief's situation in the General Repository.
+     * @param thiefId Id of the Thief.
+     * @param situation Current situation.
+     */
+    @Override
     public synchronized void updateThiefSituation(int thiefId, char situation ){
         Thief t = thiefMap.get(thiefId);
         t.situation = situation;
         printStatus();
     }
     
+    /**
+     * Method to set the target room to a specific Assault Party in the General Repository.
+     * @param partyId Id of the Party.
+     * @param room target room of the Assault Party.
+     */
     public synchronized void setRoomIdAP(int partyId,int room){
         roomId[partyId] = room;
         printStatus();
     }
     
+    /**
+     * Method to set the number of painting stolen in the entire heist in the General Repository.
+     * @param toalCanvas Number of canvas "borrowed" from the Museum.
+     */
     public synchronized void setCollectedCanvas(int toalCanvas){
         canvasCollected = toalCanvas;
     }
     
+    /**
+     * Method to set the Room attributes in the General Repository.
+     * @param roomId Id of the Room.
+     * @param distance Distance from the outside to the Room.
+     * @param paitings Number of paintings present on the room.
+     */
     public synchronized void setRoomAtributes(int roomId, int distance, int paitings) {
         rooms[roomId] = new Room(paitings, distance);
     }
     
+    /**
+     * Method to add the Ordinary Thief attributes in the General Repository.
+     * @param thiefId Id of the Thief. 
+     * @param speed Maximum displacement of the Thief.
+     */
+    @Override
     public synchronized void addThief(int thiefId, int speed){
         thiefMap.put(thiefId, new Thief(thiefId, speed));
     }
     
+    /**
+     * Method to put a Ordinary Thief a specified Assault Party in the General Repository.
+     * @param partyId Id of the Assault Party.
+     * @param thiefId Id of the Thief.
+     * @param elemId Thief Id in the Assault Party.
+     */
     public synchronized void setPartyElement(int partyId, int thiefId, int elemId){
         partyElement[partyId][elemId] = thiefId;
     }
     
+    /**
+     * Method to clear the elements of a Assault Party in the General Repository.
+     * @param partyId Id of the Assault Party.
+     */
     public synchronized void clearParty(int partyId){
         for (int i = 0; i < Constants.ASSAULT_PARTY_SIZE; i++) {
             partyElement[partyId][i] = -1;
@@ -187,12 +228,23 @@ public class GeneralRepository {
         printStatus();
     }
     
+    /**
+     * Method to update the position of a Ordinary Thief in the General Repository.
+     * @param thiefId Id of the Thief thar Invoked the method.
+     * @param position Current position of the Thief.
+     */
     public synchronized void updateThiefPosition(int thiefId, int position){
         Thief currentT = thiefMap.get(thiefId);
         currentT.position = position;
         printStatus();
     }
     
+    /**
+     * Method to update the contents of a Ordinary Thief cylinder in the General Repository.
+     * @param thiefId Id of the thief that invoked the method.
+     * @param hasCanvas the state of the thief cylinder.
+     */
+    @Override
     public synchronized void updateThiefCylinder(int thiefId, boolean hasCanvas){
         Thief currentT = thiefMap.get(thiefId);
         currentT.canvas = hasCanvas ? 1:0;
@@ -277,25 +329,35 @@ public class GeneralRepository {
             Logger.getLogger(Logging.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
+    /**
+     * Method to finalize the log.
+     */
+    @Override
     public synchronized void writeEnd(){
         if(Constants.DEBUG)
             return;
         pw.printf("My friends, tonight's effort produced %2d priceless paintings!", canvasCollected);
         pw.println("\nLegend:");
-        pw.println("MstT Sta – state of the master thief");
+        pw.println("MstT Sta - state of the master thief");
         pw.println("Thief # Stat - state of the ordinary thief # (# - 1 .. 6)");
-        pw.println("Thief # S – situation of the ordinary thief  # (# - 1 .. 6) either 'W' (waiting to join a party) or 'P' (in party) ");
-        pw.println("Thief # MD – maximum displacement of the ordinary thief # (# - 1 .. 6) a random number between 2 and 6 ");
-        pw.println("Assault party # RId – assault party # (# - 1,2) elem # (# - 1 .. 3) room identification (1 .. 5)");
-        pw.println("Assault party # Elem # Id – assault party # (# - 1,2) elem # (# - 1 .. 3) member identification (1 .. 6) ");
-        pw.println("Assault party # Elem # Pos – assault party # (# - 1,2) elem # (# - 1 .. 3) present position (0 .. DT RId) ");
-        pw.println("Assault party # Elem # Cv – assault party # (# - 1,2) elem # (# - 1 .. 3) carrying a canvas (0,1)");
+        pw.println("Thief # S - situation of the ordinary thief  # (# - 1 .. 6) either 'W' (waiting to join a party) or 'P' (in party) ");
+        pw.println("Thief # MD - maximum displacement of the ordinary thief # (# - 1 .. 6) a random number between 2 and 6 ");
+        pw.println("Assault party # RId - assault party # (# - 1,2) elem # (# - 1 .. 3) room identification (1 .. 5)");
+        pw.println("Assault party # Elem # Id - assault party # (# - 1,2) elem # (# - 1 .. 3) member identification (1 .. 6) ");
+        pw.println("Assault party # Elem # Pos - assault party # (# - 1,2) elem # (# - 1 .. 3) present position (0 .. DT RId) ");
+        pw.println("Assault party # Elem # Cv - assault party # (# - 1,2) elem # (# - 1 .. 3) carrying a canvas (0,1)");
         pw.println("Museum Room # NP - room identification (1 .. 5) number of paintings presently hanging on the walls");
         pw.println("Museum Room # DT - room identification (1 .. 5) distance from outside gathering site, a random number between 15 and 30");
         pw.flush();
         pw.close();
     }
 
+    /**
+     * Method to set the number of paintings in the General Repository. 
+     * @param id Id of the Room
+     * @param paitings Number of paintings in the Room.
+     */
     public synchronized void setRoomCanvas(int id, int paitings) {
         rooms[id].paitings_left = paitings;
     }

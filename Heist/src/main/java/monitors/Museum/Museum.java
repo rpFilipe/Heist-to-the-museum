@@ -1,13 +1,15 @@
-package monitors;
+package monitors.Museum;
 
 import main.Constants;
 import java.util.Random;
+import monitors.GeneralRepository.GeneralRepository;
 
 /**
  *
  * @author Ricardo Filipe
+ * @author Marc Wagner
  */
-public class Museum{
+public class Museum implements IotMuseum, ImtMuseum{
     private static int roomsCreated = 0;
     private Room rooms[] =  new Room[Constants.N_ROOMS];
     private int totalPaitings;
@@ -15,6 +17,7 @@ public class Museum{
     
     /**
      *  Constructor to create a new Museum
+     * @param genRepo
      */
     public Museum(GeneralRepository genRepo){
         totalPaitings = 0;
@@ -59,6 +62,7 @@ public class Museum{
      * @param room
      * @return true if the room still has canvas to be stolen.
      */
+    @Override
     public boolean rollACanvas(int room){
         return rooms[room].rollACanvas();
     }
@@ -68,6 +72,7 @@ public class Museum{
      * @param id of the room
      * @return
      */
+    @Override
     public int getRoomDistance(int id){
         return rooms[id].getDistance();
     }
