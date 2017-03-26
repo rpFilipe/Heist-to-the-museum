@@ -27,7 +27,7 @@ import monitors.Museum.Museum;
  * @author Marc Wagner
  */
 public class Main {
-    private static final int N_RUNS = 10000;
+    private static final int N_RUNS = 100;
     // P1G9;
 
     /**

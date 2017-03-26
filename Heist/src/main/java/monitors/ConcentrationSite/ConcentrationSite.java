@@ -1,5 +1,6 @@
 package monitors.ConcentrationSite;
 
+import States.MasterThiefStates;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import main.Constants;
@@ -67,8 +68,8 @@ public class ConcentrationSite implements IotConcentrationSite, ImtConcentration
         if(nThievesInParty == Constants.ASSAULT_PARTY_SIZE)
         {
             partyReady = true;
-            notifyAll();
             nThievesInParty = 0;
+            notifyAll();
         }
     }
     
@@ -78,15 +79,6 @@ public class ConcentrationSite implements IotConcentrationSite, ImtConcentration
      */
     @Override
     public synchronized void prepareAssaultParty(int partyId){
-        
-        while(thievesWaiting.size() < Constants.ASSAULT_PARTY_SIZE){
-            try {
-                wait();
-            } catch (InterruptedException ex) {
-                Logger.getLogger(ConcentrationSite.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        
         for (int i = 0; i < Constants.ASSAULT_PARTY_SIZE; i++) {
             int thiefToWake = thievesWaiting.poll();
             thiefAssaultParty[thiefToWake] = partyId;
@@ -111,13 +103,6 @@ public class ConcentrationSite implements IotConcentrationSite, ImtConcentration
      */
     @Override
     public synchronized void sumUpResults(){
-        while(thievesWaiting.size() < Constants.N_ORD_THIEVES){
-            try {
-                wait();
-            } catch (InterruptedException ex) {
-                Logger.getLogger(ConcentrationSite.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
         resultsReady = true;
         notifyAll();
     }
@@ -136,16 +121,7 @@ public class ConcentrationSite implements IotConcentrationSite, ImtConcentration
             }
         }
     }
-    
-    /**
-     * Get the number of Ordinary Thieves that are idling.
-     * @return number of Ordinary Thieves waiting.
-     */
-    /*@Override
-    public synchronized int getNumberThivesWaiting(){
-        return thievesWaiting.size();
-    }*/
-    
+
     /**
      * Get the id of the Assault Party associated with a Ordinary Thief.
      * @param thiefId Id of the Thief.
@@ -154,5 +130,38 @@ public class ConcentrationSite implements IotConcentrationSite, ImtConcentration
     @Override
     public synchronized int getPartyId(int thiefId){
         return thiefAssaultParty[thiefId];
+    }
+
+    /**
+     *
+     * @param isHeistCompleted
+     * @param isWaitingNedded
+     * @return
+     */
+    @Override
+    public synchronized int appraiseSit(boolean isHeistCompleted, boolean isWaitingNedded) {
+        if(isHeistCompleted){
+            while(thievesWaiting.size() < Constants.N_ORD_THIEVES){
+                try {
+                    wait();
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(ConcentrationSite.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            return MasterThiefStates.PRESENTING_THE_REPORT;
+        }
+        
+        if(isWaitingNedded){
+            return MasterThiefStates.WAITING_FOR_GROUP_ARRIVAL;
+        }
+        
+        while(thievesWaiting.size() < Constants.ASSAULT_PARTY_SIZE){
+            try {
+                wait();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(ConcentrationSite.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return MasterThiefStates.ASSEMBLING_A_GROUP;
     }
 }

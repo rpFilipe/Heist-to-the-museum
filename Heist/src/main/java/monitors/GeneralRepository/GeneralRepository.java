@@ -10,10 +10,7 @@ import States.OrdinaryThiefState;
 import com.sun.javafx.binding.Logging;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import java.io.PrintWriter;;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,17 +25,10 @@ public class GeneralRepository implements ImtGeneralRepository, IotGeneralReposi
     private static PrintWriter pw;
     private final File log;
     private int masterThiefState;
-    private int[] thiefPositions;
-    private int[] thiefStates;
-    private int[] thiefSpeed;
-    private String[] thiefSituation;
     private int[] roomId;
     private Room[] rooms;
-    private int[] memberId;
-    private int[][] collectedCanvas;
     private HashMap<Integer,Thief> thiefMap;
     private int[][] partyElement;
-    private int[][] pos;
     private int canvasCollected= 0;
     
     /**
@@ -46,58 +36,26 @@ public class GeneralRepository implements ImtGeneralRepository, IotGeneralReposi
      */
     public GeneralRepository(){
         masterThiefState = MasterThiefStates.PLANNING_THE_HEIST;
-        thiefPositions = new int[Constants.N_ORD_THIEVES];
-        thiefSpeed = new int[Constants.N_ORD_THIEVES];
-        thiefStates = new int[Constants.N_ORD_THIEVES];
-        thiefSituation = new String[Constants.N_ORD_THIEVES];
         roomId = new int[Constants.N_ASSAULT_PARTIES];
         rooms = new Room[Constants.N_ROOMS];
-        memberId = new int[Constants.N_ASSAULT_PARTIES];
-        collectedCanvas = new int[Constants.N_ASSAULT_PARTIES][Constants.ASSAULT_PARTY_SIZE];
-        pos = new int[Constants.N_ASSAULT_PARTIES][Constants.ASSAULT_PARTY_SIZE];
         thiefMap = new HashMap<>();
         partyElement = new int[Constants.N_ASSAULT_PARTIES][Constants.ASSAULT_PARTY_SIZE];
         
-        for(int i = 0; i < thiefStates.length;i++)
-            thiefStates[i] = OrdinaryThiefState.OUTSIDE;
-        
-        for(int i = 0; i < thiefPositions.length; i++){
-            thiefPositions[i] = 0;
-        }
-        
-        for(int i = 0; i < thiefSituation.length; i++){
-            thiefSituation[i] = "W";
-        }
-        
         for(int i = 0; i < roomId.length; i++){
-            roomId[i] = 0;
+            roomId[i] = -1;
         }
-         
-        for(int i = 0; i < memberId.length; i++){
-            memberId[i] = 0;
-        }
-        
-        for(int i = 0; i < collectedCanvas.length; i++){
-            for(int j = 0; j <  Constants.ASSAULT_PARTY_SIZE;j++)
-                collectedCanvas[i][j] = 0;
-        }
-        for(int i = 0; i < Constants.N_ASSAULT_PARTIES; i++){
-            for(int j = 0; j <  Constants.ASSAULT_PARTY_SIZE;j++)
-                pos[i][j] = 0;
-        }
+
         for (int i = 0; i < Constants.N_ASSAULT_PARTIES; i++) {
             for (int j = 0; j < Constants.ASSAULT_PARTY_SIZE; j++) {
                partyElement[i][j] = -1; 
             }
             
         }
-
-        Date today = Calendar.getInstance().getTime();
-        SimpleDateFormat date = new SimpleDateFormat("yyyyMMddhhmmss");
-        String filename = "HeistMuseum" + date.format(today) + ".log";
+        int ts = (int) System.currentTimeMillis();
+        String filename = "HeistMuseumSim_ "+ ts+ ".log";
 
         this.log = new File(filename);
-        writeInit();
+        InitializeLog();
 
     }
     
@@ -114,7 +72,12 @@ public class GeneralRepository implements ImtGeneralRepository, IotGeneralReposi
         Thief currentT;
         pw.printf("   ");
         for(int i =0; i < Constants.N_ASSAULT_PARTIES; i++){
-            pw.printf(" %3d ", roomId[i]+1);
+            if(roomId[i] == -1){
+                pw.printf("     ");
+            }
+            else{
+                pw.printf(" %3d ", roomId[i]+1);
+            }
             for(int j = 0; j < Constants.ASSAULT_PARTY_SIZE; j++){
                 if(partyElement[i][j] == -1)
                 {
@@ -176,7 +139,6 @@ public class GeneralRepository implements ImtGeneralRepository, IotGeneralReposi
      */
     public synchronized void setRoomIdAP(int partyId,int room){
         roomId[partyId] = room;
-        printStatus();
     }
     
     /**
@@ -224,6 +186,7 @@ public class GeneralRepository implements ImtGeneralRepository, IotGeneralReposi
     public synchronized void clearParty(int partyId){
         for (int i = 0; i < Constants.ASSAULT_PARTY_SIZE; i++) {
             partyElement[partyId][i] = -1;
+            roomId[partyId] = -1;
         }
         printStatus();
     }
@@ -259,7 +222,7 @@ public class GeneralRepository implements ImtGeneralRepository, IotGeneralReposi
         SecondLine();
     }
     
-    private synchronized void writeInit(){
+    private synchronized void InitializeLog(){
         if(Constants.DEBUG)
             return;
         try{
@@ -334,7 +297,7 @@ public class GeneralRepository implements ImtGeneralRepository, IotGeneralReposi
      * Method to finalize the log.
      */
     @Override
-    public synchronized void writeEnd(){
+    public synchronized void FinalizeLog(){
         if(Constants.DEBUG)
             return;
         pw.printf("My friends, tonight's effort produced %2d priceless paintings!", canvasCollected);

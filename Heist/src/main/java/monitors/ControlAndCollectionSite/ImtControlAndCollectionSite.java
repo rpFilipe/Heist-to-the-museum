@@ -33,11 +33,17 @@ public interface ImtControlAndCollectionSite {
      * Method to get the canvas from the Ordinary Thief.
      */
     public void collectCanvas();
-
+    
     /**
-     * Evaluates the situation and decide what to do next.
-     * @return Master Thief next state
+     * Check if all the Rooms have been cleared.
+     * @return heist completed
      */
-    public int appraiseSit();
+    public boolean isHeistCompleted();
+    
+    /**
+     * Check if all the MasterThief can rest for a bit.
+     * @return MasterThief has to wait
+     */
+    public boolean waitingNedded();
     
 }

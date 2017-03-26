@@ -32,5 +32,13 @@ public interface ImtConcentrationSite {
     /**
      * Notify that the assault has ended.
      */
-    public void sumUpResults(); 
+    public void sumUpResults();
+    
+    /**
+     * Evaluates the situation and blocks if needed.
+     * @param isHeistCompleted has the heist been successful.
+     * @param isWaitingNedded does the MasterThief have to wait for a group arrival.
+     * @return Master Thief next State
+     */
+    public int appraiseSit(boolean isHeistCompleted, boolean isWaitingNedded);
 }

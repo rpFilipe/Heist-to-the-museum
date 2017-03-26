@@ -57,7 +57,9 @@ public class MasterThief extends Thread {
                     break;
                 case MasterThiefStates.DECIDING_WHAT_TO_DO:
                     //int nwating = concentrationSite.getNumberThivesWaiting();
-                    this.state = controlAndCollectionSite.appraiseSit();
+                    boolean a = controlAndCollectionSite.isHeistCompleted();
+                    boolean b = controlAndCollectionSite.waitingNedded();
+                    this.state = concentrationSite.appraiseSit(a,b);
                     break;
                 case MasterThiefStates.ASSEMBLING_A_GROUP:
                     int targetRoom = controlAndCollectionSite.getTargetRoom();
@@ -77,7 +79,7 @@ public class MasterThief extends Thread {
                     break;
                 case MasterThiefStates.PRESENTING_THE_REPORT:
                     concentrationSite.sumUpResults();
-                    genRepo.writeEnd();
+                    genRepo.FinalizeLog();
                     return;
             }
         }

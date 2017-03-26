@@ -21,6 +21,6 @@ public interface ImtGeneralRepository {
     /**
      * Method to finalize the log.
      */
-    public void writeEnd();
+    public void FinalizeLog();
     
 }

@@ -8,6 +8,7 @@ package main;
 /**
  *
  * @author Ricardo Filipe
+ * @author Marc Wagner
  */
 public final class Constants {
     public static final int N_ROOMS = 5;
