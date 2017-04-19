@@ -7,7 +7,6 @@ package monitors.GeneralRepository;
 
 import States.MasterThiefStates;
 import States.OrdinaryThiefState;
-import com.sun.javafx.binding.Logging;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;;
@@ -18,7 +17,8 @@ import main.Constants;
 
 /**
  * General Repository Instance.
- * @author Tiago Henriques nmec: 73046; Miguel Oliveira nmec: 72638
+ * @author Ricardo Filipe
+ * @author Marc Wagner
  */
 public class GeneralRepository implements ImtGeneralRepository, IotGeneralRepository{
     
@@ -289,7 +289,7 @@ public class GeneralRepository implements ImtGeneralRepository, IotGeneralReposi
                         
             pw.flush();
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(Logging.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex);
         }
     }
 

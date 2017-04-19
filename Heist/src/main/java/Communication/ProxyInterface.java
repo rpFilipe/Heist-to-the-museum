@@ -3,15 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package States;
+package Communication;
+
 /**
  *
  * @author Ricardo Filipe
- * @author Marc Wagner
+ * 221GX xE[0,9]
+ * l040101-ws??.clients.ua.pt
+ * sd010g
  */
-public final class OrdinaryThiefState {
-    public final static int  OUTSIDE = 1000,
-    CRAWLING_INWARDS = 2000,
-    AT_A_ROOM = 3000,
-    CRAWLING_OUTWARDS = 4000;
+public interface ProxyInterface {
+    public Message processRequest(Message inMessage) throws MessageException;
 }
