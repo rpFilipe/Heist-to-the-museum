@@ -14,10 +14,7 @@ import monitors.AssaultParty.IotAssaultParty;
  */
 class AssaultPartyProxy implements IotAssaultParty, ImtAssaultParty{
 
-    public AssaultPartyProxy() {
-    }
-
-    AssaultPartyProxy(int i) {
+    AssaultPartyProxy(int i, String configServerAddr, int configServerPort) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

@@ -14,7 +14,7 @@ import monitors.ConcentrationSite.IotConcentrationSite;
  */
 class ConcentrationSiteProxy implements ImtConcentrationSite, IotConcentrationSite{
 
-    public ConcentrationSiteProxy() {
+    public ConcentrationSiteProxy(String configServerAddr, int configServerPort) {
     }
 
     

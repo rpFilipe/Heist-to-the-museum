@@ -18,17 +18,23 @@ import monitors.Museum.ImtMuseum;
  */
 public class MasterThiefStart {
     
+    private static String configServerAddr;
+    private static int configServerPort;
     
     public static void main(String[] args) {
-        GeneralRepositoryProxy genRepo = new GeneralRepositoryProxy();
-        MuseumProxy museum = new MuseumProxy();
-        ControlAndCollectionSiteProxy controlCollectionSite = new ControlAndCollectionSiteProxy();
-        ConcentrationSiteProxy concentrationSite = new ConcentrationSiteProxy();
+        
+        configServerAddr = args[0];
+        configServerPort = Integer.parseInt(args[1]);
+        
+        GeneralRepositoryProxy genRepo = new GeneralRepositoryProxy(configServerAddr, configServerPort);
+        MuseumProxy museum = new MuseumProxy(configServerAddr, configServerPort);
+        ControlAndCollectionSiteProxy controlCollectionSite = new ControlAndCollectionSiteProxy(configServerAddr, configServerPort);
+        ConcentrationSiteProxy concentrationSite = new ConcentrationSiteProxy(configServerAddr, configServerPort);
         AssaultPartyProxy[] assaultParty = new AssaultPartyProxy[Constants.N_ASSAULT_PARTIES];
         
 
         for(int i = 0; i < Constants.N_ASSAULT_PARTIES; i++) {
-            assaultParty[i] = new AssaultPartyProxy(i);
+            assaultParty[i] = new AssaultPartyProxy(i, configServerAddr, configServerPort);
         }
         
         MasterThief mt = new MasterThief( (ImtMuseum)museum,

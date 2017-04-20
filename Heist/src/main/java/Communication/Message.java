@@ -56,6 +56,10 @@ public class Message implements Serializable {
         this.returnValue = returnValue;
     }
 
+    public int getReturnValue() {
+        return returnValue;
+    }
+
     public Message(MessageType msgType, int[] args) {
         this(msgType);
         this.args = args;

@@ -13,7 +13,7 @@ import monitors.GeneralRepository.IotGeneralRepository;
  */
 public class GeneralRepositoryProxy implements ImtGeneralRepository, IotGeneralRepository{
 
-    public GeneralRepositoryProxy() {
+    public GeneralRepositoryProxy(String configServerAddr, int configServerPort) {
     }
 
     @Override

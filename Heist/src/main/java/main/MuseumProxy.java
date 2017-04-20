@@ -4,29 +4,61 @@
  * and open the template in the editor.
  */
 package main;
-
-import monitors.GeneralRepository.GeneralRepository;
+import Communication.ClientCom;
+import Communication.Message;
+import static Communication.MessageType.*;
 import monitors.Museum.ImtMuseum;
 import monitors.Museum.IotMuseum;
-import monitors.Museum.Museum;
 
 /**
  *
  * @author Ricardo Filipe
  */
 public class MuseumProxy implements ImtMuseum, IotMuseum{
-
-    public MuseumProxy() {
+    String SERVER_ADDR;
+    int SERVER_PORT;
+    
+    public MuseumProxy(String configServerAddr, int configServerPort) {
+        SERVER_ADDR = "21564564654";
+        SERVER_PORT = 5000;
     }
 
     @Override
-    public int getRoomDistance(int targetRoom) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public int getRoomDistance(int targetRoom){
+        ClientCom con = new ClientCom (SERVER_ADDR, SERVER_PORT);
+        Message inMessage, outMessage;
+        
+        if (!con.open ()) return -1;
+        
+        outMessage = new Message(GRD, targetRoom);
+        con.writeObject(outMessage);
+        
+        inMessage = (Message) con.readObject();
+        
+        if(inMessage.getType() != SERVER_RESPONSE)
+            System.exit(1);
+        
+        return inMessage.getReturnValue();
     }
 
     @Override
     public boolean rollACanvas(int roomId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        ClientCom con = new ClientCom (SERVER_ADDR, SERVER_PORT);
+        Message inMessage, outMessage;
+        
+        if (!con.open ()) System.exit(1);
+        
+        outMessage = new Message(RAC, roomId);
+        con.writeObject(outMessage);
+        
+        inMessage = (Message) con.readObject();
+        
+        if(inMessage.getType() != SERVER_RESPONSE)
+            System.exit(1);
+        
+        boolean value = inMessage.getReturnValue() != 0;
+        
+        return value;
     }
     
 }

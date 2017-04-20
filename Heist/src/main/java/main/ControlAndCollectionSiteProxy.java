@@ -14,7 +14,7 @@ import monitors.ControlAndCollectionSite.IotControlAndCollectionSite;
  */
 class ControlAndCollectionSiteProxy implements ImtControlAndCollectionSite, IotControlAndCollectionSite{
 
-    public ControlAndCollectionSiteProxy() {
+    public ControlAndCollectionSiteProxy(String configServerAddr, int configServerPort) {
     }
     
     
