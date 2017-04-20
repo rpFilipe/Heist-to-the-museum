@@ -28,6 +28,7 @@ public class Message implements Serializable {
     private static final long serialVersionUID = 1001L;
     private MessageType msgType;
     private int[] args;
+    private String returnStr;
     private int returnValue;
 
     public Message() {
@@ -54,6 +55,14 @@ public class Message implements Serializable {
 
     public Message(MessageType msgType, int returnValue) {
         this.returnValue = returnValue;
+    }
+
+    public String getReturnStr() {
+        return returnStr;
+    }
+    
+    public Message(MessageType msgType, String str) {
+        this.returnStr = str;
     }
 
     public int getReturnValue() {

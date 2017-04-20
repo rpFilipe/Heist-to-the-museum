@@ -28,7 +28,7 @@ public class ControlAndCollectionSiteStart {
         SERVER_PORT = proxy.SERVER_PORTS().get("Playground");
         */
         
-        SERVER_PORT = 5003;
+        SERVER_PORT = Integer.parseInt(args[0]);
         
         // canais de comunicação
         ServerCom schan, schani;
@@ -45,7 +45,7 @@ public class ControlAndCollectionSiteStart {
         schan.start();
         
         ControlAndCollectionSiteService controlAndCollectionSiteService = new ControlAndCollectionSiteService(genRep);
-        System.out.println("Museum service has started!");
+        System.out.println("ControlAndCollectionSite service has started!");
         System.out.printf("Server is listening on port: %d ... \n" , SERVER_PORT);
 
         /* processamento de pedidos */     

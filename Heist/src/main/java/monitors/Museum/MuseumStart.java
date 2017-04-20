@@ -27,7 +27,7 @@ public class MuseumStart {
         SERVER_PORT = proxy.SERVER_PORTS().get("Playground");
         */
         
-        SERVER_PORT = 5003;
+        SERVER_PORT = Integer.parseInt(args[0]);
         
         // canais de comunicação
         ServerCom schan, schani;

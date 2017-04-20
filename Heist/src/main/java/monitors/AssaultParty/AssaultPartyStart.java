@@ -31,8 +31,8 @@ public class AssaultPartyStart {
         SERVER_PORT = proxy.SERVER_PORTS().get("Playground");
         */
         
-        SERVER_PORT = 5003;
-        PARTY_ID = 0;
+        SERVER_PORT = Integer.parseInt(args[0]);
+        PARTY_ID = Integer.parseInt(args[1]);
         
         // canais de comunicação
         ServerCom schan, schani;
@@ -49,7 +49,7 @@ public class AssaultPartyStart {
         schan.start();
         
         AssaultPartyService assaultPartyService = new AssaultPartyService(PARTY_ID, genRep);
-        System.out.println("Museum service has started!");
+        System.out.println("AssaultParty service has started!");
         System.out.printf("Server is listening on port: %d ... \n" , SERVER_PORT);
 
         /* processamento de pedidos */     

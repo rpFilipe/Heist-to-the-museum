@@ -12,6 +12,8 @@ package Communication;
 public enum MessageType {
     ACK,
     SERVER_RESPONSE,
+    CONFIGURATION_REQUEST_PORT,
+    CONFIGURATION_REQUEST_LOCATION,
     RAC,
     GRD,
     GTR,

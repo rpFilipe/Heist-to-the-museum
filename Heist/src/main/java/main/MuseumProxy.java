@@ -19,8 +19,8 @@ public class MuseumProxy implements ImtMuseum, IotMuseum{
     int SERVER_PORT;
     
     public MuseumProxy(String configServerAddr, int configServerPort) {
-        SERVER_ADDR = "21564564654";
-        SERVER_PORT = 5000;
+        SERVER_ADDR = getServerLocation(configServerAddr, configServerPort, "Museum");
+        SERVER_PORT = getServerPort(configServerAddr, configServerPort, "Museum");
     }
 
     @Override
@@ -59,6 +59,46 @@ public class MuseumProxy implements ImtMuseum, IotMuseum{
         boolean value = inMessage.getReturnValue() != 0;
         
         return value;
+    }
+    
+    private String getServerLocation(String configServerAddr, int configServerPort, String svname) {
+        ClientCom con = new ClientCom(configServerAddr, configServerPort);
+        Message inMessage, outMessage;
+
+        if (!con.open()) {
+            return "";
+        }
+
+        outMessage = new Message(CONFIGURATION_REQUEST_LOCATION, svname);
+        con.writeObject(outMessage);
+
+        inMessage = (Message) con.readObject();
+
+        if (inMessage.getType() != SERVER_RESPONSE) {
+            System.exit(1);
+        }
+
+        return inMessage.getReturnStr();
+    }
+
+    private int getServerPort(String configServerAddr, int configServerPort, String svname) {
+        ClientCom con = new ClientCom(configServerAddr, configServerPort);
+        Message inMessage, outMessage;
+
+        if (!con.open()) {
+            return -1;
+        }
+
+        outMessage = new Message(CONFIGURATION_REQUEST_PORT, svname);
+        con.writeObject(outMessage);
+
+        inMessage = (Message) con.readObject();
+
+        if (inMessage.getType() != SERVER_RESPONSE) {
+            System.exit(1);
+        }
+
+        return inMessage.getReturnValue();
     }
     
 }
