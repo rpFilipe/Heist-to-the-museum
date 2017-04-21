@@ -5,12 +5,10 @@
  */
 package monitors.AssaultParty;
 
-import monitors.ConcentrationSite.*;
-import monitors.ControlAndCollectionSite.*;
-import monitors.Museum.*;
 import Communication.ServerCom;
 import Communication.ServerServiceAgent;
-import monitors.GeneralRepository.GeneralRepository;
+import main.GeneralRepositoryProxy;
+import monitors.GeneralRepository.ImonitorsGeneralRepository;
 
 /**
  *
@@ -40,7 +38,7 @@ public class AssaultPartyStart {
         // thread agente prestador do serviço
         ServerServiceAgent cliProxy;         
         
-        GeneralRepository genRep = new GeneralRepository();
+        GeneralRepositoryProxy genRepo = new GeneralRepositoryProxy(args[2], Integer.parseInt(args[3]));
 
         /* estabelecimento do servico */
         
@@ -48,7 +46,7 @@ public class AssaultPartyStart {
         schan = new ServerCom(SERVER_PORT);    
         schan.start();
         
-        AssaultPartyService assaultPartyService = new AssaultPartyService(PARTY_ID, genRep);
+        AssaultPartyService assaultPartyService = new AssaultPartyService(PARTY_ID, (ImonitorsGeneralRepository) genRepo);
         System.out.println("AssaultParty service has started!");
         System.out.printf("Server is listening on port: %d ... \n" , SERVER_PORT);
 

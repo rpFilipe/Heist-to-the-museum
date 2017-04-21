@@ -11,7 +11,7 @@ import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
-import monitors.GeneralRepository.GeneralRepository;
+import monitors.GeneralRepository.ImonitorsGeneralRepository;
 
 /**
  *
@@ -32,14 +32,14 @@ public class AssaultParty implements IotAssaultParty, ImtAssaultParty{
     private boolean outsideReached = false;
     private ThiefInfo currentThiefInfo;
     private int thiefCrawlongIdx = -1;
-    private GeneralRepository genRepo;
+    private ImonitorsGeneralRepository genRepo;
 
     /**
      * Create a new Assault Party
      * @param tid Party Identifier
      * @param genRepo instance of the General Repository
      */
-    public AssaultParty(int tid, GeneralRepository genRepo) {
+    public AssaultParty(int tid, ImonitorsGeneralRepository genRepo) {
         crawlingQueue = new LinkedList<>();
         positions = new int[Constants.ASSAULT_PARTY_SIZE];
         testPositions = new int[Constants.ASSAULT_PARTY_SIZE];

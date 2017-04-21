@@ -5,8 +5,6 @@ package Configuration;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
-
 import Communication.Message;
 import Communication.MessageException;
 import static Communication.MessageType.*;
@@ -82,32 +80,35 @@ public class ConfigurationServer {
             System.out.print(ex);
         }
     }
-    
+
     private static class ConfigurationService implements ProxyInterface {
 
-    @Override
-    public Message processRequest(Message inMessage) throws MessageException {
-        Message outMessage = null;
-        String svname;
-        ServerLocation sl;
-        switch(inMessage.getType()){
-            case CONFIGURATION_REQUEST_PORT:
-                svname = inMessage.getReturnStr();
-                sl = serversLocation.get(svname);
-                outMessage = new Message(SERVER_RESPONSE, sl.port);
-                break;
-            case CONFIGURATION_REQUEST_LOCATION:
-                svname = inMessage.getReturnStr();
-                sl = serversLocation.get(svname);
-                outMessage = new Message(SERVER_RESPONSE, sl.host);
-                break;
-            default:
-                throw new MessageException("Invalid Request", inMessage);
+        @Override
+        public Message processRequest(Message inMessage) throws MessageException {
+            Message outMessage = null;
+            String svname;
+            ServerLocation sl;
+            System.out.println(inMessage);
+            switch (inMessage.getType()) {
+                case CONFIGURATION_REQUEST_PORT:
+                    svname = inMessage.getReturnStr();
+                    sl = serversLocation.get(svname);
+                    outMessage = new Message(SERVER_RESPONSE, sl.port);
+                    break;
+                case CONFIGURATION_REQUEST_LOCATION:
+                    svname = inMessage.getReturnStr();
+                    sl = serversLocation.get(svname);
+                    outMessage = new Message(SERVER_RESPONSE, sl.host);
+                    break;
+                case TERMINATE:
+                    System.exit(0);
+                default:
+                    throw new MessageException("Invalid Request", inMessage);
+            }
+
+            return outMessage;
         }
-        
-        return outMessage;
     }
-}
 
     private static class ServerLocation {
 

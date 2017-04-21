@@ -5,13 +5,12 @@
  */
 package monitors.ControlAndCollectionSite;
 
-import States.MasterThiefStates;
 import States.PartyStates;
 import States.RoomStates;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import main.Constants;
-import monitors.GeneralRepository.GeneralRepository;
+import monitors.GeneralRepository.ImonitorsGeneralRepository;
 
 /**
  *
@@ -31,13 +30,13 @@ public class ControlAndCollectionSite implements IotControlAndCollectionSite, Im
     private int[] partyArrivedThiefs;
     private boolean partyFree;
     private int thievesWaiting;
-    private GeneralRepository genRepo;
+    private ImonitorsGeneralRepository genRepo;
 
     /**
      * Create a Control And Collection Instance.
      * @param genRepo
      */
-    public ControlAndCollectionSite(GeneralRepository genRepo) {
+    public ControlAndCollectionSite(ImonitorsGeneralRepository genRepo) {
         roomStates = new int[Constants.N_ROOMS];
         partyFree = true;
         partyArrivedThiefs = new int[Constants.N_ASSAULT_PARTIES];

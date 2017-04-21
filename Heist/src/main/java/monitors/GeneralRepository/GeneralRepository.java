@@ -11,8 +11,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import main.Constants;
 
 /**
@@ -20,7 +18,7 @@ import main.Constants;
  * @author Ricardo Filipe
  * @author Marc Wagner
  */
-public class GeneralRepository implements ImtGeneralRepository, IotGeneralRepository{
+public class GeneralRepository implements ImtGeneralRepository, IotGeneralRepository, ImonitorsGeneralRepository{
     
     private static PrintWriter pw;
     private final File log;
@@ -137,6 +135,7 @@ public class GeneralRepository implements ImtGeneralRepository, IotGeneralReposi
      * @param partyId Id of the Party.
      * @param room target room of the Assault Party.
      */
+    @Override
     public synchronized void setRoomIdAP(int partyId,int room){
         roomId[partyId] = room;
     }
@@ -145,6 +144,7 @@ public class GeneralRepository implements ImtGeneralRepository, IotGeneralReposi
      * Method to set the number of painting stolen in the entire heist in the General Repository.
      * @param toalCanvas Number of canvas "borrowed" from the Museum.
      */
+    @Override
     public synchronized void setCollectedCanvas(int toalCanvas){
         canvasCollected = toalCanvas;
     }
@@ -155,6 +155,7 @@ public class GeneralRepository implements ImtGeneralRepository, IotGeneralReposi
      * @param distance Distance from the outside to the Room.
      * @param paitings Number of paintings present on the room.
      */
+    @Override
     public synchronized void setRoomAtributes(int roomId, int distance, int paitings) {
         rooms[roomId] = new Room(paitings, distance);
     }
@@ -166,6 +167,7 @@ public class GeneralRepository implements ImtGeneralRepository, IotGeneralReposi
      */
     @Override
     public synchronized void addThief(int thiefId, int speed){
+        System.out.println("Thief added");
         thiefMap.put(thiefId, new Thief(thiefId, speed));
     }
     
@@ -175,6 +177,7 @@ public class GeneralRepository implements ImtGeneralRepository, IotGeneralReposi
      * @param thiefId Id of the Thief.
      * @param elemId Thief Id in the Assault Party.
      */
+    @Override
     public synchronized void setPartyElement(int partyId, int thiefId, int elemId){
         partyElement[partyId][elemId] = thiefId;
     }
@@ -183,6 +186,7 @@ public class GeneralRepository implements ImtGeneralRepository, IotGeneralReposi
      * Method to clear the elements of a Assault Party in the General Repository.
      * @param partyId Id of the Assault Party.
      */
+    @Override
     public synchronized void clearParty(int partyId){
         for (int i = 0; i < Constants.ASSAULT_PARTY_SIZE; i++) {
             partyElement[partyId][i] = -1;
@@ -196,6 +200,7 @@ public class GeneralRepository implements ImtGeneralRepository, IotGeneralReposi
      * @param thiefId Id of the Thief thar Invoked the method.
      * @param position Current position of the Thief.
      */
+    @Override
     public synchronized void updateThiefPosition(int thiefId, int position){
         Thief currentT = thiefMap.get(thiefId);
         currentT.position = position;
@@ -321,6 +326,7 @@ public class GeneralRepository implements ImtGeneralRepository, IotGeneralReposi
      * @param id Id of the Room
      * @param paitings Number of paintings in the Room.
      */
+    @Override
     public synchronized void setRoomCanvas(int id, int paitings) {
         rooms[id].paitings_left = paitings;
     }

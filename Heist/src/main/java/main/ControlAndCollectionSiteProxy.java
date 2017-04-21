@@ -142,12 +142,12 @@ class ControlAndCollectionSiteProxy implements ImtControlAndCollectionSite, IotC
         
         int[] args = new int[] {id, (canvas) ? 1:0, roomId, partyId};
         
-        outMessage = new Message(IHC, args);
+        outMessage = new Message(HAC, args);
         con.writeObject(outMessage);
         
         inMessage = (Message) con.readObject();
         
-        if(inMessage.getType() != SERVER_RESPONSE)
+        if(inMessage.getType() != ACK)
             System.exit(1);
     }
     

@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 import main.Constants;
 import java.util.LinkedList;
 import java.util.Queue;
-import monitors.GeneralRepository.GeneralRepository;
+import monitors.GeneralRepository.ImonitorsGeneralRepository;
 
 /**
  *
@@ -21,13 +21,13 @@ public class ConcentrationSite implements IotConcentrationSite, ImtConcentration
     private boolean resultsReady;
     private int nThievesInParty;
     private int[] thiefAssaultParty = new int[Constants.N_ORD_THIEVES];
-    private GeneralRepository genRepo;
+    private ImonitorsGeneralRepository genRepo;
     
     /**
      *  Create a new Concentration Site.
      * @param genRepo
      */
-    public ConcentrationSite(GeneralRepository genRepo) {
+    public ConcentrationSite(ImonitorsGeneralRepository genRepo) {
         thievesWaiting = new LinkedList<>();
         isNeeded = new boolean[Constants.N_ORD_THIEVES];
         resultsReady = false;

@@ -2,7 +2,7 @@ package monitors.Museum;
 
 import main.Constants;
 import java.util.Random;
-import monitors.GeneralRepository.GeneralRepository;
+import monitors.GeneralRepository.ImonitorsGeneralRepository;
 
 /**
  *
@@ -13,13 +13,13 @@ public class Museum implements IotMuseum, ImtMuseum{
     private static int roomsCreated = 0;
     private Room rooms[] =  new Room[Constants.N_ROOMS];
     private int totalPaitings;
-    private GeneralRepository genRepo;
+    private ImonitorsGeneralRepository genRepo;
     
     /**
      *  Constructor to create a new Museum
      * @param genRepo
      */
-    public Museum(GeneralRepository genRepo){
+    public Museum(ImonitorsGeneralRepository genRepo){
         totalPaitings = 0;
         roomsCreated = 0;
         this.genRepo = genRepo;

@@ -54,6 +54,7 @@ public class Message implements Serializable {
     }
 
     public Message(MessageType msgType, int returnValue) {
+        this.msgType = msgType;
         this.returnValue = returnValue;
     }
 
@@ -62,6 +63,7 @@ public class Message implements Serializable {
     }
     
     public Message(MessageType msgType, String str) {
+        this.msgType = msgType;
         this.returnStr = str;
     }
 
@@ -70,7 +72,7 @@ public class Message implements Serializable {
     }
 
     public Message(MessageType msgType, int[] args) {
-        this(msgType);
+        this.msgType = msgType;
         this.args = args;
     }
 
@@ -106,7 +108,6 @@ public class Message implements Serializable {
     @Override
     public String toString() {
         return ("Tipo = " + msgType
-                + "\nThief Id = " + ""
                 + "\nLogging File = " + fName
                 + "\nNumber of iterations = " + nIter);
     }

@@ -29,8 +29,8 @@ public class MuseumProxy implements ImtMuseum, IotMuseum{
         Message inMessage, outMessage;
         
         if (!con.open ()) return -1;
-        
-        outMessage = new Message(GRD, targetRoom);
+        int[] args = new int[] {targetRoom};
+        outMessage = new Message(GRD, args);
         con.writeObject(outMessage);
         
         inMessage = (Message) con.readObject();
@@ -47,8 +47,8 @@ public class MuseumProxy implements ImtMuseum, IotMuseum{
         Message inMessage, outMessage;
         
         if (!con.open ()) System.exit(1);
-        
-        outMessage = new Message(RAC, roomId);
+        int[] args = new int[] {roomId};
+        outMessage = new Message(RAC, args);
         con.writeObject(outMessage);
         
         inMessage = (Message) con.readObject();

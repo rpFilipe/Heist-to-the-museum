@@ -21,8 +21,8 @@ class ConcentrationSiteProxy implements ImtConcentrationSite, IotConcentrationSi
     int SERVER_PORT;
 
     public ConcentrationSiteProxy(String configServerAddr, int configServerPort) {
-        SERVER_ADDR = getServerLocation(configServerAddr, configServerPort, "ConcentrarionSite");
-        SERVER_PORT = getServerPort(configServerAddr, configServerPort, "ConcentrarionSite");
+        SERVER_ADDR = getServerLocation(configServerAddr, configServerPort, "ConcentrationSite");
+        SERVER_PORT = getServerPort(configServerAddr, configServerPort, "ConcentrationSite");
     }
 
     @Override
@@ -47,8 +47,8 @@ class ConcentrationSiteProxy implements ImtConcentrationSite, IotConcentrationSi
         Message inMessage, outMessage;
         
         if (!con.open ()) System.exit(1);
-        
-        outMessage = new Message(PAP, partyId);
+        int[] args = new int[] {partyId};
+        outMessage = new Message(PAP, args);
         con.writeObject(outMessage);
         
         inMessage = (Message) con.readObject();
@@ -59,7 +59,7 @@ class ConcentrationSiteProxy implements ImtConcentrationSite, IotConcentrationSi
 
     @Override
     public void sumUpResults() {
-                ClientCom con = new ClientCom (SERVER_ADDR, SERVER_PORT);
+        ClientCom con = new ClientCom (SERVER_ADDR, SERVER_PORT);
         Message inMessage, outMessage;
         
         if (!con.open ()) System.exit(1);
@@ -97,8 +97,8 @@ class ConcentrationSiteProxy implements ImtConcentrationSite, IotConcentrationSi
         Message inMessage, outMessage;
         
         if (!con.open ()) System.exit(1);
-        
-        outMessage = new Message(AIN, id);
+        int[] args = new int[] {id};
+        outMessage = new Message(AIN, args);
         con.writeObject(outMessage);
         
         inMessage = (Message) con.readObject();
@@ -117,8 +117,8 @@ class ConcentrationSiteProxy implements ImtConcentrationSite, IotConcentrationSi
         Message inMessage, outMessage;
         
         if (!con.open ()) System.exit(1);
-        
-        outMessage = new Message(AS, thiefId);
+        int[] args = new int[] {thiefId};
+        outMessage = new Message(GPI, args);
         con.writeObject(outMessage);
         
         inMessage = (Message) con.readObject();
@@ -135,8 +135,8 @@ class ConcentrationSiteProxy implements ImtConcentrationSite, IotConcentrationSi
         Message inMessage, outMessage;
         
         if (!con.open ()) System.exit(1);
-        
-        outMessage = new Message(AS, id);
+        int[] args = new int[] {id};
+        outMessage = new Message(PE, args);
         con.writeObject(outMessage);
         
         inMessage = (Message) con.readObject();

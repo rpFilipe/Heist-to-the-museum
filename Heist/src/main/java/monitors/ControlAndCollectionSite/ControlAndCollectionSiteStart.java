@@ -5,10 +5,9 @@
  */
 package monitors.ControlAndCollectionSite;
 
-import monitors.Museum.*;
 import Communication.ServerCom;
 import Communication.ServerServiceAgent;
-import monitors.GeneralRepository.GeneralRepository;
+import main.GeneralRepositoryProxy;
 
 /**
  *
@@ -36,7 +35,7 @@ public class ControlAndCollectionSiteStart {
         // thread agente prestador do serviço
         ServerServiceAgent cliProxy;         
         
-        GeneralRepository genRep = new GeneralRepository();
+        GeneralRepositoryProxy genRepo = new GeneralRepositoryProxy(args[1], Integer.parseInt(args[2]));
 
         /* estabelecimento do servico */
         
@@ -44,7 +43,7 @@ public class ControlAndCollectionSiteStart {
         schan = new ServerCom(SERVER_PORT);    
         schan.start();
         
-        ControlAndCollectionSiteService controlAndCollectionSiteService = new ControlAndCollectionSiteService(genRep);
+        ControlAndCollectionSiteService controlAndCollectionSiteService = new ControlAndCollectionSiteService(genRepo);
         System.out.println("ControlAndCollectionSite service has started!");
         System.out.printf("Server is listening on port: %d ... \n" , SERVER_PORT);
 

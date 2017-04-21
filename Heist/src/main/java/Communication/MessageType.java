@@ -14,6 +14,7 @@ public enum MessageType {
     SERVER_RESPONSE,
     CONFIGURATION_REQUEST_PORT,
     CONFIGURATION_REQUEST_LOCATION,
+    TERMINATE,
     RAC,
     GRD,
     GTR,
@@ -36,5 +37,18 @@ public enum MessageType {
     CI,
     CO,
     JP,
-    RD;
+    RD,
+    FN,
+    AT,
+    CP,
+    SCC,
+    SPE,
+    SRA,
+    SRC,
+    SRIAP,
+    UMTS,
+    UTC,
+    UTP,
+    UTS,
+    UTST;
 }

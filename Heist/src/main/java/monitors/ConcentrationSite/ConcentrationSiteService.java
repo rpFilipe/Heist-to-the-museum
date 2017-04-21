@@ -5,12 +5,11 @@
  */
 package monitors.ConcentrationSite;
 
-import monitors.ControlAndCollectionSite.*;
 import Communication.Message;
 import Communication.MessageException;
 import Communication.ProxyInterface;
 import static Communication.MessageType.*;
-import monitors.GeneralRepository.GeneralRepository;
+import monitors.GeneralRepository.ImonitorsGeneralRepository;
 
 /**
  *
@@ -18,7 +17,7 @@ import monitors.GeneralRepository.GeneralRepository;
  */
 public class ConcentrationSiteService extends ConcentrationSite implements ProxyInterface {
 
-    public ConcentrationSiteService(GeneralRepository genRepo) {
+    public ConcentrationSiteService(ImonitorsGeneralRepository genRepo) {
         super(genRepo);
     }
 
@@ -26,7 +25,7 @@ public class ConcentrationSiteService extends ConcentrationSite implements Proxy
     public Message processRequest(Message inMessage) throws MessageException {
         Message serverResponse = null;
         int[] messageArgs = inMessage.getArgs();
-
+        System.out.println(messageArgs);
         try {
             switch (inMessage.getType()) {
                 case SO:
@@ -59,11 +58,15 @@ public class ConcentrationSiteService extends ConcentrationSite implements Proxy
                     super.prepareExcursion(messageArgs[0]);
                     serverResponse = new Message(ACK);
                     break;
+                case TERMINATE:
+                    System.exit(0);
                 default:
                     throw new MessageException("Invalid request for Museum Server", inMessage);
 
             }
         } catch (IndexOutOfBoundsException e) {
+            System.out.println(e);
+            System.out.println(inMessage);
             throw new MessageException("Invalid number of arguments", inMessage);
         }
         return serverResponse;

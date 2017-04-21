@@ -5,11 +5,9 @@
  */
 package monitors.ConcentrationSite;
 
-import monitors.ControlAndCollectionSite.*;
-import monitors.Museum.*;
 import Communication.ServerCom;
 import Communication.ServerServiceAgent;
-import monitors.GeneralRepository.GeneralRepository;
+import main.GeneralRepositoryProxy;
 
 /**
  *
@@ -37,7 +35,7 @@ public class ConcentrationSiteStart {
         // thread agente prestador do serviço
         ServerServiceAgent cliProxy;         
         
-        GeneralRepository genRep = new GeneralRepository();
+        GeneralRepositoryProxy genRepo = new GeneralRepositoryProxy(args[1], Integer.parseInt(args[2]));
 
         /* estabelecimento do servico */
         
@@ -45,7 +43,7 @@ public class ConcentrationSiteStart {
         schan = new ServerCom(SERVER_PORT);    
         schan.start();
         
-        ConcentrationSiteService concentrationSiteService = new ConcentrationSiteService(genRep);
+        ConcentrationSiteService concentrationSiteService = new ConcentrationSiteService(genRepo);
         System.out.println("ConcentrationSite service has started!");
         System.out.printf("Server is listening on port: %d ... \n" , SERVER_PORT);
 

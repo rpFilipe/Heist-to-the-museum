@@ -18,7 +18,7 @@ import monitors.Museum.IotMuseum;
  */
 public class OrdinaryThiefStart {
     
-    private static final int N_ORD_THIEVES = 3;
+    private static final int N_ORD_THIEVES = 6;
     private static String configServerAddr;
     private static int configServerPort;
     
@@ -28,6 +28,7 @@ public class OrdinaryThiefStart {
         configServerPort = Integer.parseInt(args[1]);
         
         GeneralRepositoryProxy genRepo = new GeneralRepositoryProxy(configServerAddr, configServerPort);
+        //GeneralRepository genRepo = new GeneralRepository();
         MuseumProxy museum = new MuseumProxy(configServerAddr, configServerPort);
         ControlAndCollectionSiteProxy controlCollectionSite = new ControlAndCollectionSiteProxy(configServerAddr, configServerPort);
         ConcentrationSiteProxy concentrationSite = new ConcentrationSiteProxy(configServerAddr, configServerPort);

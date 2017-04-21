@@ -9,7 +9,7 @@ import Communication.Message;
 import Communication.MessageException;
 import Communication.ProxyInterface;
 import static Communication.MessageType.*;
-import monitors.GeneralRepository.GeneralRepository;
+import monitors.GeneralRepository.ImonitorsGeneralRepository;
 
 /**
  *
@@ -17,7 +17,7 @@ import monitors.GeneralRepository.GeneralRepository;
  */
 public class MuseumService extends Museum implements ProxyInterface{
 
-    public MuseumService(GeneralRepository genRepo) {
+    public MuseumService(ImonitorsGeneralRepository genRepo) {
         super(genRepo);
     }
 
@@ -36,6 +36,8 @@ public class MuseumService extends Museum implements ProxyInterface{
                     int roomId = super.getRoomDistance(messageArgs[0]);
                     serverResponse = new Message(SERVER_RESPONSE, roomId);
                     break;
+                case TERMINATE:
+                    System.exit(0);
                 default:
                     throw new MessageException ("Invalid request for Museum Server", inMessage);
 

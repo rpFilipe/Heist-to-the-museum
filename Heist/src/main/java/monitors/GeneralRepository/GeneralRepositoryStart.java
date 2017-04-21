@@ -3,17 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package monitors.Museum;
-
+package monitors.GeneralRepository;
 import Communication.ServerCom;
 import Communication.ServerServiceAgent;
-import main.GeneralRepositoryProxy;
 
 /**
  *
  * @author Ricardo Filipe
  */
-public class MuseumStart {
+public class GeneralRepositoryStart {
     
     private static int SERVER_PORT;
     /**
@@ -35,7 +33,7 @@ public class MuseumStart {
         // thread agente prestador do serviço
         ServerServiceAgent cliProxy;         
         
-        GeneralRepositoryProxy genRepo = new GeneralRepositoryProxy(args[1], Integer.parseInt(args[2]));
+        GeneralRepository genRep = new GeneralRepository();
 
         /* estabelecimento do servico */
         
@@ -43,8 +41,8 @@ public class MuseumStart {
         schan = new ServerCom(SERVER_PORT);    
         schan.start();
         
-        MuseumService museumService = new MuseumService(genRepo);
-        System.out.println("Museum service has started!");
+        GeneralRepositoryService generalRepositoryService = new GeneralRepositoryService(genRep);
+        System.out.println("GeneralRepository service has started!");
         System.out.printf("Server is listening on port: %d ... \n" , SERVER_PORT);
 
         /* processamento de pedidos */     
@@ -53,7 +51,7 @@ public class MuseumStart {
             // entrada em processo de escuta
             schani = schan.accept();
             // lançamento do agente prestador do serviço
-            cliProxy = new ServerServiceAgent(schani, museumService);
+            cliProxy = new ServerServiceAgent(schani, generalRepositoryService);
             cliProxy.start();
         }
     }

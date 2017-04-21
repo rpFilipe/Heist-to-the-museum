@@ -31,8 +31,8 @@ class AssaultPartyProxy implements IotAssaultParty, ImtAssaultParty{
         Message inMessage, outMessage;
         
         if (!con.open ()) System.exit(1);
-        
-        outMessage = new Message(CI, id);
+        int[] args = new int[] {id};
+        outMessage = new Message(CI, args);
         con.writeObject(outMessage);
         
         inMessage = (Message) con.readObject();
@@ -47,8 +47,8 @@ class AssaultPartyProxy implements IotAssaultParty, ImtAssaultParty{
         Message inMessage, outMessage;
         
         if (!con.open ()) System.exit(1);
-        
-        outMessage = new Message(CO, id);
+        int[] args = new int[] {id};
+        outMessage = new Message(CO, args);
         con.writeObject(outMessage);
         
         inMessage = (Message) con.readObject();
