@@ -16,7 +16,7 @@ import monitors.Museum.IotMuseum;
  *
  * @author Ricardo Filipe
  */
-public class OrdinaryThiefStart {
+public class OrdinaryThievesStart {
     
     private static final int N_ORD_THIEVES = 6;
     private static String configServerAddr;
@@ -56,7 +56,7 @@ public class OrdinaryThiefStart {
             try {
                 ot.join();
             } catch (InterruptedException ex) {
-                Logger.getLogger(OrdinaryThiefStart.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(OrdinaryThievesStart.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
