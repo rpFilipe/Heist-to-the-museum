@@ -16,7 +16,7 @@ import static Communication.MessageType.*;
  */
 public class GeneralRepositoryService extends GeneralRepository implements ProxyInterface {
 
-    public GeneralRepositoryService(GeneralRepository genRepo) {
+    public GeneralRepositoryService() {
         super();
     }
 

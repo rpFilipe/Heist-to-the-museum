@@ -32,8 +32,6 @@ public class GeneralRepositoryStart {
         
         // thread agente prestador do serviço
         ServerServiceAgent cliProxy;         
-        
-        GeneralRepository genRep = new GeneralRepository();
 
         /* estabelecimento do servico */
         
@@ -41,7 +39,7 @@ public class GeneralRepositoryStart {
         schan = new ServerCom(SERVER_PORT);    
         schan.start();
         
-        GeneralRepositoryService generalRepositoryService = new GeneralRepositoryService(genRep);
+        GeneralRepositoryService generalRepositoryService = new GeneralRepositoryService();
         System.out.println("GeneralRepository service has started!");
         System.out.printf("Server is listening on port: %d ... \n" , SERVER_PORT);
 
