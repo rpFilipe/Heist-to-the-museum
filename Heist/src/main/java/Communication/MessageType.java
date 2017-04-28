@@ -50,5 +50,17 @@ public enum MessageType {
     UTC,
     UTP,
     UTS,
-    UTST;
+    UTST,
+    NR,
+    NOT,
+    MAPPR,
+    MIPPR,
+    MARD,
+    MIRD,
+    APS,
+    NAP,
+    MD,
+    MATS,
+    MITS,
+    MDBT;
 }

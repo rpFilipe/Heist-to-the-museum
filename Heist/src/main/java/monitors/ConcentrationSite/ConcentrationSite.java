@@ -3,7 +3,6 @@ package monitors.ConcentrationSite;
 import States.MasterThiefStates;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import main.Constants;
 import java.util.LinkedList;
 import java.util.Queue;
 import monitors.GeneralRepository.ImonitorsGeneralRepository;
@@ -14,25 +13,29 @@ import monitors.GeneralRepository.ImonitorsGeneralRepository;
  * @author Marc Wagner
  */
 public class ConcentrationSite implements IotConcentrationSite, ImtConcentrationSite{
-    
+    private int N_ORD_THIEVES;
+    private int ASSAULT_PARTY_SIZE;
     private boolean partyReady;
     private  Queue<Integer> thievesWaiting;
     private  boolean[] isNeeded;
     private boolean resultsReady;
     private int nThievesInParty;
-    private int[] thiefAssaultParty = new int[Constants.N_ORD_THIEVES];
+    private int[] thiefAssaultParty;
     private ImonitorsGeneralRepository genRepo;
     
     /**
      *  Create a new Concentration Site.
      * @param genRepo
      */
-    public ConcentrationSite(ImonitorsGeneralRepository genRepo) {
+    public ConcentrationSite(ImonitorsGeneralRepository genRepo, int n_ord_thieves, int assault_party_size) {
+        N_ORD_THIEVES = n_ord_thieves;
+        ASSAULT_PARTY_SIZE = assault_party_size;
         thievesWaiting = new LinkedList<>();
-        isNeeded = new boolean[Constants.N_ORD_THIEVES];
+        isNeeded = new boolean[N_ORD_THIEVES];
         resultsReady = false;
         partyReady = false;
         nThievesInParty = 0;
+        thiefAssaultParty = new int[N_ORD_THIEVES];
         this.genRepo = genRepo;
     }
     
@@ -65,7 +68,7 @@ public class ConcentrationSite implements IotConcentrationSite, ImtConcentration
     @Override
     public synchronized void prepareExcursion(int thiefId){
         nThievesInParty++;
-        if(nThievesInParty == Constants.ASSAULT_PARTY_SIZE)
+        if(nThievesInParty == ASSAULT_PARTY_SIZE)
         {
             partyReady = true;
             nThievesInParty = 0;
@@ -79,7 +82,7 @@ public class ConcentrationSite implements IotConcentrationSite, ImtConcentration
      */
     @Override
     public synchronized void prepareAssaultParty(int partyId){
-        for (int i = 0; i < Constants.ASSAULT_PARTY_SIZE; i++) {
+        for (int i = 0; i < ASSAULT_PARTY_SIZE; i++) {
             int thiefToWake = thievesWaiting.poll();
             thiefAssaultParty[thiefToWake] = partyId;
             genRepo.setPartyElement(partyId, thiefToWake, i);
@@ -112,7 +115,7 @@ public class ConcentrationSite implements IotConcentrationSite, ImtConcentration
      */
     @Override
     public synchronized void startOperations(){
-        while(thievesWaiting.size() < Constants.N_ORD_THIEVES){
+        while(thievesWaiting.size() < N_ORD_THIEVES){
             try {
                 wait();
             } catch (InterruptedException ex) {
@@ -141,7 +144,7 @@ public class ConcentrationSite implements IotConcentrationSite, ImtConcentration
     @Override
     public synchronized int appraiseSit(boolean isHeistCompleted, boolean isWaitingNedded) {
         if(isHeistCompleted){
-            while(thievesWaiting.size() < Constants.N_ORD_THIEVES){
+            while(thievesWaiting.size() < N_ORD_THIEVES){
                 try {
                     wait();
                 } catch (InterruptedException ex) {
@@ -155,7 +158,7 @@ public class ConcentrationSite implements IotConcentrationSite, ImtConcentration
             return MasterThiefStates.WAITING_FOR_GROUP_ARRIVAL;
         }
         
-        while(thievesWaiting.size() < Constants.ASSAULT_PARTY_SIZE){
+        while(thievesWaiting.size() < ASSAULT_PARTY_SIZE){
             try {
                 wait();
             } catch (InterruptedException ex) {

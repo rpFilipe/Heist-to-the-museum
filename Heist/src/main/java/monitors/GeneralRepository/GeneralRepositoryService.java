@@ -15,9 +15,8 @@ import static Communication.MessageType.*;
  * @author ricardo
  */
 public class GeneralRepositoryService extends GeneralRepository implements ProxyInterface {
-
-    public GeneralRepositoryService() {
-        super();
+    public GeneralRepositoryService(String logname, int nrooms, int assault_party_size, int n_ord_thieves) {
+        super(logname, nrooms, assault_party_size, n_ord_thieves);
     }
 
     @Override

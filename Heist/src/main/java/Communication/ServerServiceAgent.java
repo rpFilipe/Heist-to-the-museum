@@ -19,7 +19,6 @@ public class ServerServiceAgent extends Thread
    public ServerServiceAgent (ServerCom sconi, ProxyInterface proxyInterface)
    {
       //super ("Proxy_" + getProxyId ());
-       System.out.println("Message Arrinves");
       this.sconi = sconi;
       this.proxyInterface = proxyInterface;
    }

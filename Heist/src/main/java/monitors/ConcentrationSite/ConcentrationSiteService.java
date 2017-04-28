@@ -17,8 +17,8 @@ import monitors.GeneralRepository.ImonitorsGeneralRepository;
  */
 public class ConcentrationSiteService extends ConcentrationSite implements ProxyInterface {
 
-    public ConcentrationSiteService(ImonitorsGeneralRepository genRepo) {
-        super(genRepo);
+    public ConcentrationSiteService(ImonitorsGeneralRepository genRepo, int n_ord_thieves, int assault_party_size) {
+        super(genRepo, n_ord_thieves, assault_party_size);
     }
 
     @Override

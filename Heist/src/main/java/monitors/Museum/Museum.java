@@ -1,6 +1,5 @@
 package monitors.Museum;
 
-import main.Constants;
 import java.util.Random;
 import monitors.GeneralRepository.ImonitorsGeneralRepository;
 
@@ -10,8 +9,13 @@ import monitors.GeneralRepository.ImonitorsGeneralRepository;
  * @author Marc Wagner
  */
 public class Museum implements IotMuseum, ImtMuseum{
+    private int N_ROOMS;
+    private int MAX_ROOM_DISTANCE;
+    private int MIN_ROOM_DISTANCE;
+    private int MAX_PAITING_PER_ROOM;
+    private int MIN_PAITING_PER_ROOM;
     private static int roomsCreated = 0;
-    private Room rooms[] =  new Room[Constants.N_ROOMS];
+    private Room[] rooms;
     private int totalPaitings;
     private ImonitorsGeneralRepository genRepo;
     
@@ -19,11 +23,22 @@ public class Museum implements IotMuseum, ImtMuseum{
      *  Constructor to create a new Museum
      * @param genRepo
      */
-    public Museum(ImonitorsGeneralRepository genRepo){
+    public Museum(ImonitorsGeneralRepository genRepo,
+            int N_ROOMS,
+            int MAX_ROOM_DISTANCE,
+            int MIN_ROOM_DISTANCE, 
+            int MAX_PAITING_PER_ROOM, 
+            int MIN_PAITING_PER_ROOM){
+        this.N_ROOMS = N_ROOMS;
+        this.MAX_ROOM_DISTANCE = MAX_ROOM_DISTANCE;
+        this.MIN_ROOM_DISTANCE = MIN_ROOM_DISTANCE;
+        this.MAX_PAITING_PER_ROOM = MAX_PAITING_PER_ROOM;
+        this.MIN_PAITING_PER_ROOM = MIN_PAITING_PER_ROOM;
+        rooms =  new Room[N_ROOMS];
         totalPaitings = 0;
         roomsCreated = 0;
         this.genRepo = genRepo;
-        for (int i = 0; i < Constants.N_ROOMS; i++) {
+        for (int i = 0; i < N_ROOMS; i++) {
             rooms[i] = new Room();
             totalPaitings += rooms[i].paintings;
         }
@@ -36,8 +51,8 @@ public class Museum implements IotMuseum, ImtMuseum{
         private int id;
         
         public Room() {
-            this.distance = new Random().nextInt(Constants.MAX_ROOM_DISTANCE-Constants.MIN_ROOM_DISTANCE) + Constants.MIN_ROOM_DISTANCE;
-            this.paintings = new Random().nextInt(Constants.MAX_PAITING_PER_ROOM-Constants.MIN_PAITING_PER_ROOM) + Constants.MIN_PAITING_PER_ROOM;
+            this.distance = new Random().nextInt(MAX_ROOM_DISTANCE-MIN_ROOM_DISTANCE) + MIN_ROOM_DISTANCE;
+            this.paintings = new Random().nextInt(MAX_PAITING_PER_ROOM-MIN_PAITING_PER_ROOM) + MIN_PAITING_PER_ROOM;
             this.id = roomsCreated;
             genRepo.setRoomAtributes(id, distance, paintings);
             roomsCreated++;

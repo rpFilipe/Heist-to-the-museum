@@ -8,6 +8,7 @@ package main;
 import Communication.ClientCom;
 import Communication.Message;
 import static Communication.MessageType.*;
+import Communication.SettingsProxy;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import monitors.AssaultParty.ImtAssaultParty;
@@ -24,20 +25,24 @@ public class MasterThiefStart {
 
     private static String configServerAddr;
     private static int configServerPort;
+    private static int N_ASSAULT_PARTIES;
 
     public static void main(String[] args) {
 
         configServerAddr = args[0];
         configServerPort = Integer.parseInt(args[1]);
 
+        SettingsProxy sp = new SettingsProxy(configServerAddr, configServerPort);
+
+        N_ASSAULT_PARTIES = sp.getN_ORD_THIEVES() / sp.getASSAULT_PARTY_SIZE();
+
         GeneralRepositoryProxy genRepo = new GeneralRepositoryProxy(configServerAddr, configServerPort);
-        //GeneralRepository genRepo = new GeneralRepository();
         MuseumProxy museum = new MuseumProxy(configServerAddr, configServerPort);
         ControlAndCollectionSiteProxy controlCollectionSite = new ControlAndCollectionSiteProxy(configServerAddr, configServerPort);
         ConcentrationSiteProxy concentrationSite = new ConcentrationSiteProxy(configServerAddr, configServerPort);
-        AssaultPartyProxy[] assaultParty = new AssaultPartyProxy[Constants.N_ASSAULT_PARTIES];
+        AssaultPartyProxy[] assaultParty = new AssaultPartyProxy[N_ASSAULT_PARTIES];
 
-        for (int i = 0; i < Constants.N_ASSAULT_PARTIES; i++) {
+        for (int i = 0; i < N_ASSAULT_PARTIES; i++) {
             assaultParty[i] = new AssaultPartyProxy(i, configServerAddr, configServerPort);
         }
 

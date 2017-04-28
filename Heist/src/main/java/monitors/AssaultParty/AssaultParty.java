@@ -6,7 +6,6 @@
 package monitors.AssaultParty;
 
 import java.util.LinkedList;
-import main.Constants;
 import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,16 +32,18 @@ public class AssaultParty implements IotAssaultParty, ImtAssaultParty{
     private ThiefInfo currentThiefInfo;
     private int thiefCrawlongIdx = -1;
     private ImonitorsGeneralRepository genRepo;
+    private int ASSAULT_PARTY_SIZE;
 
     /**
      * Create a new Assault Party
      * @param tid Party Identifier
      * @param genRepo instance of the General Repository
      */
-    public AssaultParty(int tid, ImonitorsGeneralRepository genRepo) {
+    public AssaultParty(int tid, ImonitorsGeneralRepository genRepo, int aps) {
         crawlingQueue = new LinkedList<>();
-        positions = new int[Constants.ASSAULT_PARTY_SIZE];
-        testPositions = new int[Constants.ASSAULT_PARTY_SIZE];
+        ASSAULT_PARTY_SIZE = aps;
+        positions = new int[ASSAULT_PARTY_SIZE];
+        testPositions = new int[ASSAULT_PARTY_SIZE];
         teamId = tid;
         nThievesReadyToReturn = 0;
         this.genRepo = genRepo;
@@ -89,7 +90,7 @@ public class AssaultParty implements IotAssaultParty, ImtAssaultParty{
 
             // Check if all thieves arrived to the room
             int sum = IntStream.of(positions).sum();
-            if (sum == roomDistance * Constants.ASSAULT_PARTY_SIZE) {
+            if (sum == roomDistance * ASSAULT_PARTY_SIZE) {
                 roomReached = true;
                 thiefCrawlongIdx = -1;
             }
@@ -186,20 +187,12 @@ public class AssaultParty implements IotAssaultParty, ImtAssaultParty{
     public synchronized void reverseDirection() {
         nThievesReadyToReturn++;
         //outsideReached = false;
-        if (nThievesReadyToReturn == Constants.ASSAULT_PARTY_SIZE) {
+        if (nThievesReadyToReturn == ASSAULT_PARTY_SIZE) {
             thiefCrawlongIdx = crawlingQueue.peek().id;
             notifyAll();
         }
     }
     
-    private boolean isDisplacementValid(){
-        for (int i = 0; i < Constants.ASSAULT_PARTY_SIZE-1; i++) {
-            int displacement = Math.abs(testPositions[i+1] - testPositions[i]);
-            if(displacement > Constants.MAX_DISPLACEMENT)
-                return false;
-        }
-            return true;
-    }
 
     private class ThiefInfo {
 

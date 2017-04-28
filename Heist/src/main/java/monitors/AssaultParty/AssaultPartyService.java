@@ -17,8 +17,8 @@ import monitors.GeneralRepository.ImonitorsGeneralRepository;
  */
 public class AssaultPartyService extends AssaultParty implements ProxyInterface {
 
-    public AssaultPartyService(int partyId, ImonitorsGeneralRepository genRepo) {
-        super(partyId, genRepo);
+    public AssaultPartyService(int partyId, ImonitorsGeneralRepository genRepo, int aps) {
+        super(partyId, genRepo, aps);
     }
 
     @Override

@@ -17,8 +17,8 @@ import monitors.GeneralRepository.ImonitorsGeneralRepository;
  */
 public class ControlAndCollectionSiteService extends ControlAndCollectionSite implements ProxyInterface {
 
-    public ControlAndCollectionSiteService(ImonitorsGeneralRepository genRepo) {
-        super(genRepo);
+    public ControlAndCollectionSiteService(ImonitorsGeneralRepository genRepo, int nrooms, int n_assault_parties, int assault_party_size) {
+        super(genRepo, nrooms, n_assault_parties, assault_party_size);
     }
 
     @Override

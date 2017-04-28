@@ -4,48 +4,63 @@
  * and open the template in the editor.
  */
 package monitors.GeneralRepository;
+
 import Communication.ServerCom;
 import Communication.ServerServiceAgent;
+import Communication.SettingsProxy;
 
 /**
  *
  * @author Ricardo Filipe
  */
 public class GeneralRepositoryStart {
-    
+
     private static int SERVER_PORT;
+    private static String logname;
+    private static String CONFIG_SERVER_ADDR;
+    private static int CONFIG_SERVER_PORT;
+
     /**
-     * This class will launch one server listening one port and processing
-     * the events.
+     * This class will launch one server listening one port and processing the
+     * events.
+     *
      * @param args
      */
-    public static void main(String[] args){
+    public static void main(String[] args) {
         /* TODO
         NodeSettsProxy proxy = new NodeSettsProxy(); 
         SERVER_PORT = proxy.SERVER_PORTS().get("Playground");
-        */
-        
+         */
+
         SERVER_PORT = Integer.parseInt(args[0]);
-        
+        logname = args[1];
+        CONFIG_SERVER_ADDR = args[2];
+        CONFIG_SERVER_PORT = Integer.parseInt(args[3]);
+
         // canais de comunicação
         ServerCom schan, schani;
-        
+
         // thread agente prestador do serviço
-        ServerServiceAgent cliProxy;         
+        ServerServiceAgent cliProxy;
 
         /* estabelecimento do servico */
-        
-        // criação do canal de escuta e sua associação
-        schan = new ServerCom(SERVER_PORT);    
-        schan.start();
-        
-        GeneralRepositoryService generalRepositoryService = new GeneralRepositoryService();
-        System.out.println("GeneralRepository service has started!");
-        System.out.printf("Server is listening on port: %d ... \n" , SERVER_PORT);
+        SettingsProxy sp = new SettingsProxy(CONFIG_SERVER_ADDR, CONFIG_SERVER_PORT);
 
-        /* processamento de pedidos */     
+        // criação do canal de escuta e sua associação
+        schan = new ServerCom(SERVER_PORT);
+        schan.start();
+
+        int nrooms = sp.getN_ROOMS();
+        int assault_party_size = sp.getASSAULT_PARTY_SIZE();
+        int n_ord_thieves = sp.getN_ORD_THIEVES();
+        
+        GeneralRepositoryService generalRepositoryService = new GeneralRepositoryService(logname, nrooms, assault_party_size, n_ord_thieves);
+        System.out.println("GeneralRepository service has started!");
+        System.out.printf("Server is listening on port: %d ... \n", SERVER_PORT);
+
+        /* processamento de pedidos */
         while (true) {
-            
+
             // entrada em processo de escuta
             schani = schan.accept();
             // lançamento do agente prestador do serviço
@@ -53,5 +68,5 @@ public class GeneralRepositoryStart {
             cliProxy.start();
         }
     }
-    
+
 }

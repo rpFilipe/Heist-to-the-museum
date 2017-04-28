@@ -40,14 +40,14 @@ public class OrdinaryThief extends Thread {
      * @param assaultGroup AssaultParty interface
      * @param genRepo GeneralRepository interface
      */
-    public OrdinaryThief(int id,
+    public OrdinaryThief(int id, int max_speed, int min_speed,
             IotMuseum museum,
             IotConcentrationSite concentrationSite,
             IotControlAndCollectionSite controlAndCollectionSite,
             IotAssaultParty[] assaultGroup,
             IotGeneralRepository genRepo) {
         this.id = id;
-        this.speed = new Random().nextInt(Constants.MAX_THIEF_SPEED - Constants.MIN_THIEF_SPEED) + Constants.MIN_THIEF_SPEED;
+        this.speed = new Random().nextInt(max_speed - min_speed) +min_speed;
         this.museum = museum;
         this.concentrationSite = concentrationSite;
         this.controlAndCollectionSite = controlAndCollectionSite;
