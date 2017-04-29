@@ -7,8 +7,8 @@ package monitors.AssaultParty;
 
 import Communication.ServerCom;
 import Communication.ServerServiceAgent;
-import Communication.SettingsProxy;
-import main.GeneralRepositoryProxy;
+import Proxies.SettingsProxy;
+import Proxies.GeneralRepositoryProxy;
 import monitors.GeneralRepository.ImonitorsGeneralRepository;
 
 /**

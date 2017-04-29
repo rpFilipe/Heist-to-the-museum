@@ -13,5 +13,12 @@ package Communication;
  * sd010g
  */
 public interface ProxyInterface {
+
+    /**
+     * Process and reply to an incoming  Message
+     * @param inMessage Incoming Message
+     * @return Outgoing Message 
+     * @throws MessageException
+     */
     public Message processRequest(Message inMessage) throws MessageException;
 }

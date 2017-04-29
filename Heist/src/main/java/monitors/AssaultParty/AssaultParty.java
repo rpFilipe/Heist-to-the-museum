@@ -36,8 +36,9 @@ public class AssaultParty implements IotAssaultParty, ImtAssaultParty{
 
     /**
      * Create a new Assault Party
-     * @param tid Party Identifier
-     * @param genRepo instance of the General Repository
+     * @param tid Id of the Assault Party.
+     * @param genRepo General Repository instance.
+     * @param aps Number of Ordinary Thieves in each Assault Party.
      */
     public AssaultParty(int tid, ImonitorsGeneralRepository genRepo, int aps) {
         crawlingQueue = new LinkedList<>();

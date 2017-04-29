@@ -16,7 +16,12 @@ public class ServerServiceAgent extends Thread
    private ServerCom sconi;
    private ProxyInterface proxyInterface;
 
-   public ServerServiceAgent (ServerCom sconi, ProxyInterface proxyInterface)
+    /**
+     * Create a thread to service the request.
+     * @param sconi Communication interface.
+     * @param proxyInterface Service handler.
+     */
+    public ServerServiceAgent (ServerCom sconi, ProxyInterface proxyInterface)
    {
       //super ("Proxy_" + getProxyId ());
       this.sconi = sconi;
@@ -26,7 +31,6 @@ public class ServerServiceAgent extends Thread
   /**
    *  Ciclo de vida do thread agente prestador de serviço.
    */
-
    @Override
    public void run()
    {
@@ -40,34 +44,5 @@ public class ServerServiceAgent extends Thread
        } catch (MessageException ex) {
            Logger.getLogger(ServerServiceAgent.class.getName()).log(Level.SEVERE, null, ex);
        }
-   }
-
-  /**
-   *  Geração do identificador da instanciação.
-   *
-   *    @return identificador da instanciação
-   */
-
-   private static int getProxyId ()
-   {
-      Class<Communication.ServerServiceAgent> ssa = null;           // representação do tipo de dados CustomerProxy na máquina
-                                                           //   virtual de Java
-      int proxyId;                                         // identificador da instanciação
-
-      try
-      { ssa = (Class<Communication.ServerServiceAgent>) Class.forName ("serverSide.CustomerProxy");
-      }
-      catch (ClassNotFoundException e)
-      { System.out.println("O tipo de dados ClientProxy não foi encontrado!");
-        e.printStackTrace ();
-        System.exit (1);
-      }
-
-      synchronized (ssa)
-      { proxyId = nProxy;
-        nProxy += 1;
-      }
-
-      return proxyId;
    }
 }

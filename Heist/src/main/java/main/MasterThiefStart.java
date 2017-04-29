@@ -5,10 +5,15 @@
  */
 package main;
 
+import Proxies.AssaultPartyProxy;
+import Proxies.GeneralRepositoryProxy;
+import Proxies.ConcentrationSiteProxy;
+import Proxies.ControlAndCollectionSiteProxy;
+import Proxies.MuseumProxy;
 import Communication.ClientCom;
 import Communication.Message;
 import static Communication.MessageType.*;
-import Communication.SettingsProxy;
+import Proxies.SettingsProxy;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import monitors.AssaultParty.ImtAssaultParty;
@@ -27,6 +32,10 @@ public class MasterThiefStart {
     private static int configServerPort;
     private static int N_ASSAULT_PARTIES;
 
+    /**
+     * Start the Master Thief Life.
+     * @param args
+     */
     public static void main(String[] args) {
 
         configServerAddr = args[0];

@@ -11,8 +11,21 @@ package States;
  * @author Marc Wagner
  */
 public class RoomStates {
+
+    /**
+     * Value of Room state 'ROOM_EMPTY'
+     */
     public final static int ROOM_EMPTY = 0,
-    BEING_STOLEN = 1,
-    ROB_AGAIN = 3,
-    NOT_VISITED = 2;
+            /**
+             * Value of Room state 'BEING_STOLEN'
+             */
+            BEING_STOLEN = 1,
+            /**
+             * Value of Room state 'ROB_AGAIN'
+             */
+            ROB_AGAIN = 3,
+            /**
+             * Value of Room state 'NOT_VISITED'
+             */
+            NOT_VISITED = 2;
 }

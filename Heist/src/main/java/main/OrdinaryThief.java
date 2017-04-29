@@ -34,6 +34,8 @@ public class OrdinaryThief extends Thread {
     /**
      * Create a new OrdinaryThief
      * @param id of the OrdinaryThief
+     * @param max_speed Maximum speed of the Ordinary Thief
+     * @param min_speed Minimum speed of the Ordinary Thief
      * @param museum museum interface
      * @param concentrationSite ConcentrationSite interface
      * @param controlAndCollectionSite ControlAndCollectionSite interface

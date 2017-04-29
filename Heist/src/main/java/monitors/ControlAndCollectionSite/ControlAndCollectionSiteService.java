@@ -17,10 +17,23 @@ import monitors.GeneralRepository.ImonitorsGeneralRepository;
  */
 public class ControlAndCollectionSiteService extends ControlAndCollectionSite implements ProxyInterface {
 
+    /**
+     * Create a new Service to handle the requests for the Control and Collection Site.
+     * @param genRepo General Repository instance
+     * @param nrooms Number of Rooms in the Simulation
+     * @param n_assault_parties Number of Assault Parties in the Simulation
+     * @param assault_party_size Number of Ordinary Thieves in each Assault Party.
+     */
     public ControlAndCollectionSiteService(ImonitorsGeneralRepository genRepo, int nrooms, int n_assault_parties, int assault_party_size) {
         super(genRepo, nrooms, n_assault_parties, assault_party_size);
     }
 
+    /**
+     * Process a Message for this Service
+     * @param inMessage Incoming Message
+     * @return Outgoing Message 
+     * @throws MessageException
+     */
     @Override
     public Message processRequest(Message inMessage) throws MessageException {
         Message serverResponse = null;

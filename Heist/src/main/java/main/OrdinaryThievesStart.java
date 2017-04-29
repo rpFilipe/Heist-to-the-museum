@@ -5,7 +5,12 @@
  */
 package main;
 
-import Communication.SettingsProxy;
+import Proxies.AssaultPartyProxy;
+import Proxies.GeneralRepositoryProxy;
+import Proxies.ConcentrationSiteProxy;
+import Proxies.ControlAndCollectionSiteProxy;
+import Proxies.MuseumProxy;
+import Proxies.SettingsProxy;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import monitors.AssaultParty.IotAssaultParty;
@@ -24,6 +29,10 @@ public class OrdinaryThievesStart {
     private static String configServerAddr;
     private static int configServerPort;
     
+    /**
+     * Start the Ordinary Thief Life.
+     * @param args
+     */
     public static void main(String[] args) {
         
         configServerAddr = args[0];

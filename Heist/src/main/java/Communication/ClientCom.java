@@ -24,13 +24,22 @@ public class ClientCom {
     
     private ObjectOutputStream out = null;
     
+    /**
+     * Create a new communication channel.
+     * @param hostName Target address.
+     * @param portNumb Target port.
+     */
     public ClientCom (String hostName, int portNumb)
     {
        this.serverHostName = hostName;
        this.serverPortNumb = portNumb;
     }
     
-   public boolean open() {
+    /**
+     * Open the channel.
+     * @return Channel successfully open.
+     */
+    public boolean open() {
         boolean success = true;
         SocketAddress serverAddress = new InetSocketAddress(this.serverHostName, serverPortNumb);
 
@@ -92,6 +101,9 @@ public class ClientCom {
         return (success);
     }
    
+    /**
+     * Close the channel.
+     */
     public void close() {
         try {
             in.close();
@@ -118,6 +130,10 @@ public class ClientCom {
         }
     }
     
+    /**
+     * Read an Object sent to this Channel.
+     * @return Object read.
+     */
     public Object readObject() {
         Object fromServer = null;
         
@@ -140,6 +156,10 @@ public class ClientCom {
         return fromServer;
     }
     
+    /**
+     * Write an Object to this Channel.
+     * @param toServer Object to send.
+     */
     public void writeObject(Object toServer) {
         try {
             out.writeObject(toServer);

@@ -17,6 +17,15 @@ import monitors.GeneralRepository.ImonitorsGeneralRepository;
  */
 public class MuseumService extends Museum implements ProxyInterface {
 
+    /**
+     * Create a new Service to handle the requests for the Museum.
+     * @param genRepo General Repository Instance
+     * @param N_ROOMS Number of Rooms in the simulation.
+     * @param MAX_ROOM_DISTANCE Maximum distance a Room can be in the simulation.
+     * @param MIN_ROOM_DISTANCE Minimum distance a Room can be in the simulation.
+     * @param MAX_PAITING_PER_ROOM Maximum number of paintings in a given Room.
+     * @param MIN_PAITING_PER_ROOM Minimum number of paintings in a given Room.
+     */
     public MuseumService(ImonitorsGeneralRepository genRepo,
             int N_ROOMS,
             int MAX_ROOM_DISTANCE,
@@ -30,6 +39,12 @@ public class MuseumService extends Museum implements ProxyInterface {
                 MIN_PAITING_PER_ROOM);
     }
 
+    /**
+     * Process a Message for this Service
+     * @param inMessage Incoming Message
+     * @return Outgoing Message 
+     * @throws MessageException
+     */
     @Override
     public Message processRequest(Message inMessage) throws MessageException {
         Message serverResponse = null;

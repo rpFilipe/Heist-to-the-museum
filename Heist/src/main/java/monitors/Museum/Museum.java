@@ -21,7 +21,12 @@ public class Museum implements IotMuseum, ImtMuseum{
     
     /**
      *  Constructor to create a new Museum
-     * @param genRepo
+     * @param genRepo General Repository Instance
+     * @param N_ROOMS Number of Rooms in the simulation.
+     * @param MAX_ROOM_DISTANCE Maximum distance a Room can be in the simulation.
+     * @param MIN_ROOM_DISTANCE Minimum distance a Room can be in the simulation.
+     * @param MAX_PAITING_PER_ROOM Maximum number of paintings in a given Room.
+     * @param MIN_PAITING_PER_ROOM Minimum number of paintings in a given Room.
      */
     public Museum(ImonitorsGeneralRepository genRepo,
             int N_ROOMS,

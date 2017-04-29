@@ -37,7 +37,10 @@ public class ControlAndCollectionSite implements IotControlAndCollectionSite, Im
     /**
      * Create a Control And Collection Instance.
      *
-     * @param genRepo
+     * @param genRepo General Repository instance
+     * @param nrooms Number of Rooms in the Simulation
+     * @param n_assault_parties Number of Assault Parties in the Simulation
+     * @param assault_party_size Number of Ordinary Thieves in each Assault Party.
      */
     public ControlAndCollectionSite(ImonitorsGeneralRepository genRepo, int nrooms, int n_assault_parties, int assault_party_size) {
         N_ROOMS = nrooms;

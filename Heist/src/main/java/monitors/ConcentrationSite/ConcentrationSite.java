@@ -26,6 +26,8 @@ public class ConcentrationSite implements IotConcentrationSite, ImtConcentration
     /**
      *  Create a new Concentration Site.
      * @param genRepo
+     * @param n_ord_thieves
+     * @param assault_party_size
      */
     public ConcentrationSite(ImonitorsGeneralRepository genRepo, int n_ord_thieves, int assault_party_size) {
         N_ORD_THIEVES = n_ord_thieves;

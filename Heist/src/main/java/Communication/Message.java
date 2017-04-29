@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 /**
  *
- * @author Tiago Henriques
+ * @author Ricardo Filipe
  */
 /**
  * Este tipo de dados define as mensagens que são trocadas entre os clientes e o
@@ -20,98 +20,78 @@ import java.io.Serializable;
  */
 public class Message implements Serializable {
 
-    /**
-     * Chave de serialização
-     *
-     * @serialField serialVersionUID
-     */
     private static final long serialVersionUID = 1001L;
     private MessageType msgType;
     private int[] args;
     private String returnStr;
     private int returnValue;
 
-    public Message() {
-        returnValue = -1;
-    }
-
     /**
-     * Logging file name
-     *
-     * @serialField fName
+     * Create a new Message.
+     * @param msgType Type of the Message.
      */
-    private String fName = null;
-
-    /**
-     * Thieves lifecyle iterations number
-     *
-     * @serialField nIter
-     */
-    private int nIter = -1;
-
     public Message(MessageType msgType) {
         this.msgType = msgType;
     }
 
+    /**
+     * Create a new Message.
+     * @param msgType Type of the Message.
+     * @param returnValue Integer value to send.
+     */
     public Message(MessageType msgType, int returnValue) {
         this.msgType = msgType;
         this.returnValue = returnValue;
     }
 
+    /**
+     * Get the String sent in this Message.
+     * @return String that has been sent.
+     */
     public String getReturnStr() {
         return returnStr;
     }
     
+    /**
+     * Create a new Message.
+     * @param msgType Type of the Message.
+     * @param str String value to send.
+     */
     public Message(MessageType msgType, String str) {
         this.msgType = msgType;
         this.returnStr = str;
     }
 
+    /**
+     * Get the Integer sent in this Message.
+     * @return Integer that has been sent.
+     */
     public int getReturnValue() {
         return returnValue;
     }
 
+    /**
+     * Create a new Message
+     * @param msgType Type of the Message.
+     * @param args Array of Integers to be sent.
+     */
     public Message(MessageType msgType, int[] args) {
         this.msgType = msgType;
         this.args = args;
     }
 
+    /**
+     * Get the Message type.
+     * @return MessageType.
+     */
     public MessageType getType() {
         return (msgType);
     }
 
     /**
-     * Obtenção do valor do campo nome do ficheiro de logging.
-     *
-     * @return nome do ficheiro
+     * Get the arguments of this Message.
+     * @return Array of Integers that have been sent.
      */
-    public String getFName() {
-        return (fName);
-    }
-
-    /**
-     * Obtenção do valor do campo número de iterações do ciclo de vida dos
-     * clientes.
-     *
-     * @return número de iterações do ciclo de vida dos clientes
-     */
-    public int getNIter() {
-        return (nIter);
-    }
-
-    /**
-     * Impressão dos campos internos. Usada para fins de debugging.
-     *
-     * @return string contendo, em linhas separadas, a concatenação da
-     * identificação de cada campo e valor respectivo
-     */
-    @Override
-    public String toString() {
-        return ("Tipo = " + msgType
-                + "\nLogging File = " + fName
-                + "\nNumber of iterations = " + nIter);
-    }
-
     public int[] getArgs() {
         return this.args;
     }

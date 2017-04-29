@@ -17,10 +17,22 @@ import monitors.GeneralRepository.ImonitorsGeneralRepository;
  */
 public class AssaultPartyService extends AssaultParty implements ProxyInterface {
 
+    /**
+     * Create a new Service to handle the requests for the Concentration Site.
+     * @param partyId Id of the Assault Party.
+     * @param genRepo General Repository instance.
+     * @param aps Number of Ordinary Thieves in each Assault Party.
+     */
     public AssaultPartyService(int partyId, ImonitorsGeneralRepository genRepo, int aps) {
         super(partyId, genRepo, aps);
     }
 
+    /**
+     * Process a Message for this Service
+     * @param inMessage Incoming Message
+     * @return Outgoing Message 
+     * @throws MessageException
+     */
     @Override
     public Message processRequest(Message inMessage) throws MessageException {
         Message serverResponse = null;

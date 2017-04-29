@@ -11,7 +11,15 @@ package States;
  * @author Marc Wagner
  */
 public class PartyStates {
+
+    /**
+     * Value of the Party State 'DEPLOYED'
+     */
     public final static int DEPLOYED = 0,
     BEING_FORMED = 2,
+
+    /**
+     * Value of the Party State 'EMPTY'
+     */
     EMPTY = 1;
 }

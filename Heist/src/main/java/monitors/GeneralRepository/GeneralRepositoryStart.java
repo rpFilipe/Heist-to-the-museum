@@ -7,7 +7,7 @@ package monitors.GeneralRepository;
 
 import Communication.ServerCom;
 import Communication.ServerServiceAgent;
-import Communication.SettingsProxy;
+import Proxies.SettingsProxy;
 
 /**
  *

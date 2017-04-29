@@ -15,10 +15,24 @@ import static Communication.MessageType.*;
  * @author ricardo
  */
 public class GeneralRepositoryService extends GeneralRepository implements ProxyInterface {
+
+    /**
+     * Create a new Service to handle the requests for the General Repository.
+     * @param logname Name of the File to store the simulation log.
+     * @param n_ord_thieves Number of Ordinary Thieves in the simulation.
+     * @param nrooms Number of Rooms in the Museum.
+     * @param assault_party_size Number of Ordinary Thieves per Assault Party.
+     */
     public GeneralRepositoryService(String logname, int nrooms, int assault_party_size, int n_ord_thieves) {
         super(logname, nrooms, assault_party_size, n_ord_thieves);
     }
 
+    /**
+     * Process a Message for this Service
+     * @param inMessage Incoming Message
+     * @return Outgoing Message 
+     * @throws MessageException
+     */
     @Override
     public Message processRequest(Message inMessage) throws MessageException {
         Message serverResponse = null;

@@ -17,10 +17,22 @@ import monitors.GeneralRepository.ImonitorsGeneralRepository;
  */
 public class ConcentrationSiteService extends ConcentrationSite implements ProxyInterface {
 
+    /**
+     * Create a new Service to handle the requests for the Concentration Site.
+     * @param genRepo General Repository instance.
+     * @param n_ord_thieves Number of Ordinary Thieves in the Simulation.
+     * @param assault_party_size Number of Ordinary Thieves in each Assault Party.
+     */
     public ConcentrationSiteService(ImonitorsGeneralRepository genRepo, int n_ord_thieves, int assault_party_size) {
         super(genRepo, n_ord_thieves, assault_party_size);
     }
 
+    /**
+     * Process a Message for this Service
+     * @param inMessage Incoming Message
+     * @return Outgoing Message 
+     * @throws MessageException
+     */
     @Override
     public Message processRequest(Message inMessage) throws MessageException {
         Message serverResponse = null;

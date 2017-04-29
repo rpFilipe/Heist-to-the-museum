@@ -40,6 +40,10 @@ public class GeneralRepository implements ImtGeneralRepository, IotGeneralReposi
 
     /**
      * Creates a new General Repository
+     * @param logname Name of the File to store the simulation log.
+     * @param n_ord_thieves Number of Ordinary Thieves in the simulation.
+     * @param nrooms Number of Rooms in the Museum.
+     * @param assault_party_size Number of Ordinary Thieves per Assault Party.
      */
     public GeneralRepository(String logname, int nrooms, int assault_party_size, int n_ord_thieves) {
         N_ASSAULT_PARTIES = n_ord_thieves/assault_party_size;
