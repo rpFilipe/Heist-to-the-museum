@@ -4,11 +4,16 @@
  * and open the template in the editor.
  */
 package monitors.Museum;
-
-import Communication.ServerCom;
-import Communication.ServerServiceAgent;
-import Proxies.SettingsProxy;
-import Proxies.GeneralRepositoryProxy;
+import interfaces.GeneralRepositoryInterface;
+import interfaces.MuseumInterface;
+import interfaces.Register;
+import java.rmi.AlreadyBoundException;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
+import monitors.GeneralRepository.ImonitorsGeneralRepository;
 
 /**
  *
@@ -17,8 +22,8 @@ import Proxies.GeneralRepositoryProxy;
 public class MuseumStart {
 
     private static int SERVER_PORT;
-    private static String CONFIG_SERVER_ADDR;
-    private static int CONFIG_SERVER_PORT;
+    private static String rmiServerHostname;
+    private static int rmiServerPort;
 
     /**
      * This class will launch one server listening one port and processing the
@@ -27,49 +32,77 @@ public class MuseumStart {
      * @param args
      */
     public static void main(String[] args) {
-        /* TODO
-        NodeSettsProxy proxy = new NodeSettsProxy(); 
-        SERVER_PORT = proxy.SERVER_PORTS().get("Playground");
-         */
 
         SERVER_PORT = Integer.parseInt(args[0]);
-        CONFIG_SERVER_ADDR = args[1];
-        CONFIG_SERVER_PORT = Integer.parseInt(args[2]);
+        rmiServerHostname = args[1];
+        rmiServerPort = Integer.parseInt(args[2]);
 
-        // canais de comunicação
-        ServerCom schan, schani;
+        /* look for the remote object by name in the remote host registry */
+        String nameEntry = "GeneralRepository";
+        GeneralRepositoryInterface genRepo = null;
+        Registry registry = null;
 
-        // thread agente prestador do serviço
-        ServerServiceAgent cliProxy;
-
-        GeneralRepositoryProxy genRepo = new GeneralRepositoryProxy(CONFIG_SERVER_ADDR, CONFIG_SERVER_PORT);
-        SettingsProxy sp = new SettingsProxy(CONFIG_SERVER_ADDR, CONFIG_SERVER_PORT);
-        /* estabelecimento do servico */
-
-        // criação do canal de escuta e sua associação
-        schan = new ServerCom(SERVER_PORT);
-        schan.start();
-
-        //simulation parameters
-        int nrooms = sp.getN_ROOMS();
-        int max_room_distance = sp.getMAX_ROOM_DISTANCE();
-        int min_room_distance = sp.getMIN_ROOM_DISTANCE();
-        int max_paitings_per_room = sp.getMAX_PAITING_PER_ROOM();
-        int min_paitings_per_room = sp.getMIN_PAITING_PER_ROOM();
-
-        MuseumService museumService = new MuseumService(genRepo, nrooms, max_room_distance, min_room_distance, max_paitings_per_room, min_paitings_per_room);
-        System.out.println("Museum service has started!");
-        System.out.printf("Server is listening on port: %d ... \n", SERVER_PORT);
-
-        /* processamento de pedidos */
-        while (true) {
-
-            // entrada em processo de escuta
-            schani = schan.accept();
-            // lançamento do agente prestador do serviço
-            cliProxy = new ServerServiceAgent(schani, museumService);
-            cliProxy.start();
+        /* Locate General Repository */
+        try {
+            registry = LocateRegistry.getRegistry(rmiServerHostname, rmiServerPort);
+            genRepo = (GeneralRepositoryInterface) registry.lookup(nameEntry);
+        } catch (RemoteException e) {
+            System.out.println("Exception thrown while locating log: " + e.getMessage() + "!");
+            System.exit(1);
+        } catch (NotBoundException e) {
+            System.out.println("Log is not registered: " + e.getMessage() + "!");
+            System.exit(1);
         }
+
+        /* instanciação e instalação do gestor de segurança */
+        if (System.getSecurityManager() == null) {
+            System.setSecurityManager(new SecurityManager());
+        }
+
+        Museum museum = new Museum((ImonitorsGeneralRepository) genRepo, SERVER_PORT, SERVER_PORT, SERVER_PORT, SERVER_PORT, SERVER_PORT);
+        MuseumInterface museumInterface = null;
+
+        try {
+            museumInterface = (MuseumInterface) UnicastRemoteObject.exportObject(museum, SERVER_PORT);
+        } catch (RemoteException e) {
+            System.out.println("Excepção na geração do stub para o Museum: " + e.getMessage());
+            System.exit(1);
+        }
+
+        System.out.println("O stub para o museum foi gerado!");
+
+        Register reg = null;
+        try {
+            registry = LocateRegistry.getRegistry(rmiServerHostname, rmiServerPort);
+        } catch (RemoteException e) {
+            System.out.println("Excepção na criação do registo RMI: " + e.getMessage());
+            System.exit(1);
+        }
+
+        System.out.println("O registo RMI foi criado!");
+
+        try {
+            reg = (Register) registry.lookup("RegisterHandler");
+        } catch (RemoteException e) {
+            System.out.println("RegisterRemoteObject lookup exception: " + e.getMessage());
+            System.exit(1);
+        } catch (NotBoundException e) {
+            System.out.println("RegisterRemoteObject not bound exception: " + e.getMessage());
+            System.exit(1);
+        }
+
+        try {
+            reg.bind("Museum", museumInterface);
+        } catch (RemoteException e) {
+            System.out.println("Excepção no registo do museum: " + e.getMessage());
+            System.exit(1);
+        } catch (AlreadyBoundException e) {
+            System.out.println("O museum já está registado: " + e.getMessage());
+            System.exit(1);
+        }
+
+        System.out.println("O bench foi registado!");
+
     }
 
 }

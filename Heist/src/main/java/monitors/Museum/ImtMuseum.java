@@ -5,6 +5,8 @@
  */
 package monitors.Museum;
 
+import structures.VectorClock;
+
 /**
  *
  * @author Ricardo Filipe
@@ -16,6 +18,6 @@ public interface ImtMuseum {
      * @param targetRoom of the room
      * @return
      */
-    public int getRoomDistance(int targetRoom);
+    public VectorClock getRoomDistance(int targetRoom, VectorClock vc);
     
 }

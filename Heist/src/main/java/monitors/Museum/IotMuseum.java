@@ -5,6 +5,8 @@
  */
 package monitors.Museum;
 
+import structures.VectorClock;
+
 /**
  *
  * @author Ricardo Filipe
@@ -17,6 +19,6 @@ public interface IotMuseum {
      * @param roomId
      * @return true if the room still has canvas to be stolen.
      */
-    public boolean rollACanvas(int roomId);
+    public VectorClock rollACanvas(int roomId, VectorClock vc);
     
 }

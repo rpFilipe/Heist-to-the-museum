@@ -11,6 +11,7 @@ import monitors.ConcentrationSite.ImtConcentrationSite;
 import monitors.ControlAndCollectionSite.ImtControlAndCollectionSite;
 import monitors.GeneralRepository.ImtGeneralRepository;
 import monitors.Museum.ImtMuseum;
+import structures.VectorClock;
 
 /**
  *
@@ -20,14 +21,17 @@ import monitors.Museum.ImtMuseum;
 public class MasterThief extends Thread {
 
     private int state = MasterThiefStates.PLANNING_THE_HEIST;
-    private  ImtMuseum museum;
-    private  ImtControlAndCollectionSite controlAndCollectionSite;
-    private  ImtConcentrationSite concentrationSite;
-    private  ImtAssaultParty[] assaultParty;
-    private  ImtGeneralRepository genRepo;
+    private ImtMuseum museum;
+    private ImtControlAndCollectionSite controlAndCollectionSite;
+    private ImtConcentrationSite concentrationSite;
+    private ImtAssaultParty[] assaultParty;
+    private ImtGeneralRepository genRepo;
+    private VectorClock myClk;
+    private VectorClock receivedClk;
 
     /**
      * Create a new MasterThief
+     *
      * @param museum museum interface
      * @param concentrationSite ConcentrationSite interface
      * @param controlAndCollectionSite ControlAndCollectionSite interface
@@ -44,6 +48,7 @@ public class MasterThief extends Thread {
         this.controlAndCollectionSite = controlAndCollectionSite;
         this.assaultParty = assaultParty;
         this.genRepo = genRepo;
+        myClk = new VectorClock(7, 0);
     }
 
     @Override
@@ -59,13 +64,19 @@ public class MasterThief extends Thread {
                     //int nwating = concentrationSite.getNumberThivesWaiting();
                     boolean a = controlAndCollectionSite.isHeistCompleted();
                     boolean b = controlAndCollectionSite.waitingNedded();
-                    this.state = concentrationSite.appraiseSit(a,b);
+                    this.state = concentrationSite.appraiseSit(a, b);
                     break;
                 case MasterThiefStates.ASSEMBLING_A_GROUP:
                     int targetRoom = controlAndCollectionSite.getTargetRoom();
                     int partyToDeploy = controlAndCollectionSite.getPartyToDeploy();
-                    
-                    int roomDistance = museum.getRoomDistance(targetRoom);
+
+                    /* Isto para todas as mensagens*/
+                    myClk.incrementClock();
+                    receivedClk = museum.getRoomDistance(targetRoom, myClk.clone());
+                    int roomDistance = receivedClk.getReturnIntValue();
+                    myClk.update(receivedClk);
+                    /***************************************/
+
                     assaultParty[partyToDeploy].setRoom(targetRoom, roomDistance);
                     concentrationSite.prepareAssaultParty(partyToDeploy);
 

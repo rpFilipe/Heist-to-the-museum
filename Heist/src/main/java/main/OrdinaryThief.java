@@ -14,6 +14,7 @@ import monitors.ConcentrationSite.IotConcentrationSite;
 import monitors.ControlAndCollectionSite.IotControlAndCollectionSite;
 import monitors.GeneralRepository.IotGeneralRepository;
 import monitors.Museum.IotMuseum;
+import structures.VectorClock;
 
 /**
  *
@@ -30,6 +31,8 @@ public class OrdinaryThief extends Thread {
     private IotConcentrationSite concentrationSite;
     private IotGeneralRepository genRepo;
     private int state;
+    private VectorClock myClk;
+    private VectorClock receivedClk;
 
     /**
      * Create a new OrdinaryThief
@@ -56,6 +59,7 @@ public class OrdinaryThief extends Thread {
         this.assaultGroup = assaultGroup;
         this.genRepo = genRepo;
         this.genRepo.addThief(id, speed);
+        this.myClk = new VectorClock(7, id+1);
     }
 
     @Override
@@ -75,7 +79,13 @@ public class OrdinaryThief extends Thread {
             this.state = OrdinaryThiefState.AT_A_ROOM;
             genRepo.updateThiefState(id, state);
             
-            boolean canvas = museum.rollACanvas(roomId);
+            /* Isto para todas as mensagens*/
+            myClk.incrementClock();
+            receivedClk = museum.rollACanvas(roomId, myClk.clone());
+            boolean canvas = receivedClk.getreturnBoolValue();
+            myClk.update(receivedClk);
+            /***************************************/
+            
             genRepo.updateThiefCylinder(id, canvas);
             assaultGroup[partyId].reverseDirection();
             

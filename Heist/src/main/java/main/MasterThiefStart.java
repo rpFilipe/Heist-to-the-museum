@@ -9,11 +9,15 @@ import Proxies.AssaultPartyProxy;
 import Proxies.GeneralRepositoryProxy;
 import Proxies.ConcentrationSiteProxy;
 import Proxies.ControlAndCollectionSiteProxy;
-import Proxies.MuseumProxy;
 import Communication.ClientCom;
 import Communication.Message;
 import static Communication.MessageType.*;
 import Proxies.SettingsProxy;
+import interfaces.MuseumInterface;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import monitors.AssaultParty.ImtAssaultParty;
@@ -28,25 +32,39 @@ import monitors.Museum.ImtMuseum;
  */
 public class MasterThiefStart {
 
-    private static String configServerAddr;
-    private static int configServerPort;
+    private static String rmiServerHostname;
+    private static int rmiServerPort;
     private static int N_ASSAULT_PARTIES;
 
     /**
      * Start the Master Thief Life.
+     *
      * @param args
      */
     public static void main(String[] args) {
 
-        configServerAddr = args[0];
-        configServerPort = Integer.parseInt(args[1]);
+        rmiServerHostname = args[0];
+        rmiServerPort = Integer.parseInt(args[1]);
 
         SettingsProxy sp = new SettingsProxy(configServerAddr, configServerPort);
 
         N_ASSAULT_PARTIES = sp.getN_ORD_THIEVES() / sp.getASSAULT_PARTY_SIZE();
 
+        Registry reg = null;
+        MuseumInterface museum = null;
+
+        try {
+            Registry registry = LocateRegistry.getRegistry(rmiServerHostname, rmiServerPort);
+            museum = (MuseumInterface) registry.lookup("museum");
+        } catch (RemoteException e) {
+            System.out.println("Exception thrown while locating log: " + e.getMessage() + "!");
+            System.exit(1);
+        } catch (NotBoundException e) {
+            System.out.println("Log is not registered: " + e.getMessage() + "!");
+            System.exit(1);
+        }
+
         GeneralRepositoryProxy genRepo = new GeneralRepositoryProxy(configServerAddr, configServerPort);
-        MuseumProxy museum = new MuseumProxy(configServerAddr, configServerPort);
         ControlAndCollectionSiteProxy controlCollectionSite = new ControlAndCollectionSiteProxy(configServerAddr, configServerPort);
         ConcentrationSiteProxy concentrationSite = new ConcentrationSiteProxy(configServerAddr, configServerPort);
         AssaultPartyProxy[] assaultParty = new AssaultPartyProxy[N_ASSAULT_PARTIES];
@@ -65,79 +83,17 @@ public class MasterThiefStart {
 
         try {
             mt.join();
-            terminateServers();
+            terminateServers(museum);
         } catch (InterruptedException ex) {
             Logger.getLogger(MasterThiefStart.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    private static void terminateServers() {
-        String[] servers = new String[]{"AssaultParty0",
-            "AssaultParty1",
-            "Museum",
-            "ControlAndCollectionSite",
-            "ConcentrationSite",
-            "GeneralRepository"
-        };
-
-        for (String s : servers) {
-            String addr = getServerLocation(configServerAddr, configServerPort, s);
-            int port = getServerPort(configServerAddr, configServerPort, s);
-            sendTerminateSignal(addr, port);
-            System.out.printf("%s server has ended.\n", s);
+    private static void terminateServers(MuseumInterface museum) {
+        try {
+            museum.signalShutdown();
+        } catch (RemoteException ex) {
+            Logger.getLogger(MasterThiefStart.class.getName()).log(Level.SEVERE, null, ex);
         }
-        sendTerminateSignal(configServerAddr, configServerPort);
-        System.out.printf("%s server has ended.\n", "ConfigurationServer");
-    }
-
-    private static String getServerLocation(String configServerAddr, int configServerPort, String svname) {
-        ClientCom con = new ClientCom(configServerAddr, configServerPort);
-        Message inMessage, outMessage;
-
-        if (!con.open()) {
-            return "";
-        }
-
-        outMessage = new Message(CONFIGURATION_REQUEST_LOCATION, svname);
-        con.writeObject(outMessage);
-
-        inMessage = (Message) con.readObject();
-
-        if (inMessage.getType() != SERVER_RESPONSE) {
-            System.exit(1);
-        }
-
-        return inMessage.getReturnStr();
-    }
-
-    private static int getServerPort(String configServerAddr, int configServerPort, String svname) {
-        ClientCom con = new ClientCom(configServerAddr, configServerPort);
-        Message inMessage, outMessage;
-
-        if (!con.open()) {
-            return -1;
-        }
-
-        outMessage = new Message(CONFIGURATION_REQUEST_PORT, svname);
-        con.writeObject(outMessage);
-
-        inMessage = (Message) con.readObject();
-
-        if (inMessage.getType() != SERVER_RESPONSE) {
-            System.exit(1);
-        }
-
-        return inMessage.getReturnValue();
-    }
-
-    private static void sendTerminateSignal(String addr, int port) {
-        ClientCom con = new ClientCom(addr, port);
-        Message inMessage, outMessage;
-
-        if (!con.open()) {
-            System.exit(1);
-        }
-        outMessage = new Message(TERMINATE);
-        con.writeObject(outMessage);
     }
 }
