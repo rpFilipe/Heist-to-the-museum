@@ -5,6 +5,9 @@
  */
 package monitors.GeneralRepository;
 
+import java.rmi.RemoteException;
+import structures.VectorClock;
+
 /**
  *
  * @author ricardo
@@ -15,13 +18,13 @@ public interface ImonitorsGeneralRepository {
      * Remove all Ordinary Thieves of the Party.
      * @param partyId id of the Assault Party.
      */
-    public void clearParty(int partyId);
+    public VectorClock clearParty(int partyId, VectorClock vc) throws RemoteException;
 
     /**
      * Save the number of stolen canvas in the General Repository.
      * @param toalCanvas Number of Canvas Stolen.
      */
-    public void setCollectedCanvas(int toalCanvas);
+    public VectorClock setCollectedCanvas(int toalCanvas, VectorClock vc) throws RemoteException;
 
     /**
      * Set a Ordinary Thief in a specific Assault Party. 
@@ -29,7 +32,7 @@ public interface ImonitorsGeneralRepository {
      * @param thiefId Id of the Ordinary Thief.
      * @param elemId Member in said Assault Party.
      */
-    public void setPartyElement(int partyId, int thiefId, int elemId);
+    public VectorClock setPartyElement(int partyId, int thiefId, int elemId, VectorClock vc) throws RemoteException;
 
     /**
      * Save the Room characteristics in the General Repository.
@@ -37,33 +40,33 @@ public interface ImonitorsGeneralRepository {
      * @param distance Distance of the Concentration Site to the Room.
      * @param paitings Number of paintings in the Room.
      */
-    public void setRoomAtributes(int roomId, int distance, int paitings);
+    public VectorClock setRoomAtributes(int roomId, int distance, int paitings, VectorClock vc) throws RemoteException;
 
     /**
      * Update Ordinary Thief position in the General Repository.
      * @param thiefId Id of the Ordinary Thief.
      * @param position Current position of the Ordinary Thief
      */
-    public void updateThiefPosition(int thiefId, int position);
+    public VectorClock updateThiefPosition(int thiefId, int position, VectorClock vc) throws RemoteException;
 
     /**
      * Update Ordinary Thief situation in the General Repository.
      * @param thiefId Id of the Ordinary Thief.
      * @param situation Value to set.
      */
-    public void updateThiefSituation(int thiefId, char situation);
+    public VectorClock updateThiefSituation(int thiefId, char situation, VectorClock vc) throws RemoteException;
 
     /**
      * Set the target Room of an Assault Party.
      * @param partyId Id of the Party.
      * @param room Id of the Room.
      */
-    public void setRoomIdAP(int partyId,int room);
+    public VectorClock setRoomIdAP(int partyId,int room, VectorClock vc) throws RemoteException;
 
     /**
      * Set the number of paintings in a Room.
      * @param id Id of the Room.
      * @param paitings Number of paintings.
      */
-    public void setRoomCanvas(int id, int paitings);
+    public VectorClock setRoomCanvas(int id, int paitings, VectorClock vc) throws RemoteException;
 }

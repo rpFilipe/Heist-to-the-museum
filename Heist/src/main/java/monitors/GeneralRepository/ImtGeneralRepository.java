@@ -5,6 +5,9 @@
  */
 package monitors.GeneralRepository;
 
+import java.rmi.RemoteException;
+import structures.VectorClock;
+
 /**
  *
  * @author Ricardo Filipe
@@ -16,11 +19,11 @@ public interface ImtGeneralRepository {
      * Method to update state the Master Thief in the General Repository.
      * @param state Current state the Master Thief.
      */
-    public void updateMThiefState(int state);
+    public VectorClock updateMThiefState(int state, VectorClock vc) throws RemoteException;
 
     /**
      * Method to finalize the log.
      */
-    public void FinalizeLog();
+    public VectorClock FinalizeLog(VectorClock vc) throws RemoteException;
     
 }

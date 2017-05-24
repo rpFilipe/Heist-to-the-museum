@@ -10,8 +10,10 @@ import States.OrdinaryThiefState;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.rmi.RemoteException;
 ;
 import java.util.HashMap;
+import structures.VectorClock;
 
 /**
  * General Repository Instance.
@@ -37,6 +39,7 @@ public class GeneralRepository implements ImtGeneralRepository, IotGeneralReposi
     private int ASSAULT_PARTY_SIZE;
     private int N_ORD_THIEVES;
     private boolean DEBUG = false;
+    private VectorClock vc;
 
     /**
      * Creates a new General Repository
@@ -55,6 +58,7 @@ public class GeneralRepository implements ImtGeneralRepository, IotGeneralReposi
         rooms = new Room[N_ROOMS];
         thiefMap = new HashMap<>();
         partyElement = new int[N_ASSAULT_PARTIES][ASSAULT_PARTY_SIZE];
+        this.vc = new VectorClock(7, 0); // 1 master + 6 ordinary
 
         for (int i = 0; i < roomId.length; i++) {
             roomId[i] = -1;
@@ -116,11 +120,14 @@ public class GeneralRepository implements ImtGeneralRepository, IotGeneralReposi
      * @param state updated State
      */
     @Override
-    public synchronized void updateThiefState(int thiefId, int state) {
+    public synchronized VectorClock updateThiefState(int thiefId, int state, VectorClock vc) throws RemoteException {
+        this.vc.update(vc);
         Thief t = thiefMap.get(thiefId);
         t.state = state;
         printStatus();
-
+        
+        VectorClock returnClk = this.vc.clone();
+        return returnClk;
     }
 
     /**
@@ -129,10 +136,12 @@ public class GeneralRepository implements ImtGeneralRepository, IotGeneralReposi
      * @param state Current state the Master Thief.
      */
     @Override
-    public synchronized void updateMThiefState(int state) {
+    public synchronized VectorClock updateMThiefState(int state, VectorClock vc) throws RemoteException {
         masterThiefState = state;
         printStatus();
-
+        
+        VectorClock returnClk = this.vc.clone();
+        return returnClk;
     }
 
     /**
@@ -142,10 +151,14 @@ public class GeneralRepository implements ImtGeneralRepository, IotGeneralReposi
      * @param situation Current situation.
      */
     @Override
-    public synchronized void updateThiefSituation(int thiefId, char situation) {
+    public synchronized VectorClock updateThiefSituation(int thiefId, char situation, VectorClock vc) throws RemoteException {
+        this.vc.update(vc);
         Thief t = thiefMap.get(thiefId);
         t.situation = situation;
         printStatus();
+        
+        VectorClock returnClk = this.vc.clone();
+        return returnClk;
     }
 
     /**
@@ -156,8 +169,12 @@ public class GeneralRepository implements ImtGeneralRepository, IotGeneralReposi
      * @param room target room of the Assault Party.
      */
     @Override
-    public synchronized void setRoomIdAP(int partyId, int room) {
+    public synchronized VectorClock setRoomIdAP(int partyId, int room, VectorClock vc) throws RemoteException {
+        this.vc.update(vc);
         roomId[partyId] = room;
+        
+        VectorClock returnClk = this.vc.clone();
+        return returnClk;
     }
 
     /**
@@ -167,8 +184,12 @@ public class GeneralRepository implements ImtGeneralRepository, IotGeneralReposi
      * @param toalCanvas Number of canvas "borrowed" from the Museum.
      */
     @Override
-    public synchronized void setCollectedCanvas(int toalCanvas) {
+    public synchronized VectorClock setCollectedCanvas(int toalCanvas, VectorClock vc) throws RemoteException {
+        this.vc.update(vc);
         canvasCollected = toalCanvas;
+        
+        VectorClock returnClk = this.vc.clone();
+        return returnClk;
     }
 
     /**
@@ -179,8 +200,12 @@ public class GeneralRepository implements ImtGeneralRepository, IotGeneralReposi
      * @param paitings Number of paintings present on the room.
      */
     @Override
-    public synchronized void setRoomAtributes(int roomId, int distance, int paitings) {
+    public synchronized VectorClock setRoomAtributes(int roomId, int distance, int paitings, VectorClock vc) throws RemoteException {
+        this.vc.update(vc);
         rooms[roomId] = new Room(paitings, distance);
+        
+        VectorClock returnClk = this.vc.clone();
+        return returnClk;
     }
 
     /**
@@ -190,9 +215,13 @@ public class GeneralRepository implements ImtGeneralRepository, IotGeneralReposi
      * @param speed Maximum displacement of the Thief.
      */
     @Override
-    public synchronized void addThief(int thiefId, int speed) {
+    public synchronized VectorClock addThief(int thiefId, int speed, VectorClock vc) throws RemoteException {
+        this.vc.update(vc);
         System.out.println("Thief added");
         thiefMap.put(thiefId, new Thief(thiefId, speed));
+        
+        VectorClock returnClk = this.vc.clone();
+        return returnClk;
     }
 
     /**
@@ -204,8 +233,12 @@ public class GeneralRepository implements ImtGeneralRepository, IotGeneralReposi
      * @param elemId Thief Id in the Assault Party.
      */
     @Override
-    public synchronized void setPartyElement(int partyId, int thiefId, int elemId) {
+    public synchronized VectorClock setPartyElement(int partyId, int thiefId, int elemId, VectorClock vc) throws RemoteException {
+        this.vc.update(vc);
         partyElement[partyId][elemId] = thiefId;
+        
+        VectorClock returnClk = this.vc.clone();
+        return returnClk;
     }
 
     /**
@@ -215,12 +248,16 @@ public class GeneralRepository implements ImtGeneralRepository, IotGeneralReposi
      * @param partyId Id of the Assault Party.
      */
     @Override
-    public synchronized void clearParty(int partyId) {
+    public synchronized VectorClock clearParty(int partyId, VectorClock vc) throws RemoteException {
+        this.vc.update(vc);
         for (int i = 0; i < ASSAULT_PARTY_SIZE; i++) {
             partyElement[partyId][i] = -1;
             roomId[partyId] = -1;
         }
         printStatus();
+        
+        VectorClock returnClk = this.vc.clone();
+        return returnClk;
     }
 
     /**
@@ -231,10 +268,14 @@ public class GeneralRepository implements ImtGeneralRepository, IotGeneralReposi
      * @param position Current position of the Thief.
      */
     @Override
-    public synchronized void updateThiefPosition(int thiefId, int position) {
+    public synchronized VectorClock updateThiefPosition(int thiefId, int position, VectorClock vc) throws RemoteException {
+        this.vc.update(vc);
         Thief currentT = thiefMap.get(thiefId);
         currentT.position = position;
         printStatus();
+        
+        VectorClock returnClk = this.vc.clone();
+        return returnClk;
     }
 
     /**
@@ -245,10 +286,14 @@ public class GeneralRepository implements ImtGeneralRepository, IotGeneralReposi
      * @param hasCanvas the state of the thief cylinder.
      */
     @Override
-    public synchronized void updateThiefCylinder(int thiefId, boolean hasCanvas) {
+    public synchronized VectorClock updateThiefCylinder(int thiefId, boolean hasCanvas, VectorClock vc) throws RemoteException {
+        this.vc.update(vc);
         Thief currentT = thiefMap.get(thiefId);
         currentT.canvas = hasCanvas ? 1 : 0;
         printStatus();
+        
+        VectorClock returnClk = this.vc.clone();
+        return returnClk;
     }
 
     private synchronized void printStatus() {
@@ -334,9 +379,12 @@ public class GeneralRepository implements ImtGeneralRepository, IotGeneralReposi
      * Method to finalize the log.
      */
     @Override
-    public synchronized void FinalizeLog() {
+    public synchronized VectorClock FinalizeLog(VectorClock vc) throws RemoteException {
+        this.vc.update(vc);
+        VectorClock returnClk = this.vc.clone();
+        
         if (DEBUG) {
-            return;
+            return returnClk;
         }
         pw.printf("My friends, tonight's effort produced %2d priceless paintings!", canvasCollected);
         pw.println("\nLegend:");
@@ -352,6 +400,8 @@ public class GeneralRepository implements ImtGeneralRepository, IotGeneralReposi
         pw.println("Museum Room # DT - room identification (1 .. 5) distance from outside gathering site, a random number between 15 and 30");
         pw.flush();
         pw.close();
+        
+        return returnClk;
     }
 
     /**
@@ -361,8 +411,12 @@ public class GeneralRepository implements ImtGeneralRepository, IotGeneralReposi
      * @param paitings Number of paintings in the Room.
      */
     @Override
-    public synchronized void setRoomCanvas(int id, int paitings) {
+    public synchronized VectorClock setRoomCanvas(int id, int paitings, VectorClock vc) throws RemoteException {
+        this.vc.update(vc);
         rooms[id].paitings_left = paitings;
+        
+        VectorClock returnClk = this.vc.clone();
+        return returnClk;
     }
 
     private class Room {

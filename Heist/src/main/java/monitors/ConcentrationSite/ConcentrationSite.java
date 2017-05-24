@@ -1,11 +1,14 @@
 package monitors.ConcentrationSite;
 
 import States.MasterThiefStates;
+import java.rmi.RemoteException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.LinkedList;
 import java.util.Queue;
 import monitors.GeneralRepository.ImonitorsGeneralRepository;
+import structures.Pair;
+import structures.VectorClock;
 
 /**
  *
@@ -22,6 +25,7 @@ public class ConcentrationSite implements IotConcentrationSite, ImtConcentration
     private int nThievesInParty;
     private int[] thiefAssaultParty;
     private ImonitorsGeneralRepository genRepo;
+    private VectorClock vc;
     
     /**
      *  Create a new Concentration Site.
@@ -39,6 +43,7 @@ public class ConcentrationSite implements IotConcentrationSite, ImtConcentration
         nThievesInParty = 0;
         thiefAssaultParty = new int[N_ORD_THIEVES];
         this.genRepo = genRepo;
+        this.vc = new VectorClock(7, 0); // 1 master + 6 ordinary
     }
     
     /**
@@ -47,7 +52,8 @@ public class ConcentrationSite implements IotConcentrationSite, ImtConcentration
      * @return is the Ordinary Thief needed.
      */
     @Override
-    public synchronized boolean amINeeded(int id){
+    public synchronized Pair<VectorClock, Boolean> amINeeded(int id, VectorClock vc) throws RemoteException {
+        this.vc.update(vc);
         thievesWaiting.add(id);
         notifyAll();
         
@@ -60,7 +66,8 @@ public class ConcentrationSite implements IotConcentrationSite, ImtConcentration
             }
         } isNeeded[id] = false;
         
-        return !resultsReady;
+        VectorClock returnClk = this.vc.clone();
+        return new Pair(returnClk, !resultsReady);
     }
     
     /**
@@ -68,7 +75,8 @@ public class ConcentrationSite implements IotConcentrationSite, ImtConcentration
      * @param thiefId Id of the Ordinary Thief.
      */
     @Override
-    public synchronized void prepareExcursion(int thiefId){
+    public synchronized VectorClock prepareExcursion(int thiefId, VectorClock vc) throws RemoteException{
+        this.vc.update(vc);
         nThievesInParty++;
         if(nThievesInParty == ASSAULT_PARTY_SIZE)
         {
@@ -76,6 +84,9 @@ public class ConcentrationSite implements IotConcentrationSite, ImtConcentration
             nThievesInParty = 0;
             notifyAll();
         }
+        
+        VectorClock returnClk = this.vc.clone();
+        return returnClk;
     }
     
     /**
@@ -83,11 +94,12 @@ public class ConcentrationSite implements IotConcentrationSite, ImtConcentration
      * @param partyId Id of the target Assault Party.
      */
     @Override
-    public synchronized void prepareAssaultParty(int partyId){
+    public synchronized VectorClock prepareAssaultParty(int partyId, VectorClock vc) throws RemoteException {
+        this.vc.update(vc);
         for (int i = 0; i < ASSAULT_PARTY_SIZE; i++) {
             int thiefToWake = thievesWaiting.poll();
             thiefAssaultParty[thiefToWake] = partyId;
-            genRepo.setPartyElement(partyId, thiefToWake, i);
+            genRepo.setPartyElement(partyId, thiefToWake, i, vc);
             isNeeded[thiefToWake] = true;
         }
         notifyAll();
@@ -101,22 +113,30 @@ public class ConcentrationSite implements IotConcentrationSite, ImtConcentration
                 System.out.println("Error prepareAssaultParty");
             }
         } partyReady = false;
+        
+        VectorClock returnClk = this.vc.clone();
+        return returnClk;
     }
 
     /**
      * Notify that the assault has ended.
      */
     @Override
-    public synchronized void sumUpResults(){
+    public synchronized VectorClock sumUpResults(VectorClock vc) throws RemoteException {
+        this.vc.update(vc);
         resultsReady = true;
         notifyAll();
+        
+        VectorClock returnClk = this.vc.clone();
+        return returnClk;
     }
     
     /**
      * Wait for all the Ordinary Thieves to be Outside and start the assault.
      */
     @Override
-    public synchronized void startOperations(){
+    public synchronized VectorClock startOperations(VectorClock vc) throws RemoteException {
+        this.vc.update(vc);
         while(thievesWaiting.size() < N_ORD_THIEVES){
             try {
                 wait();
@@ -125,6 +145,9 @@ public class ConcentrationSite implements IotConcentrationSite, ImtConcentration
                 System.out.println("Error startOperations");
             }
         }
+        
+        VectorClock returnClk = this.vc.clone();
+        return returnClk;
     }
 
     /**
@@ -133,8 +156,10 @@ public class ConcentrationSite implements IotConcentrationSite, ImtConcentration
      * @return the Assault Party id.
      */
     @Override
-    public synchronized int getPartyId(int thiefId){
-        return thiefAssaultParty[thiefId];
+    public synchronized Pair<VectorClock, Integer> getPartyId(int thiefId, VectorClock vc) throws RemoteException {
+        this.vc.update(vc);
+        VectorClock returnClk = this.vc.clone();
+        return new Pair(returnClk, thiefAssaultParty[thiefId]);
     }
 
     /**
@@ -144,7 +169,10 @@ public class ConcentrationSite implements IotConcentrationSite, ImtConcentration
      * @return
      */
     @Override
-    public synchronized int appraiseSit(boolean isHeistCompleted, boolean isWaitingNedded) {
+    public synchronized Pair<VectorClock, Integer> appraiseSit(boolean isHeistCompleted, boolean isWaitingNedded, VectorClock vc) throws RemoteException {
+        this.vc.update(vc);
+        VectorClock returnClk = this.vc.clone();
+        
         if(isHeistCompleted){
             while(thievesWaiting.size() < N_ORD_THIEVES){
                 try {
@@ -153,11 +181,11 @@ public class ConcentrationSite implements IotConcentrationSite, ImtConcentration
                     Logger.getLogger(ConcentrationSite.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            return MasterThiefStates.PRESENTING_THE_REPORT;
+            return new Pair(returnClk, MasterThiefStates.PRESENTING_THE_REPORT);
         }
         
-        if(isWaitingNedded){
-            return MasterThiefStates.WAITING_FOR_GROUP_ARRIVAL;
+        if(isWaitingNedded){            
+            return new Pair(returnClk, MasterThiefStates.WAITING_FOR_GROUP_ARRIVAL);
         }
         
         while(thievesWaiting.size() < ASSAULT_PARTY_SIZE){
@@ -167,6 +195,6 @@ public class ConcentrationSite implements IotConcentrationSite, ImtConcentration
                 Logger.getLogger(ConcentrationSite.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        return MasterThiefStates.ASSEMBLING_A_GROUP;
+        return new Pair(returnClk, MasterThiefStates.ASSEMBLING_A_GROUP);
     }
 }

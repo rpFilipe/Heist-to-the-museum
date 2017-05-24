@@ -5,10 +5,18 @@
  */
 package monitors.ConcentrationSite;
 
-import Communication.ServerCom;
-import Communication.ServerServiceAgent;
-import Proxies.SettingsProxy;
-import Proxies.GeneralRepositoryProxy;
+import interfaces.ConcentrationSiteInterface;
+import interfaces.GeneralRepositoryInterface;
+import structures.Constants;
+import interfaces.Register;
+import java.rmi.AlreadyBoundException;
+import java.rmi.NotBoundException;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
+import monitors.GeneralRepository.ImonitorsGeneralRepository;
 
 /**
  *
@@ -17,8 +25,8 @@ import Proxies.GeneralRepositoryProxy;
 public class ConcentrationSiteStart {
 
     private static int SERVER_PORT;
-    private static String CONFIG_SERVER_ADDR;
-    private static int CONFIG_SERVER_PORT;
+    private static String rmiServerHostname;
+    private static int rmiServerPort;
 
     /**
      * This class will launch one server listening one port and processing the
@@ -27,45 +35,78 @@ public class ConcentrationSiteStart {
      * @param args
      */
     public static void main(String[] args) {
-        /* TODO
-        NodeSettsProxy proxy = new NodeSettsProxy(); 
-        SERVER_PORT = proxy.SERVER_PORTS().get("Playground");
-         */
 
         SERVER_PORT = Integer.parseInt(args[0]);
-        CONFIG_SERVER_ADDR = args[1];
-        CONFIG_SERVER_PORT = Integer.parseInt(args[2]);
+        rmiServerHostname = args[1];
+        rmiServerPort = Integer.parseInt(args[2]);
 
-        // canais de comunicação
-        ServerCom schan, schani;
+        /* look for the remote object by name in the remote host registry */
+        String nameEntry = "GeneralRepository";
+        GeneralRepositoryInterface genRepo = null;
+        Registry registry = null;
 
-        // thread agente prestador do serviço
-        ServerServiceAgent cliProxy;
-
-        GeneralRepositoryProxy genRepo = new GeneralRepositoryProxy(CONFIG_SERVER_ADDR, CONFIG_SERVER_PORT);
-        SettingsProxy sp = new SettingsProxy(CONFIG_SERVER_ADDR, CONFIG_SERVER_PORT);
-        
-        /* estabelecimento do servico */
-        // criação do canal de escuta e sua associação
-        schan = new ServerCom(SERVER_PORT);
-        schan.start();
-        
-        int n_ord_thieves = sp.getN_ORD_THIEVES();
-        int assault_party_size = sp.getASSAULT_PARTY_SIZE();
-        
-        ConcentrationSiteService concentrationSiteService = new ConcentrationSiteService(genRepo, n_ord_thieves, assault_party_size);
-        System.out.println("ConcentrationSite service has started!");
-        System.out.printf("Server is listening on port: %d ... \n", SERVER_PORT);
-
-        /* processamento de pedidos */
-        while (true) {
-
-            // entrada em processo de escuta
-            schani = schan.accept();
-            // lançamento do agente prestador do serviço
-            cliProxy = new ServerServiceAgent(schani, concentrationSiteService);
-            cliProxy.start();
+        /* Locate General Repository */
+        try {
+            registry = LocateRegistry.getRegistry(rmiServerHostname, rmiServerPort);
+            genRepo = (GeneralRepositoryInterface) registry.lookup(nameEntry);
+        } catch (RemoteException e) {
+            System.out.println("Exception thrown while locating log: " + e.getMessage() + "!");
+            System.exit(1);
+        } catch (NotBoundException e) {
+            System.out.println("Log is not registered: " + e.getMessage() + "!");
+            System.exit(1);
         }
+
+        /* instanciação e instalação do gestor de segurança */
+        if (System.getSecurityManager() == null) {
+            System.setSecurityManager(new SecurityManager());
+        }
+
+        ConcentrationSite concSite = new ConcentrationSite((ImonitorsGeneralRepository) genRepo, Constants.N_ORD_THIEVES, Constants.ASSAULT_PARTY_SIZE);
+        ConcentrationSiteInterface concSiteInterface = null;
+
+        try {
+            concSiteInterface = (ConcentrationSiteInterface) UnicastRemoteObject.exportObject((Remote) concSite, SERVER_PORT);
+        } catch (RemoteException e) {
+            System.out.println("Excepção na geração do stub para o Museum: " + e.getMessage());
+            System.exit(1);
+        }
+
+        System.out.println("O stub para o museum foi gerado!");
+
+        Register reg = null;
+        try {
+            registry = LocateRegistry.getRegistry(rmiServerHostname, rmiServerPort);
+        } catch (RemoteException e) {
+            System.out.println("Excepção na criação do registo RMI: " + e.getMessage());
+            System.exit(1);
+        }
+
+        System.out.println("O registo RMI foi criado!");
+
+        try {
+            reg = (Register) registry.lookup("RegisterHandler");
+        } catch (RemoteException e) {
+            System.out.println("RegisterRemoteObject lookup exception: " + e.getMessage());
+            System.exit(1);
+        } catch (NotBoundException e) {
+            System.out.println("RegisterRemoteObject not bound exception: " + e.getMessage());
+            System.exit(1);
+        }
+
+        try {
+            reg.bind("ConcentrationSite", concSiteInterface);
+        } catch (RemoteException e) {
+            System.out.println("Excepção no registo do concentration site: " + e.getMessage());
+            System.exit(1);
+        } catch (AlreadyBoundException e) {
+            System.out.println("O concentration site já está registado: " + e.getMessage());
+            System.exit(1);
+        }
+
+        System.out.println("O concentration site foi registado!");
+
     }
+
 
 }
