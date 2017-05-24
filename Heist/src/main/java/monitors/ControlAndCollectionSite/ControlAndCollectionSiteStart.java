@@ -5,6 +5,7 @@
  */
 package monitors.ControlAndCollectionSite;
 
+import interfaces.ControlAndCollectionSiteInterface;
 import interfaces.GeneralRepositoryInterface;
 import interfaces.Register;
 import java.rmi.AlreadyBoundException;
@@ -50,7 +51,7 @@ public class ControlAndCollectionSiteStart {
         }
 
         ControlAndCollectionSite ccs = new ControlAndCollectionSite(genRepo, SERVER_PORT, SERVER_PORT, SERVER_PORT);
-        ControlAndCollectionSite ccsInterface = null;
+        ControlAndCollectionSiteInterface ccsInterface = null;
 
         try {
             ccsInterface = (ControlAndCollectionSite) UnicastRemoteObject.exportObject(ccs, SERVER_PORT);

@@ -55,11 +55,9 @@ public class VectorClock implements Cloneable, Serializable {
         return returnBoolValue;
     }
 
-    public void setReturnBoolValue(boolean returnBoolValue) {
+    public synchronized void setReturnBoolValue(boolean returnBoolValue) {
         this.returnBoolValue = returnBoolValue;
     }
-
-    
     
     @Override
     public VectorClock clone() {
@@ -71,5 +69,4 @@ public class VectorClock implements Cloneable, Serializable {
         }
     return null;
     }
-
 }

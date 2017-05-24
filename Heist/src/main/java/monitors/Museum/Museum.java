@@ -70,7 +70,7 @@ public class Museum implements MuseumInterface {
             this.distance = new Random().nextInt(MAX_ROOM_DISTANCE - MIN_ROOM_DISTANCE) + MIN_ROOM_DISTANCE;
             this.paintings = new Random().nextInt(MAX_PAITING_PER_ROOM - MIN_PAITING_PER_ROOM) + MIN_PAITING_PER_ROOM;
             this.id = roomsCreated;
-            genRepo.setRoomAtributes(id, distance, paintings);
+            genRepo.setRoomAtributes(id, distance, paintings, vc);
             roomsCreated++;
         }
 
@@ -80,7 +80,7 @@ public class Museum implements MuseumInterface {
             if (paintings < 0) {
                 paintings = 0;
             }
-            genRepo.setRoomCanvas(id, paintings);
+            genRepo.setRoomCanvas(id, paintings, vc);
             return res;
         }
 

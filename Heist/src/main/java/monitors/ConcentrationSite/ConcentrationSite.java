@@ -52,7 +52,7 @@ public class ConcentrationSite implements IotConcentrationSite, ImtConcentration
      * @return is the Ordinary Thief needed.
      */
     @Override
-    public synchronized Pair<VectorClock, Boolean> amINeeded(int id, VectorClock vc) throws RemoteException {
+    public synchronized Pair<VectorClock, Boolean> amINeeded(int id, VectorClock vc) {
         this.vc.update(vc);
         thievesWaiting.add(id);
         notifyAll();
@@ -75,7 +75,7 @@ public class ConcentrationSite implements IotConcentrationSite, ImtConcentration
      * @param thiefId Id of the Ordinary Thief.
      */
     @Override
-    public synchronized VectorClock prepareExcursion(int thiefId, VectorClock vc) throws RemoteException{
+    public synchronized VectorClock prepareExcursion(int thiefId, VectorClock vc) {
         this.vc.update(vc);
         nThievesInParty++;
         if(nThievesInParty == ASSAULT_PARTY_SIZE)
@@ -94,7 +94,7 @@ public class ConcentrationSite implements IotConcentrationSite, ImtConcentration
      * @param partyId Id of the target Assault Party.
      */
     @Override
-    public synchronized VectorClock prepareAssaultParty(int partyId, VectorClock vc) throws RemoteException {
+    public synchronized VectorClock prepareAssaultParty(int partyId, VectorClock vc) {
         this.vc.update(vc);
         for (int i = 0; i < ASSAULT_PARTY_SIZE; i++) {
             int thiefToWake = thievesWaiting.poll();
@@ -122,7 +122,7 @@ public class ConcentrationSite implements IotConcentrationSite, ImtConcentration
      * Notify that the assault has ended.
      */
     @Override
-    public synchronized VectorClock sumUpResults(VectorClock vc) throws RemoteException {
+    public synchronized VectorClock sumUpResults(VectorClock vc) {
         this.vc.update(vc);
         resultsReady = true;
         notifyAll();
@@ -135,7 +135,7 @@ public class ConcentrationSite implements IotConcentrationSite, ImtConcentration
      * Wait for all the Ordinary Thieves to be Outside and start the assault.
      */
     @Override
-    public synchronized VectorClock startOperations(VectorClock vc) throws RemoteException {
+    public synchronized VectorClock startOperations(VectorClock vc) {
         this.vc.update(vc);
         while(thievesWaiting.size() < N_ORD_THIEVES){
             try {
@@ -156,7 +156,7 @@ public class ConcentrationSite implements IotConcentrationSite, ImtConcentration
      * @return the Assault Party id.
      */
     @Override
-    public synchronized Pair<VectorClock, Integer> getPartyId(int thiefId, VectorClock vc) throws RemoteException {
+    public synchronized Pair<VectorClock, Integer> getPartyId(int thiefId, VectorClock vc) {
         this.vc.update(vc);
         VectorClock returnClk = this.vc.clone();
         return new Pair(returnClk, thiefAssaultParty[thiefId]);
@@ -169,7 +169,7 @@ public class ConcentrationSite implements IotConcentrationSite, ImtConcentration
      * @return
      */
     @Override
-    public synchronized Pair<VectorClock, Integer> appraiseSit(boolean isHeistCompleted, boolean isWaitingNedded, VectorClock vc) throws RemoteException {
+    public synchronized Pair<VectorClock, Integer> appraiseSit(boolean isHeistCompleted, boolean isWaitingNedded, VectorClock vc) {
         this.vc.update(vc);
         VectorClock returnClk = this.vc.clone();
         

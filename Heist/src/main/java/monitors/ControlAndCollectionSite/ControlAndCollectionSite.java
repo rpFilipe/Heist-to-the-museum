@@ -143,7 +143,7 @@ public class ControlAndCollectionSite implements ControlAndCollectionSiteInterfa
         if (partyArrivedThiefs[partyId] == ASSAULT_PARTY_SIZE) {
             masterThiefBusy = true;
             partyStates[partyId] = PartyStates.EMPTY;
-            genRepo.clearParty(partyId);
+            genRepo.clearParty(partyId, vc);
             partyArrivedThiefs[partyId] = 0;
             thiefArrived = true;
             notifyAll();
@@ -244,7 +244,7 @@ public class ControlAndCollectionSite implements ControlAndCollectionSiteInterfa
     public synchronized Pair<VectorClock, Boolean> isHeistCompleted(VectorClock vc) {
         this.vc.update(vc);
         VectorClock returnClk = this.vc.clone();
-        genRepo.setCollectedCanvas(canvasCollected);
+        genRepo.setCollectedCanvas(canvasCollected, vc);
         boolean b = allRoomsEmpty() && allPartiesFree();
         return new Pair(returnClk, b);
     }

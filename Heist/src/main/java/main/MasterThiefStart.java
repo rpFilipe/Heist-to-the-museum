@@ -5,14 +5,6 @@
  */
 package main;
 
-import Proxies.AssaultPartyProxy;
-import Proxies.GeneralRepositoryProxy;
-import Proxies.ConcentrationSiteProxy;
-import Proxies.ControlAndCollectionSiteProxy;
-import Communication.ClientCom;
-import Communication.Message;
-import static Communication.MessageType.*;
-import Proxies.SettingsProxy;
 import interfaces.MuseumInterface;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;

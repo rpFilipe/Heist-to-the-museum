@@ -5,9 +5,19 @@
  */
 package monitors.GeneralRepository;
 
-import Communication.ServerCom;
-import Communication.ServerServiceAgent;
-import Proxies.SettingsProxy;
+import interfaces.GeneralRepositoryInterface;
+import interfaces.Register;
+import java.rmi.AlreadyBoundException;
+import java.rmi.NotBoundException;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import monitors.ControlAndCollectionSite.ControlAndCollectionSiteStart;
+
 
 /**
  *
@@ -16,9 +26,8 @@ import Proxies.SettingsProxy;
 public class GeneralRepositoryStart {
 
     private static int SERVER_PORT;
-    private static String logname;
-    private static String CONFIG_SERVER_ADDR;
-    private static int CONFIG_SERVER_PORT;
+    private static String rmiServerHostname;
+    private static int rmiServerPort;
 
     /**
      * This class will launch one server listening one port and processing the
@@ -27,46 +36,88 @@ public class GeneralRepositoryStart {
      * @param args
      */
     public static void main(String[] args) {
-        /* TODO
-        NodeSettsProxy proxy = new NodeSettsProxy(); 
-        SERVER_PORT = proxy.SERVER_PORTS().get("Playground");
-         */
 
         SERVER_PORT = Integer.parseInt(args[0]);
-        logname = args[1];
-        CONFIG_SERVER_ADDR = args[2];
-        CONFIG_SERVER_PORT = Integer.parseInt(args[3]);
+        rmiServerHostname = args[1];
+        rmiServerPort = Integer.parseInt(args[2]);
 
-        // canais de comunicação
-        ServerCom schan, schani;
+        Registry registry = getRegistry(rmiServerHostname, rmiServerPort);
+        Register reg = getRegister(registry);
 
-        // thread agente prestador do serviço
-        ServerServiceAgent cliProxy;
-
-        /* estabelecimento do servico */
-        SettingsProxy sp = new SettingsProxy(CONFIG_SERVER_ADDR, CONFIG_SERVER_PORT);
-
-        // criação do canal de escuta e sua associação
-        schan = new ServerCom(SERVER_PORT);
-        schan.start();
-
-        int nrooms = sp.getN_ROOMS();
-        int assault_party_size = sp.getASSAULT_PARTY_SIZE();
-        int n_ord_thieves = sp.getN_ORD_THIEVES();
-        
-        GeneralRepositoryService generalRepositoryService = new GeneralRepositoryService(logname, nrooms, assault_party_size, n_ord_thieves);
-        System.out.println("GeneralRepository service has started!");
-        System.out.printf("Server is listening on port: %d ... \n", SERVER_PORT);
-
-        /* processamento de pedidos */
-        while (true) {
-
-            // entrada em processo de escuta
-            schani = schan.accept();
-            // lançamento do agente prestador do serviço
-            cliProxy = new ServerServiceAgent(schani, generalRepositoryService);
-            cliProxy.start();
+        /* instanciação e instalação do gestor de segurança */
+        if (System.getSecurityManager() == null) {
+            System.setSecurityManager(new SecurityManager());
         }
+
+        GeneralRepository genRep = new GeneralRepository("HeistToTheMuseum_Log");
+        GeneralRepositoryInterface genRepInterface = null;
+
+        try {
+            genRepInterface = (GeneralRepositoryInterface) UnicastRemoteObject.exportObject((Remote) genRep, SERVER_PORT);
+        } catch (RemoteException e) {
+            System.out.println("Excepção na geração do stub para o general repository: " + e.getMessage());
+            System.exit(1);
+        }
+
+        System.out.println("O stub para o general repository foi gerado!");
+
+        try {
+            reg.bind("GeneralRepository", genRepInterface);
+        } catch (RemoteException e) {
+            System.out.println("Excepção no registo do general repository: " + e.getMessage());
+            System.exit(1);
+        } catch (AlreadyBoundException e) {
+            System.out.println("O general repository já está registado: " + e.getMessage());
+            System.exit(1);
+        }
+
+        System.out.println("O general repository foi registado!");
+
+    }
+
+    private static Registry getRegistry(String rmiServerHostname, int rmiServerPort) {
+        Registry registry = null;
+        try {
+            registry = LocateRegistry.getRegistry(rmiServerHostname, rmiServerPort);
+        } catch (RemoteException ex) {
+            Logger.getLogger(ControlAndCollectionSiteStart.class.getName()).log(Level.SEVERE, null, ex);
+            System.exit(1);
+        }
+        System.out.println("O registo RMI foi criado!");
+        return registry;
+    }
+
+    private static Register getRegister(Registry registry) {
+        Register reg = null;
+        try {
+            reg = (Register) registry.lookup("RegisterHandler");
+        } catch (RemoteException e) {
+            System.out.println("RegisterRemoteObject lookup exception: " + e.getMessage());
+            System.exit(1);
+        } catch (NotBoundException e) {
+            System.out.println("RegisterRemoteObject not bound exception: " + e.getMessage());
+            System.exit(1);
+        }
+        return reg;
+
+    }
+
+    private static GeneralRepositoryInterface getGeneralRepository(Registry registry) {
+        GeneralRepositoryInterface genRepo = null;
+        /* look for the remote object by name in the remote host registry */
+        String nameEntry = "GeneralRepository";
+
+        try {
+            /* Locate General Repository */
+            genRepo = (GeneralRepositoryInterface) registry.lookup(nameEntry);
+        } catch (RemoteException ex) {
+            Logger.getLogger(ControlAndCollectionSiteStart.class.getName()).log(Level.SEVERE, null, ex);
+            System.exit(1);
+        } catch (NotBoundException ex) {
+            Logger.getLogger(ControlAndCollectionSiteStart.class.getName()).log(Level.SEVERE, null, ex);
+            System.exit(1);
+        }
+        return genRepo;
     }
 
 }

@@ -5,7 +5,6 @@
  */
 package monitors.GeneralRepository;
 
-import java.rmi.RemoteException;
 import structures.VectorClock;
 
 /**
@@ -20,27 +19,27 @@ public interface IotGeneralRepository {
      * @param thiefId Id of the Thief. 
      * @param speed Maximum displacement of the Thief.
      */
-    public VectorClock addThief(int thiefId, int speed, VectorClock vc) throws RemoteException;
+    public VectorClock addThief(int thiefId, int speed, VectorClock vc);
 
     /**
      * Update the State of the Ordinary Thief and print the updated Status in the log file.
      * @param thiefId Id of the Ordinary Thief 
      * @param state updated State
      */
-    public VectorClock updateThiefState(int thiefId, int state, VectorClock vc) throws RemoteException;
+    public VectorClock updateThiefState(int thiefId, int state, VectorClock vc);
 
     /**
      * Method to update the contents of a Ordinary Thief cylinder in the General Repository.
      * @param thiefId Id of the thief that invoked the method.
      * @param hasCanvas the state of the thief cylinder.
      */
-    public VectorClock updateThiefCylinder(int thiefId, boolean hasCanvas, VectorClock vc) throws RemoteException;
+    public VectorClock updateThiefCylinder(int thiefId, boolean hasCanvas, VectorClock vc);
 
     /**
      * Method to update state the Thief's situation in the General Repository.
      * @param thiefId Id of the Thief.
      * @param situation Current situation.
      */
-    public VectorClock updateThiefSituation(int thiefId, char situation, VectorClock vc) throws RemoteException;
+    public VectorClock updateThiefSituation(int thiefId, char situation, VectorClock vc);
     
 }
