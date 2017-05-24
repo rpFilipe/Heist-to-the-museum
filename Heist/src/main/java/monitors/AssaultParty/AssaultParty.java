@@ -5,12 +5,14 @@
  */
 package monitors.AssaultParty;
 
+
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
 import monitors.GeneralRepository.ImonitorsGeneralRepository;
+import structures.*;
 
 /**
  *
@@ -33,20 +35,21 @@ public class AssaultParty implements IotAssaultParty, ImtAssaultParty{
     private int thiefCrawlongIdx = -1;
     private ImonitorsGeneralRepository genRepo;
     private int ASSAULT_PARTY_SIZE;
+    private VectorClock vc;
 
     /**
      * Create a new Assault Party
      * @param tid Id of the Assault Party.
      * @param genRepo General Repository instance.
-     * @param aps Number of Ordinary Thieves in each Assault Party.
      */
-    public AssaultParty(int tid, ImonitorsGeneralRepository genRepo, int aps) {
+    public AssaultParty(int tid, ImonitorsGeneralRepository genRepo) {
         crawlingQueue = new LinkedList<>();
-        ASSAULT_PARTY_SIZE = aps;
+        ASSAULT_PARTY_SIZE = Constants.ASSAULT_PARTY_SIZE;
         positions = new int[ASSAULT_PARTY_SIZE];
         testPositions = new int[ASSAULT_PARTY_SIZE];
         teamId = tid;
         nThievesReadyToReturn = 0;
+        this.vc = new VectorClock(7, 0);
         this.genRepo = genRepo;
     }
 
@@ -54,9 +57,13 @@ public class AssaultParty implements IotAssaultParty, ImtAssaultParty{
      * Method to signal the first Ordinary Thief that joined the party party to start crawling inwards.
      */
     @Override
-    public synchronized void sendAssaultParty() {
+    public synchronized VectorClock sendAssaultParty(VectorClock vc) {
+        this.vc.update(vc);
+        VectorClock returnClk = this.vc.clone();
         thiefCrawlongIdx = crawlingQueue.peek().id;
         notifyAll();
+        
+        return returnClk;
     }
 
     /**
@@ -64,8 +71,10 @@ public class AssaultParty implements IotAssaultParty, ImtAssaultParty{
      * @param id of the Ordinary Thief that invoked the method.
      */
     @Override
-    public synchronized void crawlIn(int id) {
-
+    public synchronized VectorClock crawlIn(int id, VectorClock vc) {
+        this.vc.update(vc);
+        VectorClock returnClk = this.vc.clone();
+        
         while (!roomReached) {
             while (thiefCrawlongIdx != id && !roomReached) {
                 try {
@@ -77,7 +86,7 @@ public class AssaultParty implements IotAssaultParty, ImtAssaultParty{
             }
 
             if (roomReached) {
-                return;
+                return returnClk;
             }
             
             currentThiefInfo = crawlingQueue.poll();
@@ -85,7 +94,7 @@ public class AssaultParty implements IotAssaultParty, ImtAssaultParty{
             if(positions[currentThiefInfo.positionInArray] > roomDistance)
                 positions[currentThiefInfo.positionInArray] = roomDistance;
             //positions[currentThiefInfo.positionInArray]++;
-            genRepo.updateThiefPosition(thiefCrawlongIdx, positions[currentThiefInfo.positionInArray]);
+            genRepo.updateThiefPosition(thiefCrawlongIdx, positions[currentThiefInfo.positionInArray],vc);
             crawlingQueue.add(currentThiefInfo);
             thiefCrawlongIdx = (crawlingQueue.peek()).id;
 
@@ -97,6 +106,7 @@ public class AssaultParty implements IotAssaultParty, ImtAssaultParty{
             }
             notifyAll();
         }
+        return returnClk;
     }
 
     /**
@@ -104,7 +114,10 @@ public class AssaultParty implements IotAssaultParty, ImtAssaultParty{
      * @param id of the Ordinary Thief that invoked the method.
      */
     @Override
-    public synchronized void crawlOut(int id) {
+    public synchronized VectorClock crawlOut(int id, VectorClock vc) {
+        this.vc.update(vc);
+        VectorClock returnClk = this.vc.clone();
+        
         while (!outsideReached) {
             while (thiefCrawlongIdx != id && !outsideReached) {
                 try {
@@ -116,7 +129,7 @@ public class AssaultParty implements IotAssaultParty, ImtAssaultParty{
             }
 
             if (outsideReached) {
-                return;
+                return returnClk;
             }
 
             currentThiefInfo = crawlingQueue.poll();
@@ -124,7 +137,7 @@ public class AssaultParty implements IotAssaultParty, ImtAssaultParty{
             if(positions[currentThiefInfo.positionInArray] <0)
                 positions[currentThiefInfo.positionInArray] = 0;
             //positions[currentThiefInfo.positionInArray]--;
-            genRepo.updateThiefPosition(thiefCrawlongIdx, positions[currentThiefInfo.positionInArray]);
+            genRepo.updateThiefPosition(thiefCrawlongIdx, positions[currentThiefInfo.positionInArray],vc);
             crawlingQueue.add(currentThiefInfo);
             thiefCrawlongIdx = (crawlingQueue.peek()).id;
 
@@ -136,7 +149,7 @@ public class AssaultParty implements IotAssaultParty, ImtAssaultParty{
             }
             notifyAll();
         }
-
+        return returnClk;
     }
 
     /**
@@ -145,11 +158,16 @@ public class AssaultParty implements IotAssaultParty, ImtAssaultParty{
      * @param speed maximum crawling distance per step.
      */
     @Override
-    public synchronized void joinParty(int id, int speed) {
+    public synchronized VectorClock joinParty(int id, int speed, VectorClock vc) {
+        this.vc.update(vc);
+        VectorClock returnClk = this.vc.clone();
+        
         ThiefInfo ti = new ThiefInfo(id, speed, positionInArray);
         crawlingQueue.add(ti);
         positionInArray++;
-        genRepo.updateThiefSituation(id, 'P');
+        genRepo.updateThiefSituation(id, 'P',vc);
+        
+        return returnClk;
     }
 
     /**
@@ -158,7 +176,9 @@ public class AssaultParty implements IotAssaultParty, ImtAssaultParty{
      * @param distance from the Concentration Site to the Room.
      */
     @Override
-    public void setRoom(int id, int distance) {
+    public VectorClock setRoom(int id, int distance,VectorClock vc) {
+        this.vc.update(vc);
+        VectorClock returnClk = this.vc.clone();
         this.roomDistance = distance;
         this.roomReached = false;
         this.outsideReached = false;
@@ -169,7 +189,9 @@ public class AssaultParty implements IotAssaultParty, ImtAssaultParty{
             positions[i] = 0;
         }
         positionInArray = 0;
-        genRepo.setRoomIdAP(teamId, roomId);
+        genRepo.setRoomIdAP(teamId, roomId,vc);
+        
+        return returnClk;
     }
 
     /**
@@ -177,21 +199,26 @@ public class AssaultParty implements IotAssaultParty, ImtAssaultParty{
      * @return Room id
      */
     @Override
-    public int getTargetRoom() {
-        return this.roomId;
+    public synchronized Pair< VectorClock, Integer> getTargetRoom(VectorClock vc) {
+        this.vc.update(vc);
+        VectorClock returnClk = this.vc.clone();
+        return new Pair(returnClk,this.roomId);
     }
 
     /**
      * Method to change the direction in crawling.
      */
     @Override
-    public synchronized void reverseDirection() {
+    public synchronized VectorClock reverseDirection(VectorClock vc) {
+        this.vc.update(vc);
+        VectorClock returnClk = this.vc.clone();
         nThievesReadyToReturn++;
         //outsideReached = false;
         if (nThievesReadyToReturn == ASSAULT_PARTY_SIZE) {
             thiefCrawlongIdx = crawlingQueue.peek().id;
             notifyAll();
         }
+        return returnClk;
     }
     
 

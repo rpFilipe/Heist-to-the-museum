@@ -5,6 +5,9 @@
  */
 package monitors.AssaultParty;
 
+import structures.Pair;
+import structures.VectorClock;
+
 /**
  *
  * @author Ricardo Filipe
@@ -14,30 +17,39 @@ public interface IotAssaultParty {
     /**
      * Method to Thieves crawl from the Concentration Site to the Museum interior.
      * @param id of the Ordinary Thief that invoked the method.
+     * @param vc
+     * @return 
      */
-    public void crawlIn(int id);
+    public VectorClock crawlIn(int id, VectorClock vc);
 
     /**
      * Method to Thieves crawl from the Museum to the Concentration Site.
      * @param id of the Ordinary Thief that invoked the method.
+     * @param vc
+     * @return 
      */
-    public void crawlOut(int id);
+    public VectorClock crawlOut(int id, VectorClock vc);
 
     /**
      * Method to add a Ordinary Thief joins this Assault Party.
      * @param id of the Ordinary Thief that invoked the method.
      * @param speed maximum crawling distance per step.
+     * @param vc
+     * @return 
      */
-    public void joinParty(int id, int speed);
+    public VectorClock joinParty(int id, int speed, VectorClock vc);
 
     /**
      * Method to change the direction in crawling.
+     * @param vc
+     * @return 
      */
-    public void reverseDirection();
+    public VectorClock reverseDirection(VectorClock vc);
 
     /**
      * Get the current target room assigned to this Assault Party.
+     * @param vc
      * @return Room id
      */
-    public int getTargetRoom();
+    public Pair< VectorClock, Integer> getTargetRoom(VectorClock vc);
 }
