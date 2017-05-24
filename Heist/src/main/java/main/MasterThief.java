@@ -6,14 +6,12 @@
 package main;
 
 import States.MasterThiefStates;
-import java.rmi.RemoteException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import monitors.AssaultParty.ImtAssaultParty;
 import monitors.ConcentrationSite.ImtConcentrationSite;
 import monitors.ControlAndCollectionSite.ImtControlAndCollectionSite;
 import monitors.GeneralRepository.ImtGeneralRepository;
 import monitors.Museum.ImtMuseum;
+import structures.Pair;
 import structures.VectorClock;
 
 /**
@@ -57,52 +55,83 @@ public class MasterThief extends Thread {
     @Override
     public void run() {
         while (true) {
-            try {
-                this.myClk.incrementClock();
-                this.receivedClk = this.genRepo.updateMThiefState(state, this.myClk.clone());
-                this.myClk.update(this.receivedClk);
-                
-                switch (state) {
-                    case MasterThiefStates.PLANNING_THE_HEIST:
-                        this.myClk.incrementClock();
-                        this.receivedClk = this.concentrationSite.startOperations(this.myClk.clone());
-                        state = MasterThiefStates.DECIDING_WHAT_TO_DO;
-                        break;
-                    case MasterThiefStates.DECIDING_WHAT_TO_DO:
-                        //int nwating = concentrationSite.getNumberThivesWaiting();
-                        boolean a = controlAndCollectionSite.isHeistCompleted();
-                        boolean b = controlAndCollectionSite.waitingNedded();
-                        this.state = this.concentrationSite.appraiseSit(a, b);
-                        break;
-                    case MasterThiefStates.ASSEMBLING_A_GROUP:
-                        int targetRoom = controlAndCollectionSite.getTargetRoom();
-                        int partyToDeploy = controlAndCollectionSite.getPartyToDeploy();
-                        
-                        /* Isto para todas as mensagens*/
-                        this.myClk.incrementClock();
-                        this.receivedClk = museum.getRoomDistance(targetRoom, this.myClk.clone());
-                        int roomDistance = receivedClk.getReturnIntValue();
-                        myClk.update(receivedClk);
-                        /***************************************/
-                        
-                        assaultParty[partyToDeploy].setRoom(targetRoom, roomDistance);
-                        concentrationSite.prepareAssaultParty(partyToDeploy);
-                        
-                        assaultParty[partyToDeploy].sendAssaultParty();
-                        state = MasterThiefStates.DECIDING_WHAT_TO_DO;
-                        break;
-                    case MasterThiefStates.WAITING_FOR_GROUP_ARRIVAL:
-                        controlAndCollectionSite.takeARest();
-                        controlAndCollectionSite.collectCanvas();
-                        this.state = MasterThiefStates.DECIDING_WHAT_TO_DO;
-                        break;
-                    case MasterThiefStates.PRESENTING_THE_REPORT:
-                        concentrationSite.sumUpResults();
-                        genRepo.FinalizeLog();
-                        return;
-                }
-            } catch (RemoteException ex) {
-                Logger.getLogger(MasterThief.class.getName()).log(Level.SEVERE, null, ex);
+            this.myClk.incrementClock();
+            this.receivedClk = this.genRepo.updateMThiefState(state, this.myClk.clone());
+            this.myClk.update(this.receivedClk);
+
+            switch (state) {
+                case MasterThiefStates.PLANNING_THE_HEIST:
+                    this.myClk.incrementClock();
+                    this.receivedClk = this.concentrationSite.startOperations(this.myClk.clone());
+                    this.myClk.update(this.receivedClk);
+                    state = MasterThiefStates.DECIDING_WHAT_TO_DO;
+                    break;
+                case MasterThiefStates.DECIDING_WHAT_TO_DO:
+                    //int nwating = concentrationSite.getNumberThivesWaiting();
+                    this.myClk.incrementClock();
+                    Pair<VectorClock, Boolean> a = this.controlAndCollectionSite.isHeistCompleted(this.myClk.clone());
+                    this.myClk.update(a.first);
+
+                    this.myClk.incrementClock();
+                    Pair<VectorClock, Boolean> b = this.controlAndCollectionSite.waitingNedded(this.myClk.clone());
+                    this.myClk.update(a.first);
+
+                    this.myClk.incrementClock();
+                    Pair<VectorClock, Integer> pairAppraiseSit = this.concentrationSite.appraiseSit(a.second, b.second, this.myClk.clone());
+                    this.myClk.update(pairAppraiseSit.first);
+
+                    this.state = pairAppraiseSit.second;         
+                    break;
+                case MasterThiefStates.ASSEMBLING_A_GROUP:
+                    this.myClk.incrementClock();
+                    Pair<VectorClock, Integer> pairGetTargetRoom = this.controlAndCollectionSite.getTargetRoom(this.myClk.clone());
+                    int targetRoom = pairGetTargetRoom.second;
+                    this.myClk.update(pairGetTargetRoom.first);
+
+                    this.myClk.incrementClock();
+                    Pair<VectorClock, Integer> pairGetPartyToDeploy = this.controlAndCollectionSite.getPartyToDeploy(this.myClk.clone());
+                    int partyToDeploy = pairGetPartyToDeploy.second;
+                    this.myClk.update(pairGetPartyToDeploy.first);
+
+                    this.myClk.incrementClock();
+                    Pair<VectorClock, Integer> pairGetRoomDistance = this.museum.getRoomDistance(targetRoom, this.myClk.clone());
+                    int roomDistance = pairGetRoomDistance.second;  
+                    this.myClk.update(pairGetPartyToDeploy.first);
+
+                    this.myClk.incrementClock();
+                    this.receivedClk = this.assaultParty[partyToDeploy].setRoom(targetRoom, roomDistance, this.myClk.clone());
+                    //this.myClk.update();
+
+                    this.myClk.incrementClock();
+                    this.receivedClk = this.concentrationSite.prepareAssaultParty(partyToDeploy, this.myClk.clone());
+                    this.myClk.update(receivedClk);
+
+                    this.myClk.incrementClock();
+                    this.receivedClk = this.assaultParty[partyToDeploy].sendAssaultParty(this.myClk.clone());
+                    this.myClk.update(receivedClk);
+
+                    state = MasterThiefStates.DECIDING_WHAT_TO_DO;
+                    break;
+                case MasterThiefStates.WAITING_FOR_GROUP_ARRIVAL:
+                    this.myClk.incrementClock();
+                    this.receivedClk = this.controlAndCollectionSite.takeARest(this.myClk.clone());
+                    this.myClk.update(receivedClk);
+
+                    this.myClk.incrementClock();
+                    this.receivedClk = this.controlAndCollectionSite.collectCanvas(this.myClk.clone());
+                    this.myClk.update(receivedClk);
+
+                    this.state = MasterThiefStates.DECIDING_WHAT_TO_DO;
+                    break;
+                case MasterThiefStates.PRESENTING_THE_REPORT:
+                    this.myClk.incrementClock();
+                    this.receivedClk = this.concentrationSite.sumUpResults(this.myClk.clone());
+                    this.myClk.update(receivedClk);
+
+                    this.myClk.incrementClock();
+                    this.receivedClk = this.genRepo.FinalizeLog(this.myClk.clone());
+                    this.myClk.update(receivedClk);
+                    return;
             }
         }
     }

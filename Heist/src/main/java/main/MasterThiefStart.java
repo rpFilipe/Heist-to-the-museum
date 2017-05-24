@@ -5,87 +5,60 @@
  */
 package main;
 
-import interfaces.MuseumInterface;
-import java.rmi.NotBoundException;
+import interfaces.GeneralRepositoryInterface;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import monitors.AssaultParty.ImtAssaultParty;
-import monitors.ConcentrationSite.ImtConcentrationSite;
-import monitors.ControlAndCollectionSite.ImtControlAndCollectionSite;
-import monitors.GeneralRepository.ImtGeneralRepository;
-import monitors.Museum.ImtMuseum;
 
 /**
  *
  * @author Ricardo Filipe
  */
 public class MasterThiefStart {
+    
+    /* P1G3 */    
+    public static void main(String args[])
+   {
+    Scanner sc = new Scanner(System.in);   
+     /* get location of the generic registry service */
+     String rmiRegHostName;
+     int rmiRegPortNumb;
 
-    private static String rmiServerHostname;
-    private static int rmiServerPort;
-    private static int N_ASSAULT_PARTIES;
+     System.out.println ("Nome do nó de processamento onde está localizado o serviço de registo? ");
+     rmiRegHostName = sc.nextLine();
+     System.out.println ("Número do port de escuta do serviço de registo? ");
+     rmiRegPortNumb = sc.nextInt();
 
-    /**
-     * Start the Master Thief Life.
-     *
-     * @param args
+     /* look for the remote object by name in the remote host registry */
+     String nameEntry = "GeneralRepository";
+     GeneralRepositoryInterface genRepInterface = null;
+     Registry registry = null;
+
+     try
+     { registry = LocateRegistry.getRegistry (rmiRegHostName, rmiRegPortNumb);
+     }
+     catch (RemoteException e)
+     { System.out.println ("RMI registry creation exception: " + e.getMessage ());
+       e.printStackTrace ();
+       System.exit (1);
+     }
+     
+     /*
+     Fazer com os outras interfaces dos monitores onde atua o MasterThief
      */
-    public static void main(String[] args) {
 
-        rmiServerHostname = args[0];
-        rmiServerPort = Integer.parseInt(args[1]);
-
-        SettingsProxy sp = new SettingsProxy(configServerAddr, configServerPort);
-
-        N_ASSAULT_PARTIES = sp.getN_ORD_THIEVES() / sp.getASSAULT_PARTY_SIZE();
-
-        Registry reg = null;
-        MuseumInterface museum = null;
-
-        try {
-            Registry registry = LocateRegistry.getRegistry(rmiServerHostname, rmiServerPort);
-            museum = (MuseumInterface) registry.lookup("museum");
-        } catch (RemoteException e) {
-            System.out.println("Exception thrown while locating log: " + e.getMessage() + "!");
-            System.exit(1);
-        } catch (NotBoundException e) {
-            System.out.println("Log is not registered: " + e.getMessage() + "!");
-            System.exit(1);
-        }
-
-        GeneralRepositoryProxy genRepo = new GeneralRepositoryProxy(configServerAddr, configServerPort);
-        ControlAndCollectionSiteProxy controlCollectionSite = new ControlAndCollectionSiteProxy(configServerAddr, configServerPort);
-        ConcentrationSiteProxy concentrationSite = new ConcentrationSiteProxy(configServerAddr, configServerPort);
-        AssaultPartyProxy[] assaultParty = new AssaultPartyProxy[N_ASSAULT_PARTIES];
-
-        for (int i = 0; i < N_ASSAULT_PARTIES; i++) {
-            assaultParty[i] = new AssaultPartyProxy(i, configServerAddr, configServerPort);
-        }
-
-        MasterThief mt = new MasterThief((ImtMuseum) museum,
-                (ImtConcentrationSite) concentrationSite,
-                (ImtControlAndCollectionSite) controlCollectionSite,
-                (ImtAssaultParty[]) assaultParty,
-                (ImtGeneralRepository) genRepo);
-
-        mt.start();
-
-        try {
-            mt.join();
-            terminateServers(museum);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(MasterThiefStart.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    System.out.println("Alert Logger that I have finished!");
+        
+    try {
+        genRepInterface.signalShutdown();
+    } catch (RemoteException ex) {
+        Logger.getLogger(MasterThiefStart.class.getName()).log(Level.SEVERE, null, ex);
     }
 
-    private static void terminateServers(MuseumInterface museum) {
-        try {
-            museum.signalShutdown();
-        } catch (RemoteException ex) {
-            Logger.getLogger(MasterThiefStart.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
+     /* print the result */
+     System.out.println("Done!");
+  }   
 }
