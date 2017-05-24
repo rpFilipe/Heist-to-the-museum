@@ -14,6 +14,7 @@ import monitors.ConcentrationSite.IotConcentrationSite;
 import monitors.ControlAndCollectionSite.IotControlAndCollectionSite;
 import monitors.GeneralRepository.IotGeneralRepository;
 import monitors.Museum.IotMuseum;
+import structures.Pair;
 import structures.VectorClock;
 
 /**
@@ -33,9 +34,12 @@ public class OrdinaryThief extends Thread {
     private int state;
     private VectorClock myClk;
     private VectorClock receivedClk;
+    Pair<VectorClock, Integer> serverResponseInt;
+    Pair<VectorClock, Boolean> serverResponseBool;
 
     /**
      * Create a new OrdinaryThief
+     *
      * @param id of the OrdinaryThief
      * @param max_speed Maximum speed of the Ordinary Thief
      * @param min_speed Minimum speed of the Ordinary Thief
@@ -52,52 +56,108 @@ public class OrdinaryThief extends Thread {
             IotAssaultParty[] assaultGroup,
             IotGeneralRepository genRepo) {
         this.id = id;
-        this.speed = new Random().nextInt(max_speed - min_speed) +min_speed;
+        this.speed = new Random().nextInt(max_speed - min_speed) + min_speed;
         this.museum = museum;
         this.concentrationSite = concentrationSite;
         this.controlAndCollectionSite = controlAndCollectionSite;
         this.assaultGroup = assaultGroup;
         this.genRepo = genRepo;
-        this.genRepo.addThief(id, speed);
-        this.myClk = new VectorClock(7, id+1);
+        this.myClk = new VectorClock(7, id + 1);
+        this.genRepo.addThief(id, speed, myClk);
     }
 
     @Override
     public void run() {
         this.state = OrdinaryThiefState.OUTSIDE;
-        while (concentrationSite.amINeeded(this.id)) {
-            int partyId = concentrationSite.getPartyId(id);
-            assaultGroup[partyId].joinParty(id, speed);
-            
+        myClk.incrementClock();
+        serverResponseBool = concentrationSite.amINeeded(this.id, myClk.clone());
+        myClk.update(serverResponseBool.first);
+        boolean amINeeded = serverResponseBool.second;
+
+        while (amINeeded) {
+
+            myClk.incrementClock();
+            serverResponseInt = concentrationSite.getPartyId(id, myClk);
+            myClk.update(serverResponseInt.first);
+            int partyId = serverResponseInt.second;
+
+            myClk.incrementClock();
+            receivedClk = assaultGroup[partyId].joinParty(id, speed, myClk.clone());
+            myClk.update(receivedClk);
+
             this.state = OrdinaryThiefState.CRAWLING_INWARDS;
-            genRepo.updateThiefState(id, state);
-            concentrationSite.prepareExcursion(this.id);
-            
-            assaultGroup[partyId].crawlIn(this.id);
-            int roomId = assaultGroup[partyId].getTargetRoom();
-            
+
+            myClk.incrementClock();
+            receivedClk = genRepo.updateThiefState(id, state, myClk.clone());
+            myClk.update(receivedClk);
+
+            myClk.incrementClock();
+            receivedClk = concentrationSite.prepareExcursion(this.id, myClk.clone());
+            myClk.update(receivedClk);
+
+            myClk.incrementClock();
+            receivedClk = assaultGroup[partyId].crawlIn(this.id, myClk.clone());
+            myClk.update(receivedClk);
+
+            myClk.incrementClock();
+            serverResponseInt = assaultGroup[partyId].getTargetRoom(myClk.clone());
+            int roomId = serverResponseInt.second;
+            myClk.update(serverResponseInt.first);
+
             this.state = OrdinaryThiefState.AT_A_ROOM;
-            genRepo.updateThiefState(id, state);
-            
+            myClk.incrementClock();
+            receivedClk = genRepo.updateThiefState(id, state, myClk.clone());
+            myClk.update(receivedClk);
+
             /* Isto para todas as mensagens*/
             myClk.incrementClock();
-            receivedClk = museum.rollACanvas(roomId, myClk.clone());
-            boolean canvas = receivedClk.getreturnBoolValue();
+            serverResponseBool = museum.rollACanvas(roomId, myClk.clone());
+            boolean canvas = serverResponseBool.second;
+            myClk.update(serverResponseBool.first);
+            /**
+             * ************************************
+             */
+
+            myClk.incrementClock();
+            receivedClk = genRepo.updateThiefCylinder(id, canvas, myClk.clone());
             myClk.update(receivedClk);
-            /***************************************/
-            
-            genRepo.updateThiefCylinder(id, canvas);
-            assaultGroup[partyId].reverseDirection();
-            
+
+            myClk.incrementClock();
+            receivedClk = assaultGroup[partyId].reverseDirection(myClk.clone());
+            myClk.update(receivedClk);
+
             this.state = OrdinaryThiefState.CRAWLING_OUTWARDS;
-            genRepo.updateThiefState(id, state);
-            
-            assaultGroup[partyId].crawlOut(this.id);
+
+            myClk.incrementClock();
+            receivedClk = genRepo.updateThiefState(id, state, myClk.clone());
+            myClk.update(receivedClk);
+
+            myClk.incrementClock();
+            receivedClk = assaultGroup[partyId].crawlOut(this.id, myClk.clone());
+            myClk.update(receivedClk);
+
             this.state = OrdinaryThiefState.OUTSIDE;
-            genRepo.updateThiefState(id, state);
-            genRepo.updateThiefCylinder(id, false);
-            genRepo.updateThiefSituation(id, 'W');
-            controlAndCollectionSite.handACanvas(id, canvas, roomId, partyId);
+
+            myClk.incrementClock();
+            receivedClk = genRepo.updateThiefState(id, state, myClk.clone());
+            myClk.update(receivedClk);
+
+            myClk.incrementClock();
+            receivedClk = genRepo.updateThiefCylinder(id, false, myClk.clone());
+            myClk.update(receivedClk);
+
+            myClk.incrementClock();
+            receivedClk = genRepo.updateThiefSituation(id, 'W', myClk.clone());
+            myClk.update(receivedClk);
+
+            myClk.incrementClock();
+            receivedClk = controlAndCollectionSite.handACanvas(id, canvas, roomId, partyId, myClk.clone());
+            myClk.update(receivedClk);
+
+            myClk.incrementClock();
+            serverResponseBool = concentrationSite.amINeeded(this.id, myClk.clone());
+            myClk.update(serverResponseBool.first);
+            amINeeded = serverResponseBool.second;
         }
     }
 }
