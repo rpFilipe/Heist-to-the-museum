@@ -4,6 +4,7 @@ import interfaces.MuseumInterface;
 import java.rmi.RemoteException;
 import java.util.Random;
 import monitors.GeneralRepository.ImonitorsGeneralRepository;
+import structures.Pair;
 import structures.VectorClock;
 
 /**
@@ -95,11 +96,11 @@ public class Museum implements MuseumInterface {
      * @return true if the room still has canvas to be stolen.
      */
     @Override
-    public VectorClock rollACanvas(int room, VectorClock vc) {
+    public Pair<VectorClock, Boolean> rollACanvas(int room, VectorClock vc) {
         this.vc.update(vc);
         VectorClock returnClk = this.vc.clone();
-        returnClk.setReturnBoolValue(rooms[room].rollACanvas());
-        return returnClk;
+        boolean returnValue = rooms[room].rollACanvas();
+        return new Pair(returnClk, returnValue);
     }
 
     /**
@@ -109,11 +110,11 @@ public class Museum implements MuseumInterface {
      * @return
      */
     @Override
-    public VectorClock getRoomDistance(int id, VectorClock vc) {
+    public Pair<VectorClock, Integer> getRoomDistance(int id, VectorClock vc) {
         this.vc.update(vc);
         VectorClock returnClk = this.vc.clone();
-        returnClk.setReturnIntValue(rooms[id].getDistance());
-        return returnClk;
+        int returnValue = rooms[id].getDistance();
+        return new Pair(returnClk, returnValue);
     }
 
     @Override

@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package monitors.Museum;
+
 import interfaces.GeneralRepositoryInterface;
 import interfaces.MuseumInterface;
 import interfaces.Register;
@@ -13,6 +14,8 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import monitors.GeneralRepository.ImonitorsGeneralRepository;
 
 /**
@@ -37,22 +40,11 @@ public class MuseumStart {
         rmiServerHostname = args[1];
         rmiServerPort = Integer.parseInt(args[2]);
 
-        /* look for the remote object by name in the remote host registry */
-        String nameEntry = "GeneralRepository";
-        GeneralRepositoryInterface genRepo = null;
-        Registry registry = null;
+        Registry registry = getRegistry(rmiServerHostname, rmiServerPort);
 
-        /* Locate General Repository */
-        try {
-            registry = LocateRegistry.getRegistry(rmiServerHostname, rmiServerPort);
-            genRepo = (GeneralRepositoryInterface) registry.lookup(nameEntry);
-        } catch (RemoteException e) {
-            System.out.println("Exception thrown while locating log: " + e.getMessage() + "!");
-            System.exit(1);
-        } catch (NotBoundException e) {
-            System.out.println("Log is not registered: " + e.getMessage() + "!");
-            System.exit(1);
-        }
+        Register reg = getRegister(registry);
+        
+        GeneralRepositoryInterface genRepo = getGeneralRepository(registry);
 
         /* instanciação e instalação do gestor de segurança */
         if (System.getSecurityManager() == null) {
@@ -71,28 +63,8 @@ public class MuseumStart {
 
         System.out.println("O stub para o museum foi gerado!");
 
-        Register reg = null;
         try {
-            registry = LocateRegistry.getRegistry(rmiServerHostname, rmiServerPort);
-        } catch (RemoteException e) {
-            System.out.println("Excepção na criação do registo RMI: " + e.getMessage());
-            System.exit(1);
-        }
-
-        System.out.println("O registo RMI foi criado!");
-
-        try {
-            reg = (Register) registry.lookup("RegisterHandler");
-        } catch (RemoteException e) {
-            System.out.println("RegisterRemoteObject lookup exception: " + e.getMessage());
-            System.exit(1);
-        } catch (NotBoundException e) {
-            System.out.println("RegisterRemoteObject not bound exception: " + e.getMessage());
-            System.exit(1);
-        }
-
-        try {
-            reg.bind("Museum", museumInterface);
+            reg.bind("museum", museumInterface);
         } catch (RemoteException e) {
             System.out.println("Excepção no registo do museum: " + e.getMessage());
             System.exit(1);
@@ -103,6 +75,49 @@ public class MuseumStart {
 
         System.out.println("O bench foi registado!");
 
+    }
+
+    private static Registry getRegistry(String rmiServerHostname, int rmiServerPort) {
+        Registry registry = null;
+        try {
+            registry = LocateRegistry.getRegistry(rmiServerHostname, rmiServerPort);
+        } catch (RemoteException ex) {
+            Logger.getLogger(MuseumStart.class.getName()).log(Level.SEVERE, null, ex);
+            System.exit(1);
+        }
+        System.out.println("O registo RMI foi criado!");
+        return registry;
+    }
+
+    private static Register getRegister(Registry registry) {
+        Register reg = null;
+        try {
+            reg = (Register) registry.lookup("RegisterHandler");
+        } catch (RemoteException e) {
+            System.out.println("RegisterRemoteObject lookup exception: " + e.getMessage());
+            System.exit(1);
+        } catch (NotBoundException e) {
+            System.out.println("RegisterRemoteObject not bound exception: " + e.getMessage());
+            System.exit(1);
+        }
+        return reg;
+
+    }
+
+    private static GeneralRepositoryInterface getGeneralRepository(Registry registry) {
+        GeneralRepositoryInterface genRepo = null;
+        /* look for the remote object by name in the remote host registry */
+        String nameEntry = "GeneralRepository";
+
+        try {
+            /* Locate General Repository */
+            genRepo = (GeneralRepositoryInterface) registry.lookup(nameEntry);
+        } catch (RemoteException ex) {
+            Logger.getLogger(MuseumStart.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NotBoundException ex) {
+            Logger.getLogger(MuseumStart.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return genRepo;
     }
 
 }

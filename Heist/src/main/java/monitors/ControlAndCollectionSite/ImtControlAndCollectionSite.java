@@ -5,6 +5,9 @@
  */
 package monitors.ControlAndCollectionSite;
 
+import structures.Pair;
+import structures.VectorClock;
+
 /**
  *
  * @author Ricardo Filipe
@@ -15,35 +18,35 @@ public interface ImtControlAndCollectionSite {
      * Method to get the Assault Party to be deployed.. 
      * @return Id of the Assault Party to be prepared.
      */
-    public int getTargetRoom();
+    public Pair<VectorClock, Integer> getTargetRoom(VectorClock vc);
 
     /**
      * Method to get the Assault Party to be deployed.. 
      * @return Id of the Assault Party to be prepared.
      */
-    public int getPartyToDeploy();
+    public Pair<VectorClock, Integer> getPartyToDeploy(VectorClock vc);
 
     /**
      * Method to send the Master Thief to a idle state waiting for a Ordinary
      * Thief to return from the Museum.
      */
-    public void takeARest();
+    public VectorClock takeARest(VectorClock vc);
 
     /**
      * Method to get the canvas from the Ordinary Thief.
      */
-    public void collectCanvas();
+    public VectorClock collectCanvas(VectorClock vc);
     
     /**
      * Check if all the Rooms have been cleared.
      * @return heist completed
      */
-    public boolean isHeistCompleted();
+    public Pair<VectorClock, Boolean> isHeistCompleted(VectorClock vc);
     
     /**
      * Check if all the MasterThief can rest for a bit.
      * @return MasterThief has to wait
      */
-    public boolean waitingNedded();
+    public Pair<VectorClock, Boolean> waitingNedded(VectorClock vc);
     
 }

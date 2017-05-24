@@ -5,11 +5,7 @@
  */
 package main;
 
-import Proxies.AssaultPartyProxy;
-import Proxies.GeneralRepositoryProxy;
-import Proxies.ConcentrationSiteProxy;
-import Proxies.ControlAndCollectionSiteProxy;
-import Proxies.SettingsProxy;
+import interfaces.GeneralRepositoryInterface;
 import interfaces.MuseumInterface;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -22,6 +18,7 @@ import monitors.ConcentrationSite.IotConcentrationSite;
 import monitors.ControlAndCollectionSite.IotControlAndCollectionSite;
 import monitors.GeneralRepository.IotGeneralRepository;
 import monitors.Museum.IotMuseum;
+import monitors.Museum.MuseumStart;
 
 /**
  *
@@ -43,27 +40,11 @@ public class OrdinaryThievesStart {
 
         rmiServerHostname = args[0];
         rmiServerPort = Integer.parseInt(args[1]);
-        GeneralRepositoryProxy genRepo = new GeneralRepositoryProxy(configServerAddr, configServerPort);
-        SettingsProxy sp = new SettingsProxy(configServerAddr, configServerPort);
 
-        N_ORD_THIEVES = sp.getN_ORD_THIEVES();
-        N_ASSAULT_PARTIES = N_ORD_THIEVES / sp.getASSAULT_PARTY_SIZE();
-        int max_speed = sp.getMAX_THIEF_SPEED();
-        int min_speed = sp.getMIN_THIEF_SPEED();
+        Registry registry = getRegistry(rmiServerHostname, rmiServerPort);
 
-        Registry reg = null;
-        MuseumInterface museum = null;
-
-        try {
-            Registry registry = LocateRegistry.getRegistry(rmiServerHostname, rmiServerPort);
-            museum = (MuseumInterface) registry.lookup("museum");
-        } catch (RemoteException e) {
-            System.out.println("Exception thrown while locating log: " + e.getMessage() + "!");
-            System.exit(1);
-        } catch (NotBoundException e) {
-            System.out.println("Log is not registered: " + e.getMessage() + "!");
-            System.exit(1);
-        }
+        MuseumInterface museum = getMuseum(registry);
+        GeneralRepositoryInterface genRepo = getGeneralRepository(registry);
 
         ControlAndCollectionSiteProxy controlCollectionSite = new ControlAndCollectionSiteProxy(configServerAddr, configServerPort);
         ConcentrationSiteProxy concentrationSite = new ConcentrationSiteProxy(configServerAddr, configServerPort);
@@ -95,4 +76,45 @@ public class OrdinaryThievesStart {
         }
     }
 
+    private static MuseumInterface getMuseum(Registry registry) {
+        MuseumInterface museum = null;
+        try {
+            museum = (MuseumInterface) registry.lookup("museum");
+        } catch (RemoteException e) {
+            System.out.println("Exception thrown while locating log: " + e.getMessage() + "!");
+            System.exit(1);
+        } catch (NotBoundException e) {
+            System.out.println("Log is not registered: " + e.getMessage() + "!");
+            System.exit(1);
+        }
+        return museum;
+    }
+
+    private static Registry getRegistry(String rmiServerHostname, int rmiServerPort) {
+        Registry registry = null;
+        try {
+            registry = LocateRegistry.getRegistry(rmiServerHostname, rmiServerPort);
+        } catch (RemoteException ex) {
+            Logger.getLogger(OrdinaryThievesStart.class.getName()).log(Level.SEVERE, null, ex);
+            System.exit(1);
+        }
+        System.out.println("O registo RMI foi criado!");
+        return registry;
+    }
+
+    private static GeneralRepositoryInterface getGeneralRepository(Registry registry) {
+        GeneralRepositoryInterface genRepo = null;
+        /* look for the remote object by name in the remote host registry */
+        String nameEntry = "GeneralRepository";
+
+        try {
+            /* Locate General Repository */
+            genRepo = (GeneralRepositoryInterface) registry.lookup(nameEntry);
+        } catch (RemoteException ex) {
+            Logger.getLogger(MuseumStart.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NotBoundException ex) {
+            Logger.getLogger(MuseumStart.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return genRepo;
+    }
 }

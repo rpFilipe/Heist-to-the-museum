@@ -7,16 +7,20 @@ package monitors.ControlAndCollectionSite;
 
 import States.PartyStates;
 import States.RoomStates;
+import interfaces.ControlAndCollectionSiteInterface;
+import java.rmi.RemoteException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import monitors.GeneralRepository.ImonitorsGeneralRepository;
+import structures.Pair;
+import structures.VectorClock;
 
 /**
  *
  * @author Ricardo Filipe
  * @author Marc Wagner
  */
-public class ControlAndCollectionSite implements IotControlAndCollectionSite, ImtControlAndCollectionSite {
+public class ControlAndCollectionSite implements ControlAndCollectionSiteInterface {
 
     private int canvasCollected;
     private int canvasToCollect;
@@ -33,6 +37,7 @@ public class ControlAndCollectionSite implements IotControlAndCollectionSite, Im
     private int N_ROOMS;
     private int N_ASSAULT_PARTIES;
     private int ASSAULT_PARTY_SIZE;
+    private VectorClock vc;
 
     /**
      * Create a Control And Collection Instance.
@@ -40,7 +45,8 @@ public class ControlAndCollectionSite implements IotControlAndCollectionSite, Im
      * @param genRepo General Repository instance
      * @param nrooms Number of Rooms in the Simulation
      * @param n_assault_parties Number of Assault Parties in the Simulation
-     * @param assault_party_size Number of Ordinary Thieves in each Assault Party.
+     * @param assault_party_size Number of Ordinary Thieves in each Assault
+     * Party.
      */
     public ControlAndCollectionSite(ImonitorsGeneralRepository genRepo, int nrooms, int n_assault_parties, int assault_party_size) {
         N_ROOMS = nrooms;
@@ -63,6 +69,7 @@ public class ControlAndCollectionSite implements IotControlAndCollectionSite, Im
         thiefArrived = false;
         targetRoom = 0;
         this.genRepo = genRepo;
+        this.vc = new VectorClock(7, 0);
     }
 
     /**
@@ -70,7 +77,9 @@ public class ControlAndCollectionSite implements IotControlAndCollectionSite, Im
      * Thief to return from the Museum.
      */
     @Override
-    public synchronized void takeARest() {
+    public synchronized VectorClock takeARest(VectorClock vc) {
+        this.vc.update(vc);
+        VectorClock returnClk = this.vc.clone();
         masterThiefBusy = false;
         notifyAll();
 
@@ -82,14 +91,18 @@ public class ControlAndCollectionSite implements IotControlAndCollectionSite, Im
             }
         }
         thiefArrived = false;
+        return returnClk;
     }
 
     /**
      * Method to get the canvas from the Ordinary Thief.
      */
     @Override
-    public synchronized void collectCanvas() {
+    public synchronized VectorClock collectCanvas(VectorClock vc) {
         //canvasToCollect--;
+        this.vc.update(vc);
+        VectorClock returnClk = this.vc.clone();
+        return returnClk;
     }
 
     /**
@@ -102,9 +115,10 @@ public class ControlAndCollectionSite implements IotControlAndCollectionSite, Im
      * @param partyId Id of the Assault Party that Ordinary Thief belonged to.
      */
     @Override
-    public synchronized void handACanvas(int thiefId, boolean hasCanvas, int roomId, int partyId) {
+    public synchronized VectorClock handACanvas(int thiefId, boolean hasCanvas, int roomId, int partyId, VectorClock vc) {
         //canvasToCollect++;
-
+        this.vc.update(vc);
+        VectorClock returnClk = this.vc.clone();
         while (masterThiefBusy) {
             try {
                 wait();
@@ -134,6 +148,7 @@ public class ControlAndCollectionSite implements IotControlAndCollectionSite, Im
             thiefArrived = true;
             notifyAll();
         }
+        return returnClk;
     }
 
     /**
@@ -142,12 +157,14 @@ public class ControlAndCollectionSite implements IotControlAndCollectionSite, Im
      * @return Id of the target Room.
      */
     @Override
-    public synchronized int getTargetRoom() {
+    public synchronized Pair<VectorClock, Integer> getTargetRoom(VectorClock vc) {
+        this.vc.update(vc);
+        VectorClock returnClk = this.vc.clone();
         int room = chooseTargetRoom();
         if (room != -1) {
             roomStates[room] = RoomStates.BEING_STOLEN;
         }
-        return room;
+        return new Pair(returnClk, room);
     }
 
     /**
@@ -156,12 +173,14 @@ public class ControlAndCollectionSite implements IotControlAndCollectionSite, Im
      * @return Id of the Assault Party to be prepared.
      */
     @Override
-    public synchronized int getPartyToDeploy() {
+    public synchronized Pair<VectorClock, Integer> getPartyToDeploy(VectorClock vc) {
+        this.vc.update(vc);
+        VectorClock returnClk = this.vc.clone();
         int party = choosePartyToDeploy();
         if (party != -1) {
             partyStates[party] = PartyStates.DEPLOYED;
         }
-        return party;
+        return new Pair(returnClk, party);
     }
 
     private synchronized int chooseTargetRoom() {
@@ -207,10 +226,13 @@ public class ControlAndCollectionSite implements IotControlAndCollectionSite, Im
      * @return MasterThief has to wait
      */
     @Override
-    public synchronized boolean waitingNedded() {
+    public synchronized Pair<VectorClock, Boolean> waitingNedded(VectorClock vc) {
+        this.vc.update(vc);
+        VectorClock returnClk = this.vc.clone();
         partyToDeploy = choosePartyToDeploy();
         targetRoom = chooseTargetRoom();
-        return (canvasToCollect > 0 || partyToDeploy == -1 || targetRoom == -1);
+        boolean b = (canvasToCollect > 0 || partyToDeploy == -1 || targetRoom == -1);
+        return new Pair(returnClk, b);
     }
 
     /**
@@ -219,8 +241,16 @@ public class ControlAndCollectionSite implements IotControlAndCollectionSite, Im
      * @return heist completed
      */
     @Override
-    public synchronized boolean isHeistCompleted() {
+    public synchronized Pair<VectorClock, Boolean> isHeistCompleted(VectorClock vc) {
+        this.vc.update(vc);
+        VectorClock returnClk = this.vc.clone();
         genRepo.setCollectedCanvas(canvasCollected);
-        return allRoomsEmpty() && allPartiesFree();
+        boolean b = allRoomsEmpty() && allPartiesFree();
+        return new Pair(returnClk, b);
+    }
+
+    @Override
+    public void signalShutdown() throws RemoteException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

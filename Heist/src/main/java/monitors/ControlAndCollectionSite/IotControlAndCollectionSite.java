@@ -5,6 +5,8 @@
  */
 package monitors.ControlAndCollectionSite;
 
+import structures.VectorClock;
+
 /**
  *
  * @author Ricardo Filipe
@@ -19,6 +21,6 @@ public interface IotControlAndCollectionSite {
      * @param roomId Id of the Room that was being target.
      * @param partyId Id of the Assault Party that Ordinary Thief belonged to.
      */
-    public void handACanvas(int id, boolean canvas, int roomId, int partyId);
+    public VectorClock handACanvas(int id, boolean canvas, int roomId, int partyId, VectorClock vc);
     
 }
