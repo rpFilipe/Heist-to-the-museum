@@ -35,7 +35,7 @@ public class MuseumStart {
      * @param args
      */
     public static void main(String[] args) {
-
+        System.out.println("Starting Monitor");
         SERVER_PORT = Integer.parseInt(args[0]);
         rmiServerHostname = args[1];
         rmiServerPort = Integer.parseInt(args[2]);

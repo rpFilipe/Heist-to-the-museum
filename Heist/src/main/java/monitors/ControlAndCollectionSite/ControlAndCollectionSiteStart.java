@@ -34,7 +34,7 @@ public class ControlAndCollectionSiteStart {
      * @param args
      */
     public static void main(String[] args) {
-
+        System.out.println("Starting Control And Collection Site");
         SERVER_PORT = Integer.parseInt(args[0]);
         rmiServerHostname = args[1];
         rmiServerPort = Integer.parseInt(args[2]);

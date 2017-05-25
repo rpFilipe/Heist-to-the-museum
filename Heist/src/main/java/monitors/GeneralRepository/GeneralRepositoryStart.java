@@ -18,7 +18,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import monitors.ControlAndCollectionSite.ControlAndCollectionSiteStart;
 
-
 /**
  *
  * @author Ricardo Filipe
@@ -36,10 +35,11 @@ public class GeneralRepositoryStart {
      * @param args
      */
     public static void main(String[] args) {
+        System.out.println("Starting General Repository");
 
         SERVER_PORT = Integer.parseInt(args[0]);
-        rmiServerHostname = args[1];
-        rmiServerPort = Integer.parseInt(args[2]);
+        rmiServerHostname = args[2];
+        rmiServerPort = Integer.parseInt(args[3]);
 
         Registry registry = getRegistry(rmiServerHostname, rmiServerPort);
         Register reg = getRegister(registry);
@@ -83,7 +83,6 @@ public class GeneralRepositoryStart {
             Logger.getLogger(ControlAndCollectionSiteStart.class.getName()).log(Level.SEVERE, null, ex);
             System.exit(1);
         }
-        System.out.println("O registo RMI foi criado!");
         return registry;
     }
 
@@ -100,23 +99,5 @@ public class GeneralRepositoryStart {
         }
         return reg;
 
-    }
-
-    private static GeneralRepositoryInterface getGeneralRepository(Registry registry) {
-        GeneralRepositoryInterface genRepo = null;
-        /* look for the remote object by name in the remote host registry */
-        String nameEntry = "GeneralRepository";
-
-        try {
-            /* Locate General Repository */
-            genRepo = (GeneralRepositoryInterface) registry.lookup(nameEntry);
-        } catch (RemoteException ex) {
-            Logger.getLogger(ControlAndCollectionSiteStart.class.getName()).log(Level.SEVERE, null, ex);
-            System.exit(1);
-        } catch (NotBoundException ex) {
-            Logger.getLogger(ControlAndCollectionSiteStart.class.getName()).log(Level.SEVERE, null, ex);
-            System.exit(1);
-        }
-        return genRepo;
     }
 }

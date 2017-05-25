@@ -38,7 +38,7 @@ public class AssaultPartyStart {
      * @param args
      */
     public static void main(String[] args) {
-
+        System.out.println("Starting Assault Party " + args[1]);
         SERVER_PORT = Integer.parseInt(args[0]);
         PARTY_ID = Integer.parseInt(args[1]);
         rmiServerHostname = args[2];
