@@ -29,6 +29,8 @@ public class MasterThief extends Thread {
     private ImtGeneralRepository genRepo;
     private VectorClock myClk;
     private VectorClock receivedClk;
+    Pair<VectorClock, Integer> serverResponseInt;
+    Pair<VectorClock, Boolean> serverResponseBool;
 
     /**
      * Create a new MasterThief
@@ -69,38 +71,40 @@ public class MasterThief extends Thread {
                 case MasterThiefStates.DECIDING_WHAT_TO_DO:
                     //int nwating = concentrationSite.getNumberThivesWaiting();
                     this.myClk.incrementClock();
-                    Pair<VectorClock, Boolean> a = this.controlAndCollectionSite.isHeistCompleted(this.myClk.clone());
-                    this.myClk.update(a.first);
+                    serverResponseBool = this.controlAndCollectionSite.isHeistCompleted(this.myClk.clone());
+                    this.myClk.update(serverResponseBool.first);
+                    boolean a = serverResponseBool.second;
 
                     this.myClk.incrementClock();
-                    Pair<VectorClock, Boolean> b = this.controlAndCollectionSite.waitingNedded(this.myClk.clone());
-                    this.myClk.update(a.first);
+                    serverResponseBool = this.controlAndCollectionSite.waitingNedded(this.myClk.clone());
+                    this.myClk.update(serverResponseBool.first);
+                    boolean b = serverResponseBool.second;
 
                     this.myClk.incrementClock();
-                    Pair<VectorClock, Integer> pairAppraiseSit = this.concentrationSite.appraiseSit(a.second, b.second, this.myClk.clone());
-                    this.myClk.update(pairAppraiseSit.first);
+                    serverResponseInt = this.concentrationSite.appraiseSit(a, b, this.myClk.clone());
+                    this.myClk.update(serverResponseInt.first);
 
-                    this.state = pairAppraiseSit.second;         
+                    this.state = serverResponseInt.second;         
                     break;
                 case MasterThiefStates.ASSEMBLING_A_GROUP:
                     this.myClk.incrementClock();
-                    Pair<VectorClock, Integer> pairGetTargetRoom = this.controlAndCollectionSite.getTargetRoom(this.myClk.clone());
-                    int targetRoom = pairGetTargetRoom.second;
-                    this.myClk.update(pairGetTargetRoom.first);
+                    serverResponseInt = this.controlAndCollectionSite.getTargetRoom(this.myClk.clone());
+                    int targetRoom = serverResponseInt.second;
+                    this.myClk.update(serverResponseInt.first);
 
                     this.myClk.incrementClock();
-                    Pair<VectorClock, Integer> pairGetPartyToDeploy = this.controlAndCollectionSite.getPartyToDeploy(this.myClk.clone());
-                    int partyToDeploy = pairGetPartyToDeploy.second;
-                    this.myClk.update(pairGetPartyToDeploy.first);
+                    serverResponseInt = this.controlAndCollectionSite.getPartyToDeploy(this.myClk.clone());
+                    int partyToDeploy = serverResponseInt.second;
+                    this.myClk.update(serverResponseInt.first);
 
                     this.myClk.incrementClock();
-                    Pair<VectorClock, Integer> pairGetRoomDistance = this.museum.getRoomDistance(targetRoom, this.myClk.clone());
-                    int roomDistance = pairGetRoomDistance.second;  
-                    this.myClk.update(pairGetPartyToDeploy.first);
+                    serverResponseInt = this.museum.getRoomDistance(targetRoom, this.myClk.clone());
+                    int roomDistance = serverResponseInt.second;  
+                    this.myClk.update(serverResponseInt.first);
 
                     this.myClk.incrementClock();
                     this.receivedClk = this.assaultParty[partyToDeploy].setRoom(targetRoom, roomDistance, this.myClk.clone());
-                    //this.myClk.update();
+                    this.myClk.update(receivedClk);
 
                     this.myClk.incrementClock();
                     this.receivedClk = this.concentrationSite.prepareAssaultParty(partyToDeploy, this.myClk.clone());

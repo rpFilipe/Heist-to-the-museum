@@ -18,8 +18,7 @@ import java.util.logging.Logger;
  * @author Ricardo Filipe
  */
 public class MasterThiefStart {
-    
-    /* P1G3 */    
+     
     public static void main(String args[])
    {
     Scanner sc = new Scanner(System.in);   

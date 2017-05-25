@@ -5,20 +5,21 @@
  */
 package main;
 
+import interfaces.AssaultPartyInterface;
+import interfaces.ConcentrationSiteInterface;
+import interfaces.ControlAndCollectionSiteInterface;
 import interfaces.GeneralRepositoryInterface;
 import interfaces.MuseumInterface;
+import interfaces.Register;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.ArrayList;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import monitors.AssaultParty.IotAssaultParty;
-import monitors.ConcentrationSite.IotConcentrationSite;
-import monitors.ControlAndCollectionSite.IotControlAndCollectionSite;
-import monitors.GeneralRepository.IotGeneralRepository;
-import monitors.Museum.IotMuseum;
-import monitors.Museum.MuseumStart;
+import structures.Constants;
 
 /**
  *
@@ -27,7 +28,7 @@ import monitors.Museum.MuseumStart;
 public class OrdinaryThievesStart {
 
     private static int N_ORD_THIEVES;
-    private static int N_ASSAULT_PARTIES;
+    private static int N_ASSAULT_PARTY_SIZE;
     private static String rmiServerHostname;
     private static int rmiServerPort;
 
@@ -36,58 +37,39 @@ public class OrdinaryThievesStart {
      *
      * @param args
      */
-    public static void main(String[] args) {
-
+    public static void main(String args[]) {
+        Scanner sc = new Scanner(System.in);
+        /* get location of the generic registry service */
+        N_ORD_THIEVES = Constants.N_ORD_THIEVES;
+        N_ASSAULT_PARTY_SIZE = Constants.ASSAULT_PARTY_SIZE;
         rmiServerHostname = args[0];
         rmiServerPort = Integer.parseInt(args[1]);
 
+        ArrayList<OrdinaryThief> ordThieves = new ArrayList<>(N_ORD_THIEVES);
         Registry registry = getRegistry(rmiServerHostname, rmiServerPort);
+        Register reg = getRegister(registry);
 
-        MuseumInterface museum = getMuseum(registry);
-        GeneralRepositoryInterface genRepo = getGeneralRepository(registry);
-
-        ControlAndCollectionSiteProxy controlCollectionSite = new ControlAndCollectionSiteProxy(configServerAddr, configServerPort);
-        ConcentrationSiteProxy concentrationSite = new ConcentrationSiteProxy(configServerAddr, configServerPort);
-        AssaultPartyProxy[] assaultParty = new AssaultPartyProxy[N_ASSAULT_PARTIES];
-        OrdinaryThief[] ordinaryThives = new OrdinaryThief[N_ORD_THIEVES];
-
-        for (int i = 0; i < N_ASSAULT_PARTIES; i++) {
-            assaultParty[i] = new AssaultPartyProxy(i, configServerAddr, configServerPort);
+        GeneralRepositoryInterface genRepInterface = getGeneralRepository(registry);
+        ConcentrationSiteInterface concSiteInterface = getConcentrationSite(registry);;
+        ControlAndCollectionSiteInterface contCollSiteInterface = getControlAndCollectionSite(registry);
+        AssaultPartyInterface assaultPartyInterface[] = new AssaultPartyInterface[N_ASSAULT_PARTY_SIZE];
+        
+        for(int i=0; i<N_ASSAULT_PARTY_SIZE; i++){
+            assaultPartyInterface[i] = getAssaultParty(registry, "AssaultParty"+i);
         }
 
-        for (int i = 0; i < N_ORD_THIEVES; i++) {
-            ordinaryThives[i] = new OrdinaryThief(i, max_speed, min_speed,
-                    (IotMuseum) museum,
-                    (IotConcentrationSite) concentrationSite,
-                    (IotControlAndCollectionSite) controlCollectionSite,
-                    (IotAssaultParty[]) assaultParty,
-                    (IotGeneralRepository) genRepo);
-        }
+        MuseumInterface museumInterface = getMuseum(registry);;
 
-        for (OrdinaryThief ot : ordinaryThives) {
-            ot.start();
-        }
-        for (OrdinaryThief ot : ordinaryThives) {
-            try {
-                ot.join();
-            } catch (InterruptedException ex) {
-                Logger.getLogger(OrdinaryThievesStart.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }
+        System.out.println("Alert Logger that I have finished!");
 
-    private static MuseumInterface getMuseum(Registry registry) {
-        MuseumInterface museum = null;
         try {
-            museum = (MuseumInterface) registry.lookup("museum");
-        } catch (RemoteException e) {
-            System.out.println("Exception thrown while locating log: " + e.getMessage() + "!");
-            System.exit(1);
-        } catch (NotBoundException e) {
-            System.out.println("Log is not registered: " + e.getMessage() + "!");
-            System.exit(1);
+            genRepInterface.signalShutdown();
+        } catch (RemoteException ex) {
+            Logger.getLogger(MasterThiefStart.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return museum;
+
+        /* print the result */
+        System.out.println("Done!");
     }
 
     private static Registry getRegistry(String rmiServerHostname, int rmiServerPort) {
@@ -95,11 +77,26 @@ public class OrdinaryThievesStart {
         try {
             registry = LocateRegistry.getRegistry(rmiServerHostname, rmiServerPort);
         } catch (RemoteException ex) {
-            Logger.getLogger(OrdinaryThievesStart.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.print("Deu bronca");
             System.exit(1);
         }
         System.out.println("O registo RMI foi criado!");
         return registry;
+    }
+
+    private static Register getRegister(Registry registry) {
+        Register reg = null;
+        try {
+            reg = (Register) registry.lookup("RegisterHandler");
+        } catch (RemoteException e) {
+            System.out.println("RegisterRemoteObject lookup exception: " + e.getMessage());
+            System.exit(1);
+        } catch (NotBoundException e) {
+            System.out.println("RegisterRemoteObject not bound exception: " + e.getMessage());
+            System.exit(1);
+        }
+        return reg;
+
     }
 
     private static GeneralRepositoryInterface getGeneralRepository(Registry registry) {
@@ -111,10 +108,74 @@ public class OrdinaryThievesStart {
             /* Locate General Repository */
             genRepo = (GeneralRepositoryInterface) registry.lookup(nameEntry);
         } catch (RemoteException ex) {
-            Logger.getLogger(MuseumStart.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.print("Deu bronca");
         } catch (NotBoundException ex) {
-            Logger.getLogger(MuseumStart.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.print("Deu bronca");
         }
         return genRepo;
+    }
+    
+    private static ConcentrationSiteInterface getConcentrationSite(Registry registry) {
+        ConcentrationSiteInterface concSite = null;
+        /* look for the remote object by name in the remote host registry */
+        String nameEntry = "ConcentrationSite";
+
+        try {
+            /* Locate General Repository */
+            concSite = (ConcentrationSiteInterface) registry.lookup(nameEntry);
+        } catch (RemoteException ex) {
+            System.err.print("Deu bronca");
+        } catch (NotBoundException ex) {
+            System.err.print("Deu bronca");
+        }
+        return concSite;
+    }
+    
+    private static ControlAndCollectionSiteInterface getControlAndCollectionSite(Registry registry) {
+        ControlAndCollectionSiteInterface contCollSite = null;
+        /* look for the remote object by name in the remote host registry */
+        String nameEntry = "ControlAndCollectionSite";
+
+        try {
+            /* Locate General Repository */
+            contCollSite = (ControlAndCollectionSiteInterface) registry.lookup(nameEntry);
+        } catch (RemoteException ex) {
+            System.err.print("Deu bronca");
+        } catch (NotBoundException ex) {
+            System.err.print("Deu bronca");
+        }
+        return contCollSite;
+    }
+    
+    private static MuseumInterface getMuseum(Registry registry) {
+        MuseumInterface museum = null;
+        /* look for the remote object by name in the remote host registry */
+        String nameEntry = "Museum";
+
+        try {
+            /* Locate General Repository */
+            museum = (MuseumInterface) registry.lookup(nameEntry);
+        } catch (RemoteException ex) {
+            System.err.print("Deu bronca");
+        } catch (NotBoundException ex) {
+            System.err.print("Deu bronca");
+        }
+        return museum;
+    }
+    
+    private static AssaultPartyInterface getAssaultParty(Registry registry, String assParty) {
+        AssaultPartyInterface assaultParty = null;
+        /* look for the remote object by name in the remote host registry */
+        String nameEntry = assParty;
+
+        try {
+            /* Locate General Repository */
+            assaultParty = (AssaultPartyInterface) registry.lookup(nameEntry);
+        } catch (RemoteException ex) {
+            System.err.print("Deu bronca");
+        } catch (NotBoundException ex) {
+            System.err.print("Deu bronca");
+        }
+        return assaultParty;
     }
 }
