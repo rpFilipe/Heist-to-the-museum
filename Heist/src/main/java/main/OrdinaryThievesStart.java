@@ -29,6 +29,8 @@ public class OrdinaryThievesStart {
 
     private static int N_ORD_THIEVES;
     private static int N_ASSAULT_PARTY_SIZE;
+    private static int MAX_SPEED;
+    private static int MIN_SPEED;
     private static String rmiServerHostname;
     private static int rmiServerPort;
 
@@ -39,13 +41,15 @@ public class OrdinaryThievesStart {
      */
     public static void main(String args[]) {
         Scanner sc = new Scanner(System.in);
-        /* get location of the generic registry service */
         N_ORD_THIEVES = Constants.N_ORD_THIEVES;
         N_ASSAULT_PARTY_SIZE = Constants.ASSAULT_PARTY_SIZE;
+        MAX_SPEED = Constants.MAX_THIEF_SPEED;
+        MIN_SPEED = Constants.MIN_THIEF_SPEED;
         rmiServerHostname = args[0];
         rmiServerPort = Integer.parseInt(args[1]);
 
         ArrayList<OrdinaryThief> ordThieves = new ArrayList<>(N_ORD_THIEVES);
+        /* get location of the generic registry service */
         Registry registry = getRegistry(rmiServerHostname, rmiServerPort);
         Register reg = getRegister(registry);
 
@@ -54,12 +58,30 @@ public class OrdinaryThievesStart {
         ControlAndCollectionSiteInterface contCollSiteInterface = getControlAndCollectionSite(registry);
         AssaultPartyInterface assaultPartyInterface[] = new AssaultPartyInterface[N_ASSAULT_PARTY_SIZE];
         
-        for(int i=0; i<N_ASSAULT_PARTY_SIZE; i++){
+        for(int i=0; i<N_ASSAULT_PARTY_SIZE; i++)
             assaultPartyInterface[i] = getAssaultParty(registry, "AssaultParty"+i);
+
+        MuseumInterface museumInterface = getMuseum(registry);
+        
+        for(int i=0; i<ordThieves.size(); i++){
+            ordThieves.add(new OrdinaryThief(i, MAX_SPEED, MIN_SPEED, museumInterface, concSiteInterface, 
+                    contCollSiteInterface, assaultPartyInterface, genRepInterface));
         }
 
-        MuseumInterface museumInterface = getMuseum(registry);;
-
+        System.out.println("Number of ordinary thieves: " +ordThieves.size());  
+       
+        for(int i = 0; i < ordThieves.size(); i++){
+            ordThieves.get(i).start();
+            System.out.printf("OrdinaryThief start: %d\n", i);
+        }
+        
+        for(int i = 0; i < ordThieves.size(); i++){
+            try {
+                ordThieves.get(i).join();
+                System.out.printf("OrdinaryThief join: %d\n", i);
+            } catch(InterruptedException e) {}
+        }
+        
         System.out.println("Alert Logger that I have finished!");
 
         try {
@@ -96,7 +118,6 @@ public class OrdinaryThievesStart {
             System.exit(1);
         }
         return reg;
-
     }
 
     private static GeneralRepositoryInterface getGeneralRepository(Registry registry) {
