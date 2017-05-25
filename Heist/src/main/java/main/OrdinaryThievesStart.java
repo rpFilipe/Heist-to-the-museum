@@ -56,12 +56,11 @@ public class OrdinaryThievesStart {
         GeneralRepositoryInterface genRepInterface = getGeneralRepository(registry);
         ConcentrationSiteInterface concSiteInterface = getConcentrationSite(registry);;
         ControlAndCollectionSiteInterface contCollSiteInterface = getControlAndCollectionSite(registry);
+        MuseumInterface museumInterface = getMuseum(registry);
         AssaultPartyInterface assaultPartyInterface[] = new AssaultPartyInterface[N_ASSAULT_PARTY_SIZE];
         
         for(int i=0; i<N_ASSAULT_PARTY_SIZE; i++)
             assaultPartyInterface[i] = getAssaultParty(registry, "AssaultParty"+i);
-
-        MuseumInterface museumInterface = getMuseum(registry);
         
         for(int i=0; i<ordThieves.size(); i++){
             ordThieves.add(new OrdinaryThief(i, MAX_SPEED, MIN_SPEED, museumInterface, concSiteInterface, 

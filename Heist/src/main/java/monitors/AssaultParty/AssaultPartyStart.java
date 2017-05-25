@@ -15,6 +15,9 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import monitors.ControlAndCollectionSite.ControlAndCollectionSiteStart;
 import monitors.GeneralRepository.ImonitorsGeneralRepository;
 
 /**
@@ -36,28 +39,14 @@ public class AssaultPartyStart {
      */
     public static void main(String[] args) {
 
-        
         SERVER_PORT = Integer.parseInt(args[0]);
         PARTY_ID = Integer.parseInt(args[1]);
         rmiServerHostname = args[2];
         rmiServerPort = Integer.parseInt(args[3]);
-
-        /* look for the remote object by name in the remote host registry */
-        String nameEntry = "GeneralRepository";
-        GeneralRepositoryInterface genRepo = null;
-        Registry registry = null;
-
-        /* Locate General Repository */
-        try {
-            registry = LocateRegistry.getRegistry(rmiServerHostname, rmiServerPort);
-            genRepo = (GeneralRepositoryInterface) registry.lookup(nameEntry);
-        } catch (RemoteException e) {
-            System.out.println("Exception thrown while locating log: " + e.getMessage() + "!");
-            System.exit(1);
-        } catch (NotBoundException e) {
-            System.out.println("Log is not registered: " + e.getMessage() + "!");
-            System.exit(1);
-        }
+        
+        Registry registry = getRegistry(rmiServerHostname, rmiServerPort);
+        Register reg = getRegister(registry);
+        GeneralRepositoryInterface genRepo = getGeneralRepository(registry);
 
         /* instanciação e instalação do gestor de segurança */
         if (System.getSecurityManager() == null) {
@@ -70,22 +59,38 @@ public class AssaultPartyStart {
         try {
             assaultpartyInterface = (AssaultPartyInterface) UnicastRemoteObject.exportObject((Remote) assaultParty, SERVER_PORT);
         } catch (RemoteException e) {
-            System.out.println("Excepção na geração do stub para o Museum: " + e.getMessage());
+            System.out.println("Excepção na geração do stub para a assault Party: " + e.getMessage());
             System.exit(1);
         }
 
-        System.out.println("O stub para o museum foi gerado!");
+        System.out.println("O stub para a assault Party foi gerado!");
 
-        Register reg = null;
+        try {
+            reg.bind("AssaultParty"+PARTY_ID, assaultpartyInterface);
+        } catch (RemoteException e) {
+            System.out.println("Excepção no registo da assautl party: " + e.getMessage());
+            System.exit(1);
+        } catch (AlreadyBoundException e) {
+            System.out.println("A assault party já está registada: " + e.getMessage());
+            System.exit(1);
+        }
+        System.out.println("A assault party foi registada!");
+    }
+    
+    private static Registry getRegistry(String rmiServerHostname, int rmiServerPort) {
+        Registry registry = null;
         try {
             registry = LocateRegistry.getRegistry(rmiServerHostname, rmiServerPort);
-        } catch (RemoteException e) {
-            System.out.println("Excepção na criação do registo RMI: " + e.getMessage());
+        } catch (RemoteException ex) {
+            Logger.getLogger(ControlAndCollectionSiteStart.class.getName()).log(Level.SEVERE, null, ex);
             System.exit(1);
         }
-
         System.out.println("O registo RMI foi criado!");
-
+        return registry;
+    }
+    
+    private static Register getRegister(Registry registry) {
+        Register reg = null;
         try {
             reg = (Register) registry.lookup("RegisterHandler");
         } catch (RemoteException e) {
@@ -95,19 +100,25 @@ public class AssaultPartyStart {
             System.out.println("RegisterRemoteObject not bound exception: " + e.getMessage());
             System.exit(1);
         }
-
-        try {
-            reg.bind("Museum", assaultpartyInterface);
-        } catch (RemoteException e) {
-            System.out.println("Excepção no registo do museum: " + e.getMessage());
-            System.exit(1);
-        } catch (AlreadyBoundException e) {
-            System.out.println("O museum já está registado: " + e.getMessage());
-            System.exit(1);
-        }
-
-        System.out.println("O bench foi registado!");
+        return reg;
 
     }
 
+    private static GeneralRepositoryInterface getGeneralRepository(Registry registry) {
+        GeneralRepositoryInterface genRepo = null;
+        /* look for the remote object by name in the remote host registry */
+        String nameEntry = "GeneralRepository";
+
+        try {
+            /* Locate General Repository */
+            genRepo = (GeneralRepositoryInterface) registry.lookup(nameEntry);
+        } catch (RemoteException ex) {
+            Logger.getLogger(ControlAndCollectionSiteStart.class.getName()).log(Level.SEVERE, null, ex);
+            System.exit(1);
+        } catch (NotBoundException ex) {
+            Logger.getLogger(ControlAndCollectionSiteStart.class.getName()).log(Level.SEVERE, null, ex);
+            System.exit(1);
+        }
+        return genRepo;
+    }
 }
