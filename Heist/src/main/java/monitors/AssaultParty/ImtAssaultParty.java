@@ -5,6 +5,7 @@
  */
 package monitors.AssaultParty;
 
+import java.rmi.RemoteException;
 import structures.VectorClock;
 
 /**
@@ -20,12 +21,12 @@ public interface ImtAssaultParty {
      * @param vc
      * @return 
      */
-    public VectorClock setRoom(int id, int distance, VectorClock vc);
+    public VectorClock setRoom(int id, int distance, VectorClock vc) throws RemoteException,InterruptedException; 
 
     /**
      * Method to signal the first Ordinary Thief that joined the party party to start crawling inwards.
      * @param vc
      * @return 
      */
-    public VectorClock sendAssaultParty(VectorClock vc);
+    public VectorClock sendAssaultParty(VectorClock vc) throws RemoteException,InterruptedException;
 }

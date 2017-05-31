@@ -57,7 +57,7 @@ public class ConcentrationSiteStart {
         ConcentrationSiteInterface concSiteInterface = null;
 
         try {
-            concSiteInterface = (ConcentrationSiteInterface) UnicastRemoteObject.exportObject((Remote) concSite, SERVER_PORT);
+            concSiteInterface = (ConcentrationSiteInterface) UnicastRemoteObject.exportObject(concSite, SERVER_PORT);
         } catch (RemoteException e) {
             System.out.println("Excepção na geração do stub para o Museum: " + e.getMessage());
             System.exit(1);

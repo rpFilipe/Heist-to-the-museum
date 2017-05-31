@@ -57,7 +57,7 @@ public class AssaultPartyStart {
         AssaultPartyInterface assaultpartyInterface = null;
 
         try {
-            assaultpartyInterface = (AssaultPartyInterface) UnicastRemoteObject.exportObject((Remote) assaultParty, SERVER_PORT);
+            assaultpartyInterface = (AssaultPartyInterface) UnicastRemoteObject.exportObject(assaultParty, SERVER_PORT);
         } catch (RemoteException e) {
             System.out.println("Excepção na geração do stub para a assault Party: " + e.getMessage());
             System.exit(1);

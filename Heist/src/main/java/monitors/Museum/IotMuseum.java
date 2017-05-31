@@ -5,6 +5,7 @@
  */
 package monitors.Museum;
 
+import java.rmi.RemoteException;
 import structures.Pair;
 import structures.VectorClock;
 
@@ -20,6 +21,6 @@ public interface IotMuseum {
      * @param roomId
      * @return true if the room still has canvas to be stolen.
      */
-    public Pair<VectorClock, Boolean> rollACanvas(int roomId, VectorClock vc);
+    public Pair<VectorClock, Boolean> rollACanvas(int roomId, VectorClock vc)throws RemoteException,InterruptedException;
     
 }

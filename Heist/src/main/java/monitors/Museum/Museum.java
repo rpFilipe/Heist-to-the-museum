@@ -3,7 +3,10 @@ package monitors.Museum;
 import interfaces.MuseumInterface;
 import java.rmi.RemoteException;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import monitors.GeneralRepository.ImonitorsGeneralRepository;
+import structures.Constants;
 import structures.Pair;
 import structures.VectorClock;
 
@@ -37,17 +40,12 @@ public class Museum implements MuseumInterface {
      * @param MAX_PAITING_PER_ROOM Maximum number of paintings in a given Room.
      * @param MIN_PAITING_PER_ROOM Minimum number of paintings in a given Room.
      */
-    public Museum(ImonitorsGeneralRepository genRepo,
-            int N_ROOMS,
-            int MAX_ROOM_DISTANCE,
-            int MIN_ROOM_DISTANCE,
-            int MAX_PAITING_PER_ROOM,
-            int MIN_PAITING_PER_ROOM) {
-        this.N_ROOMS = N_ROOMS;
-        this.MAX_ROOM_DISTANCE = MAX_ROOM_DISTANCE;
-        this.MIN_ROOM_DISTANCE = MIN_ROOM_DISTANCE;
-        this.MAX_PAITING_PER_ROOM = MAX_PAITING_PER_ROOM;
-        this.MIN_PAITING_PER_ROOM = MIN_PAITING_PER_ROOM;
+    public Museum(ImonitorsGeneralRepository genRepo){
+        this.N_ROOMS = Constants.N_ROOMS;
+        this.MAX_ROOM_DISTANCE = Constants.MAX_ROOM_DISTANCE;
+        this.MIN_ROOM_DISTANCE = Constants.MIN_ROOM_DISTANCE;
+        this.MAX_PAITING_PER_ROOM = Constants.MAX_PAITING_PER_ROOM;
+        this.MIN_PAITING_PER_ROOM = Constants.MIN_PAITING_PER_ROOM;
         rooms = new Room[N_ROOMS];
         totalPaitings = 0;
         roomsCreated = 0;
@@ -66,15 +64,21 @@ public class Museum implements MuseumInterface {
         private int paintings;
         private int id;
 
-        public Room() {
+        public Room(){
             this.distance = new Random().nextInt(MAX_ROOM_DISTANCE - MIN_ROOM_DISTANCE) + MIN_ROOM_DISTANCE;
             this.paintings = new Random().nextInt(MAX_PAITING_PER_ROOM - MIN_PAITING_PER_ROOM) + MIN_PAITING_PER_ROOM;
             this.id = roomsCreated;
-            genRepo.setRoomAtributes(id, distance, paintings, vc);
+            try {
+                genRepo.setRoomAtributes(id, distance, paintings, vc);
+            } catch (RemoteException ex) {
+                Logger.getLogger(Museum.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Museum.class.getName()).log(Level.SEVERE, null, ex);
+            }
             roomsCreated++;
         }
 
-        private synchronized boolean rollACanvas() {
+        private synchronized boolean rollACanvas() throws RemoteException, InterruptedException {
             boolean res = paintings > 0;
             paintings--;
             if (paintings < 0) {
@@ -96,7 +100,7 @@ public class Museum implements MuseumInterface {
      * @return true if the room still has canvas to be stolen.
      */
     @Override
-    public Pair<VectorClock, Boolean> rollACanvas(int room, VectorClock vc) {
+    public Pair<VectorClock, Boolean> rollACanvas(int room, VectorClock vc) throws RemoteException, InterruptedException {
         this.vc.update(vc);
         VectorClock returnClk = this.vc.clone();
         boolean returnValue = rooms[room].rollACanvas();

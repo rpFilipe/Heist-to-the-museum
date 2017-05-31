@@ -5,6 +5,7 @@
  */
 package monitors.Museum;
 
+import java.rmi.RemoteException;
 import structures.VectorClock;
 import structures.Pair;
 
@@ -19,6 +20,6 @@ public interface ImtMuseum {
      * @param targetRoom of the room
      * @return
      */
-    public Pair<VectorClock, Integer> getRoomDistance(int targetRoom, VectorClock vc);
+    public Pair<VectorClock, Integer> getRoomDistance(int targetRoom, VectorClock vc)throws RemoteException,InterruptedException;
     
 }

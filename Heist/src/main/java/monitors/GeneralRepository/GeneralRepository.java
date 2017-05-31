@@ -7,6 +7,7 @@ package monitors.GeneralRepository;
 
 import States.MasterThiefStates;
 import States.OrdinaryThiefState;
+import interfaces.GeneralRepositoryInterface;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -23,7 +24,7 @@ import structures.VectorClock;
  */
 
 
-public class GeneralRepository implements ImtGeneralRepository, IotGeneralRepository, ImonitorsGeneralRepository {
+public class GeneralRepository implements GeneralRepositoryInterface {
 
     private static PrintWriter pw;
     private final File log;
@@ -117,7 +118,7 @@ public class GeneralRepository implements ImtGeneralRepository, IotGeneralReposi
      * @param state updated State
      */
     @Override
-    public synchronized VectorClock updateThiefState(int thiefId, int state, VectorClock vc) {
+    public synchronized VectorClock updateThiefState(int thiefId, int state, VectorClock vc) throws RemoteException,InterruptedException{
         this.vc.update(vc);
         Thief t = thiefMap.get(thiefId);
         t.state = state;
@@ -134,6 +135,7 @@ public class GeneralRepository implements ImtGeneralRepository, IotGeneralReposi
      */
     @Override
     public synchronized VectorClock updateMThiefState(int state, VectorClock vc) {
+        this.vc.update(vc);
         masterThiefState = state;
         printStatus();
         
@@ -414,6 +416,11 @@ public class GeneralRepository implements ImtGeneralRepository, IotGeneralReposi
         
         VectorClock returnClk = this.vc.clone();
         return returnClk;
+    }
+
+    @Override
+    public void signalShutdown() throws RemoteException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     private class Room {

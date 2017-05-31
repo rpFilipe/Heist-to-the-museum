@@ -5,6 +5,7 @@
  */
 package monitors.ConcentrationSite;
 
+import java.rmi.RemoteException;
 import structures.Pair;
 import structures.VectorClock;
 
@@ -18,7 +19,7 @@ public interface ImtConcentrationSite {
     /**
      * Wait for all the Ordinary Thieves to be Outside and start the assault.
      */
-    public VectorClock startOperations(VectorClock vc);
+    public VectorClock startOperations(VectorClock vc) throws RemoteException,InterruptedException;
 
     /**
      * Get the number of Ordinary Thieves that are idling.
@@ -30,12 +31,12 @@ public interface ImtConcentrationSite {
      * Wake up the Ordinary Thieves necessary to join the Assault Party.
      * @param partyId Id of the target Assault Party.
      */
-    public VectorClock prepareAssaultParty(int partyId, VectorClock vc);
+    public VectorClock prepareAssaultParty(int partyId, VectorClock vc) throws RemoteException,InterruptedException;
 
     /**
      * Notify that the assault has ended.
      */
-    public VectorClock sumUpResults(VectorClock vc);
+    public VectorClock sumUpResults(VectorClock vc) throws RemoteException,InterruptedException;
     
     /**
      * Evaluates the situation and blocks if needed.
@@ -43,5 +44,5 @@ public interface ImtConcentrationSite {
      * @param isWaitingNedded does the MasterThief have to wait for a group arrival.
      * @return Master Thief next State
      */
-    public Pair<VectorClock, Integer> appraiseSit(boolean isHeistCompleted, boolean isWaitingNedded, VectorClock vc);
+    public Pair<VectorClock, Integer> appraiseSit(boolean isHeistCompleted, boolean isWaitingNedded, VectorClock vc) throws RemoteException,InterruptedException;
 }

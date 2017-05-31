@@ -5,6 +5,7 @@
  */
 package monitors.ControlAndCollectionSite;
 
+import java.rmi.RemoteException;
 import structures.VectorClock;
 
 /**
@@ -21,6 +22,6 @@ public interface IotControlAndCollectionSite {
      * @param roomId Id of the Room that was being target.
      * @param partyId Id of the Assault Party that Ordinary Thief belonged to.
      */
-    public VectorClock handACanvas(int id, boolean canvas, int roomId, int partyId, VectorClock vc);
+    public VectorClock handACanvas(int id, boolean canvas, int roomId, int partyId, VectorClock vc) throws RemoteException,InterruptedException;
     
 }

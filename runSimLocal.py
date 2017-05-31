@@ -1,62 +1,64 @@
 import paramiko, sys, os, subprocess, signal
 from collections import OrderedDict
+import time
+
 services = [{
     "order": 1,
     "class": "registry.ServerRegisterRemoteObject",
     "machine": "localhost",
-    "args": "localhost 4000 3999"
+    "args": "localhost 22110 22109"
   },
   {
     "order": 2,
     "class": "monitors.GeneralRepository.GeneralRepositoryStart",
     "machine": "localhost",
-    "args": "4100 heistsim.log localhost 4000"
+    "args": "4100 heistsim.log localhost 22110"
   },
   {
     "order": 3,
     "class": "monitors.AssaultParty.AssaultPartyStart",
     "machine": "localhost",
-    "args": "4200 0 localhost 4000"
+    "args": "4200 0 localhost 22110"
   },
   {
     "order": 4,
     "class": "monitors.AssaultParty.AssaultPartyStart",
     "machine": "localhost",
-    "args": "4300 1 localhost 4000"
+    "args": "4300 1 localhost 22110"
   },
   {
     "order": 5,
     "class": "monitors.ControlAndCollectionSite.ControlAndCollectionSiteStart",
     "machine": "localhost",
-    "args": "4400 localhost 4000"
+    "args": "4400 localhost 22110"
   },
   {
     "order": 6,
     "class": "monitors.ConcentrationSite.ConcentrationSiteStart",
     "machine": "localhost",
-    "args": "4500 localhost 4000"
+    "args": "4500 localhost 22110"
   },
   {
     "order": 7,
     "class": "monitors.Museum.MuseumStart",
     "machine": "localhost",
-    "args": "4600 localhost 4000"
+    "args": "4600 localhost 22110"
   },
   {
     "order": 8,
     "class": "main.OrdinaryThievesStart",
     "machine": "localhost",
-    "args": "localhost 4000"
+    "args": "localhost 22110"
   },
   {
     "order": 9,
     "class": "main.MasterThiefStart",
     "machine": "localhost",
-    "args": "localhost 4000"
+    "args": "localhost 22110"
   }]
 
 COMMAND = '-cp %s:libs/* %s %s'
-COMMAND2 = 'java -Djava.rmi.server.codebase="%s"\
+COMMAND2 = 'java -Djava.rmi.server.codebase="file://$(pwd)/"\
                  -Djava.security.policy=java.policy\
                  %s'
 USERNAME = "sd0109"
@@ -78,25 +80,20 @@ def signal_handler(signal):
 
 if __name__ == '__main__':
     FILENAME = sys.argv[1]
-    realPath = os.path.realpath(__file__)  # /home/user/test/my_script.py
-    dirPath = os.path.dirname(realPath)
-    FILELOCATION = dirPath+"/"+FILENAME
 
     #services = OrderedDict(sorted(services, key=lambda x: x['order']))
 
-    services.sort(key=lambda x:x['order'])
-
+    #p = services.sort(key=lambda x:x['order'])
+    #p = sorted(services)
     #iniciar o RMI register, como tme no exemplo do borges
-    servicesPID.append(subprocess.Popen("rmiregistry -J-Djava.rmi.server.useCodebaseOnly=false 3999", shell=True).pid)
-    
-
-    #iniciar o ServerRegisterRemoteObject dá erro com o register. VER
+    servicesPID.append(subprocess.Popen("rmiregistry -J-Djava.rmi.server.useCodebaseOnly=false 22110", shell=True).pid)
     for s in services:
+        print("Starting... %s" % s['class'])
         cmd = COMMAND % (FILENAME, s['class'], s['args'])
         try:
-          print("Starting... %s" % s['class'])
-          servicesPID.append(subprocess.Popen(COMMAND2 % (FILELOCATION, cmd), shell=True).pid)
-          break
+          #servicesPID.append(subprocess.Popen("./registry-servers.sh %s"% s['class'], shell=True).pid)
+          servicesPID.append(subprocess.Popen(COMMAND2 % cmd, shell=True).pid)
+          time.sleep(5)
         except ValueError:
             print(ValueError)
             killServices()

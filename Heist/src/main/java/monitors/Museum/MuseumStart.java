@@ -51,7 +51,7 @@ public class MuseumStart {
             System.setSecurityManager(new SecurityManager());
         }
 
-        Museum museum = new Museum((ImonitorsGeneralRepository) genRepo, SERVER_PORT, SERVER_PORT, SERVER_PORT, SERVER_PORT, SERVER_PORT);
+        Museum museum = new Museum((ImonitorsGeneralRepository) genRepo);
         MuseumInterface museumInterface = null;
 
         try {

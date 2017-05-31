@@ -80,15 +80,6 @@ public class OrdinaryThievesStart {
                 System.out.printf("OrdinaryThief join: %d\n", i);
             } catch(InterruptedException e) {}
         }
-        
-        System.out.println("Alert Logger that I have finished!");
-
-        try {
-            genRepInterface.signalShutdown();
-        } catch (RemoteException ex) {
-            Logger.getLogger(MasterThiefStart.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
         /* print the result */
         System.out.println("Done!");
     }

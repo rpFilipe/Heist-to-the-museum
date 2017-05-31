@@ -54,7 +54,7 @@ public class ControlAndCollectionSiteStart {
         ControlAndCollectionSiteInterface ccsInterface = null;
 
         try {
-            ccsInterface = (ControlAndCollectionSite) UnicastRemoteObject.exportObject(ccs, SERVER_PORT);
+            ccsInterface = (ControlAndCollectionSiteInterface) UnicastRemoteObject.exportObject(ccs, SERVER_PORT);
         } catch (RemoteException e) {
             System.out.println("Excepção na geração do stub para o Museum: " + e.getMessage());
             System.exit(1);

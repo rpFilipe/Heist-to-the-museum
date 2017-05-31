@@ -9,7 +9,6 @@ import interfaces.GeneralRepositoryInterface;
 import interfaces.Register;
 import java.rmi.AlreadyBoundException;
 import java.rmi.NotBoundException;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -53,7 +52,7 @@ public class GeneralRepositoryStart {
         GeneralRepositoryInterface genRepInterface = null;
 
         try {
-            genRepInterface = (GeneralRepositoryInterface) UnicastRemoteObject.exportObject((Remote) genRep, SERVER_PORT);
+            genRepInterface = (GeneralRepositoryInterface) UnicastRemoteObject.exportObject(genRep, SERVER_PORT);
         } catch (RemoteException e) {
             System.out.println("Excepção na geração do stub para o general repository: " + e.getMessage());
             System.exit(1);
@@ -62,13 +61,15 @@ public class GeneralRepositoryStart {
         System.out.println("O stub para o general repository foi gerado!");
 
         try {
+            System.out.println(genRepInterface);
+            System.out.println("********************");
+            System.out.println(reg);
             reg.bind("GeneralRepository", genRepInterface);
         } catch (RemoteException e) {
             System.out.println("Excepção no registo do general repository: " + e.getMessage());
             System.exit(1);
-        } catch (AlreadyBoundException e) {
-            System.out.println("O general repository já está registado: " + e.getMessage());
-            System.exit(1);
+        } catch (AlreadyBoundException ex) {
+            Logger.getLogger(GeneralRepositoryStart.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         System.out.println("O general repository foi registado!");

@@ -5,6 +5,7 @@
  */
 package monitors.AssaultParty;
 
+import java.rmi.RemoteException;
 import structures.Pair;
 import structures.VectorClock;
 
@@ -20,7 +21,7 @@ public interface IotAssaultParty {
      * @param vc
      * @return 
      */
-    public VectorClock crawlIn(int id, VectorClock vc);
+    public VectorClock crawlIn(int id, VectorClock vc) throws RemoteException,InterruptedException;
 
     /**
      * Method to Thieves crawl from the Museum to the Concentration Site.
@@ -28,7 +29,7 @@ public interface IotAssaultParty {
      * @param vc
      * @return 
      */
-    public VectorClock crawlOut(int id, VectorClock vc);
+    public VectorClock crawlOut(int id, VectorClock vc) throws RemoteException,InterruptedException;
 
     /**
      * Method to add a Ordinary Thief joins this Assault Party.
@@ -37,19 +38,19 @@ public interface IotAssaultParty {
      * @param vc
      * @return 
      */
-    public VectorClock joinParty(int id, int speed, VectorClock vc);
+    public VectorClock joinParty(int id, int speed, VectorClock vc) throws RemoteException,InterruptedException;
 
     /**
      * Method to change the direction in crawling.
      * @param vc
      * @return 
      */
-    public VectorClock reverseDirection(VectorClock vc);
+    public VectorClock reverseDirection(VectorClock vc) throws RemoteException,InterruptedException;
 
     /**
      * Get the current target room assigned to this Assault Party.
      * @param vc
      * @return Room id
      */
-    public Pair< VectorClock, Integer> getTargetRoom(VectorClock vc);
+    public Pair< VectorClock, Integer> getTargetRoom(VectorClock vc) throws RemoteException,InterruptedException;
 }

@@ -77,7 +77,7 @@ public class ControlAndCollectionSite implements ControlAndCollectionSiteInterfa
      * Thief to return from the Museum.
      */
     @Override
-    public synchronized VectorClock takeARest(VectorClock vc) {
+    public synchronized VectorClock takeARest(VectorClock vc) throws RemoteException,InterruptedException{
         this.vc.update(vc);
         VectorClock returnClk = this.vc.clone();
         masterThiefBusy = false;
@@ -98,7 +98,7 @@ public class ControlAndCollectionSite implements ControlAndCollectionSiteInterfa
      * Method to get the canvas from the Ordinary Thief.
      */
     @Override
-    public synchronized VectorClock collectCanvas(VectorClock vc) {
+    public synchronized VectorClock collectCanvas(VectorClock vc) throws RemoteException,InterruptedException{
         //canvasToCollect--;
         this.vc.update(vc);
         VectorClock returnClk = this.vc.clone();
@@ -115,7 +115,7 @@ public class ControlAndCollectionSite implements ControlAndCollectionSiteInterfa
      * @param partyId Id of the Assault Party that Ordinary Thief belonged to.
      */
     @Override
-    public synchronized VectorClock handACanvas(int thiefId, boolean hasCanvas, int roomId, int partyId, VectorClock vc) {
+    public synchronized VectorClock handACanvas(int thiefId, boolean hasCanvas, int roomId, int partyId, VectorClock vc) throws RemoteException, InterruptedException {
         //canvasToCollect++;
         this.vc.update(vc);
         VectorClock returnClk = this.vc.clone();
@@ -157,7 +157,7 @@ public class ControlAndCollectionSite implements ControlAndCollectionSiteInterfa
      * @return Id of the target Room.
      */
     @Override
-    public synchronized Pair<VectorClock, Integer> getTargetRoom(VectorClock vc) {
+    public synchronized Pair<VectorClock, Integer> getTargetRoom(VectorClock vc) throws RemoteException,InterruptedException {
         this.vc.update(vc);
         VectorClock returnClk = this.vc.clone();
         int room = chooseTargetRoom();
@@ -173,7 +173,7 @@ public class ControlAndCollectionSite implements ControlAndCollectionSiteInterfa
      * @return Id of the Assault Party to be prepared.
      */
     @Override
-    public synchronized Pair<VectorClock, Integer> getPartyToDeploy(VectorClock vc) {
+    public synchronized Pair<VectorClock, Integer> getPartyToDeploy(VectorClock vc) throws RemoteException,InterruptedException {
         this.vc.update(vc);
         VectorClock returnClk = this.vc.clone();
         int party = choosePartyToDeploy();
@@ -226,7 +226,7 @@ public class ControlAndCollectionSite implements ControlAndCollectionSiteInterfa
      * @return MasterThief has to wait
      */
     @Override
-    public synchronized Pair<VectorClock, Boolean> waitingNedded(VectorClock vc) {
+    public synchronized Pair<VectorClock, Boolean> waitingNedded(VectorClock vc) throws RemoteException,InterruptedException{
         this.vc.update(vc);
         VectorClock returnClk = this.vc.clone();
         partyToDeploy = choosePartyToDeploy();
@@ -241,7 +241,7 @@ public class ControlAndCollectionSite implements ControlAndCollectionSiteInterfa
      * @return heist completed
      */
     @Override
-    public synchronized Pair<VectorClock, Boolean> isHeistCompleted(VectorClock vc) {
+    public synchronized Pair<VectorClock, Boolean> isHeistCompleted(VectorClock vc) throws RemoteException, InterruptedException {
         this.vc.update(vc);
         VectorClock returnClk = this.vc.clone();
         genRepo.setCollectedCanvas(canvasCollected, vc);

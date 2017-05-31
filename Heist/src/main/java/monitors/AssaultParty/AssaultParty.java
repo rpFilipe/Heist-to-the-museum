@@ -6,6 +6,8 @@
 package monitors.AssaultParty;
 
 
+import interfaces.AssaultPartyInterface;
+import java.rmi.RemoteException;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.logging.Level;
@@ -19,7 +21,7 @@ import structures.*;
  * @author Ricardo Filipe
  * @author Marc Wagner
  */
-public class AssaultParty implements IotAssaultParty, ImtAssaultParty{
+public class AssaultParty implements AssaultPartyInterface{
 
     private int teamId;
     private int roomDistance;
@@ -71,7 +73,7 @@ public class AssaultParty implements IotAssaultParty, ImtAssaultParty{
      * @param id of the Ordinary Thief that invoked the method.
      */
     @Override
-    public synchronized VectorClock crawlIn(int id, VectorClock vc) {
+    public synchronized VectorClock crawlIn(int id, VectorClock vc) throws RemoteException, InterruptedException {
         this.vc.update(vc);
         VectorClock returnClk = this.vc.clone();
         
@@ -114,7 +116,7 @@ public class AssaultParty implements IotAssaultParty, ImtAssaultParty{
      * @param id of the Ordinary Thief that invoked the method.
      */
     @Override
-    public synchronized VectorClock crawlOut(int id, VectorClock vc) {
+    public synchronized VectorClock crawlOut(int id, VectorClock vc) throws RemoteException, InterruptedException {
         this.vc.update(vc);
         VectorClock returnClk = this.vc.clone();
         
@@ -158,7 +160,7 @@ public class AssaultParty implements IotAssaultParty, ImtAssaultParty{
      * @param speed maximum crawling distance per step.
      */
     @Override
-    public synchronized VectorClock joinParty(int id, int speed, VectorClock vc) {
+    public synchronized VectorClock joinParty(int id, int speed, VectorClock vc) throws RemoteException, InterruptedException {
         this.vc.update(vc);
         VectorClock returnClk = this.vc.clone();
         
@@ -176,7 +178,7 @@ public class AssaultParty implements IotAssaultParty, ImtAssaultParty{
      * @param distance from the Concentration Site to the Room.
      */
     @Override
-    public VectorClock setRoom(int id, int distance,VectorClock vc) {
+    public VectorClock setRoom(int id, int distance,VectorClock vc) throws RemoteException, InterruptedException {
         this.vc.update(vc);
         VectorClock returnClk = this.vc.clone();
         this.roomDistance = distance;
@@ -219,6 +221,11 @@ public class AssaultParty implements IotAssaultParty, ImtAssaultParty{
             notifyAll();
         }
         return returnClk;
+    }
+
+    @Override
+    public void signalShutdown() throws RemoteException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 
