@@ -31,9 +31,14 @@ public class MasterThiefStart {
     private static int N_ASSAULT_PARTY_SIZE;
      
     public static void main(String args[]) {
-        Scanner sc = new Scanner(System.in); 
         
+        System.out.println("Starting Master Thief");
+        
+        Scanner sc = new Scanner(System.in); 
         N_ASSAULT_PARTY_SIZE = Constants.N_ASSAULT_PARTIES;
+        
+        rmiServerHostname = args[0];
+        rmiServerPort = Integer.parseInt(args[1]);
 
          /* get location of the generic registry service */
         Registry registry = getRegistry(rmiServerHostname, rmiServerPort);
@@ -47,27 +52,42 @@ public class MasterThiefStart {
         
         for(int i=0; i<N_ASSAULT_PARTY_SIZE; i++)
             assaultPartyInterface[i] = getAssaultParty(registry, "AssaultParty"+i);
-        
+
         MasterThief masterThief = new MasterThief(museumInterface, concSiteInterface, 
                 contCollSiteInterface, assaultPartyInterface, genRepInterface);
+        
         
         System.out.println("Number of Master Thieves: 1 ");
        
         masterThief.start();
         System.out.printf("MasterThief start: \n");
         
-         try { 
+        try {        
+            Thread.sleep(1000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(MasterThiefStart.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        try { 
             masterThief.join ();
             System.out.printf("MasterThief join: \n");
         } catch (InterruptedException e) {}
 
         System.out.println("Alert General Repository to finish!");
+        
+        try {        
+            Thread.sleep(1000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(MasterThiefStart.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
+        /*
         try {
             genRepInterface.terminateServers();
         } catch (RemoteException ex) {
             Logger.getLogger(MasterThiefStart.class.getName()).log(Level.SEVERE, null, ex);
         }
+        */
          /* print the result */
          System.out.println("End operations!!");
       }
@@ -77,7 +97,7 @@ public class MasterThiefStart {
         try {
             registry = LocateRegistry.getRegistry(rmiServerHostname, rmiServerPort);
         } catch (RemoteException ex) {
-            System.err.print("Deu bronca");
+            System.err.print("Deu bronca getRegistry");
             System.exit(1);
         }
         System.out.println("O registo RMI foi criado!");
@@ -107,9 +127,9 @@ public class MasterThiefStart {
             /* Locate General Repository */
             genRepo = (GeneralRepositoryInterface) registry.lookup(nameEntry);
         } catch (RemoteException ex) {
-            System.err.print("Deu bronca");
+            System.err.print("Deu bronca GeneralRepository");
         } catch (NotBoundException ex) {
-            System.err.print("Deu bronca");
+            System.err.print("Deu bronca GeneralRepository2");
         }
         return genRepo;
     }
@@ -117,15 +137,15 @@ public class MasterThiefStart {
     private static ConcentrationSiteInterface getConcentrationSite(Registry registry) {
         ConcentrationSiteInterface concSite = null;
         /* look for the remote object by name in the remote host registry */
-        String nameEntry = "ConcentrationSite";
+        String nameEntry = "concentrationSite";
 
         try {
             /* Locate General Repository */
             concSite = (ConcentrationSiteInterface) registry.lookup(nameEntry);
         } catch (RemoteException ex) {
-            System.err.print("Deu bronca");
+            System.err.print("Deu bronca concentrationSite");
         } catch (NotBoundException ex) {
-            System.err.print("Deu bronca");
+            System.err.print("Deu bronca concentrationSite2");
         }
         return concSite;
     }
@@ -133,15 +153,15 @@ public class MasterThiefStart {
     private static ControlAndCollectionSiteInterface getControlAndCollectionSite(Registry registry) {
         ControlAndCollectionSiteInterface contCollSite = null;
         /* look for the remote object by name in the remote host registry */
-        String nameEntry = "ControlAndCollectionSite";
+        String nameEntry = "controlAndCollectionSite";
 
         try {
             /* Locate General Repository */
             contCollSite = (ControlAndCollectionSiteInterface) registry.lookup(nameEntry);
         } catch (RemoteException ex) {
-            System.err.print("Deu bronca");
+            System.err.print("Deu bronca controlAndCollectionSite");
         } catch (NotBoundException ex) {
-            System.err.print("Deu bronca");
+            System.err.print("Deu bronca controlAndCollectionSite2");
         }
         return contCollSite;
     }
@@ -155,9 +175,9 @@ public class MasterThiefStart {
             /* Locate General Repository */
             museum = (MuseumInterface) registry.lookup(nameEntry);
         } catch (RemoteException ex) {
-            System.err.print("Deu bronca");
+            System.err.print("Deu bronca Museum");
         } catch (NotBoundException ex) {
-            System.err.print("Deu bronca");
+            System.err.print("Deu bronca Museum2");
         }
         return museum;
     }
@@ -171,9 +191,9 @@ public class MasterThiefStart {
             /* Locate General Repository */
             assaultParty = (AssaultPartyInterface) registry.lookup(nameEntry);
         } catch (RemoteException ex) {
-            System.err.print("Deu bronca");
+            System.err.print("Deu bronca AssaultParty");
         } catch (NotBoundException ex) {
-            System.err.print("Deu bronca");
+            System.err.printf("\nDeu bronca AssaultParty2 - %d", assParty);
         }
         return assaultParty;
     }

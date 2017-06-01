@@ -16,9 +16,8 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import structures.Constants;
 
 /**
@@ -40,15 +39,19 @@ public class OrdinaryThievesStart {
      * @param args
      */
     public static void main(String args[]) {
+        
+        System.out.println("Starting Ordinary Thieves");
+        
         Scanner sc = new Scanner(System.in);
         N_ORD_THIEVES = Constants.N_ORD_THIEVES;
-        N_ASSAULT_PARTY_SIZE = Constants.ASSAULT_PARTY_SIZE;
+        N_ASSAULT_PARTY_SIZE = Constants.N_ASSAULT_PARTIES;
         MAX_SPEED = Constants.MAX_THIEF_SPEED;
         MIN_SPEED = Constants.MIN_THIEF_SPEED;
         rmiServerHostname = args[0];
         rmiServerPort = Integer.parseInt(args[1]);
 
-        ArrayList<OrdinaryThief> ordThieves = new ArrayList<>(N_ORD_THIEVES);
+        /* Create ordThieves List */
+        List<OrdinaryThief> ordThieves = new ArrayList<>();
         /* get location of the generic registry service */
         Registry registry = getRegistry(rmiServerHostname, rmiServerPort);
         Register reg = getRegister(registry);
@@ -62,27 +65,27 @@ public class OrdinaryThievesStart {
         for(int i=0; i<N_ASSAULT_PARTY_SIZE; i++)
             assaultPartyInterface[i] = getAssaultParty(registry, "AssaultParty"+i);
         
-        for(int i=0; i<ordThieves.size(); i++){
+        for(int i=0; i<N_ORD_THIEVES; i++){
             ordThieves.add(new OrdinaryThief(i, MAX_SPEED, MIN_SPEED, museumInterface, concSiteInterface, 
                     contCollSiteInterface, assaultPartyInterface, genRepInterface));
         }
 
-        System.out.println("Number of ordinary thieves: " +ordThieves.size());  
+        System.out.println("\nNumber of ordinary thieves: " +ordThieves.size());  
        
         for(int i = 0; i < ordThieves.size(); i++){
             ordThieves.get(i).start();
-            System.out.printf("OrdinaryThief start: %d\n", i);
+            System.out.printf("\nOrdinaryThief start: %d", i);
         }
         
         for(int i = 0; i < ordThieves.size(); i++){
             try {
                 ordThieves.get(i).join();
-                System.out.printf("OrdinaryThief join: %d\n", i);
+                System.out.printf("\nOrdinaryThief join: %d\n", i);
             } catch(InterruptedException e) {}
         }
         
         /* print the result */
-        System.out.println("Done!");
+        System.out.println("Done Ordinary Thieves!!");
     }
 
     private static Registry getRegistry(String rmiServerHostname, int rmiServerPort) {
@@ -90,7 +93,7 @@ public class OrdinaryThievesStart {
         try {
             registry = LocateRegistry.getRegistry(rmiServerHostname, rmiServerPort);
         } catch (RemoteException ex) {
-            System.err.print("Deu bronca");
+            System.err.print("Deu bronca getRegistry");
             System.exit(1);
         }
         System.out.println("O registo RMI foi criado!");
@@ -120,9 +123,9 @@ public class OrdinaryThievesStart {
             /* Locate General Repository */
             genRepo = (GeneralRepositoryInterface) registry.lookup(nameEntry);
         } catch (RemoteException ex) {
-            System.err.print("Deu bronca");
+            System.err.print("Deu bronca GeneralRepository");
         } catch (NotBoundException ex) {
-            System.err.print("Deu bronca");
+            System.err.print("Deu bronca GeneralRepository2");
         }
         return genRepo;
     }
@@ -130,15 +133,15 @@ public class OrdinaryThievesStart {
     private static ConcentrationSiteInterface getConcentrationSite(Registry registry) {
         ConcentrationSiteInterface concSite = null;
         /* look for the remote object by name in the remote host registry */
-        String nameEntry = "ConcentrationSite";
+        String nameEntry = "concentrationSite";
 
         try {
             /* Locate General Repository */
             concSite = (ConcentrationSiteInterface) registry.lookup(nameEntry);
         } catch (RemoteException ex) {
-            System.err.print("Deu bronca");
+            System.err.print("Deu bronca ConcentrationSite");
         } catch (NotBoundException ex) {
-            System.err.print("Deu bronca");
+            System.err.print("Deu bronca ConcentrationSite2");
         }
         return concSite;
     }
@@ -146,15 +149,15 @@ public class OrdinaryThievesStart {
     private static ControlAndCollectionSiteInterface getControlAndCollectionSite(Registry registry) {
         ControlAndCollectionSiteInterface contCollSite = null;
         /* look for the remote object by name in the remote host registry */
-        String nameEntry = "ControlAndCollectionSite";
+        String nameEntry = "controlAndCollectionSite";
 
         try {
             /* Locate General Repository */
             contCollSite = (ControlAndCollectionSiteInterface) registry.lookup(nameEntry);
         } catch (RemoteException ex) {
-            System.err.print("Deu bronca");
+            System.err.print("Deu bronca ControlAndCollectionSite");
         } catch (NotBoundException ex) {
-            System.err.print("Deu bronca");
+            System.err.print("Deu bronca ControlAndCollectionSite2");
         }
         return contCollSite;
     }
@@ -168,9 +171,9 @@ public class OrdinaryThievesStart {
             /* Locate General Repository */
             museum = (MuseumInterface) registry.lookup(nameEntry);
         } catch (RemoteException ex) {
-            System.err.print("Deu bronca");
+            System.err.print("Deu bronca Museum");
         } catch (NotBoundException ex) {
-            System.err.print("Deu bronca");
+            System.err.print("Deu bronca Museum2");
         }
         return museum;
     }
@@ -184,9 +187,9 @@ public class OrdinaryThievesStart {
             /* Locate General Repository */
             assaultParty = (AssaultPartyInterface) registry.lookup(nameEntry);
         } catch (RemoteException ex) {
-            System.err.print("Deu bronca");
+            System.err.print("Deu bronca AssaultParty");
         } catch (NotBoundException ex) {
-            System.err.print("Deu bronca");
+            System.err.printf("\nDeu bronca AssaultParty2 - %d", assParty);
         }
         return assaultParty;
     }

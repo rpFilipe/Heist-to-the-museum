@@ -34,6 +34,7 @@ public class ControlAndCollectionSiteStart {
      * @param args
      */
     public static void main(String[] args) {
+
         System.out.println("Starting Control And Collection Site");
         SERVER_PORT = Integer.parseInt(args[0]);
         rmiServerHostname = args[1];
@@ -56,23 +57,23 @@ public class ControlAndCollectionSiteStart {
         try {
             ccsInterface = (ControlAndCollectionSiteInterface) UnicastRemoteObject.exportObject(ccs, SERVER_PORT);
         } catch (RemoteException e) {
-            System.out.println("Excepção na geração do stub para o Museum: " + e.getMessage());
+            System.out.println("Excepção na geração do stub para o Control And Collection Site: " + e.getMessage());
             System.exit(1);
         }
 
-        System.out.println("O stub para o museum foi gerado!");
+        System.out.println("O stub para o Control And Collection Site foi gerado!");
 
         try {
             reg.bind("controlAndCollectionSite", ccsInterface);
         } catch (RemoteException e) {
-            System.out.println("Excepção no registo do museum: " + e.getMessage());
+            System.out.println("Excepção no registo do Control And Collection Site: " + e.getMessage());
             System.exit(1);
         } catch (AlreadyBoundException e) {
-            System.out.println("O museum já está registado: " + e.getMessage());
+            System.out.println("O Control And Collection Site já está registado: " + e.getMessage());
             System.exit(1);
         }
 
-        System.out.println("O bench foi registado!");
+        System.out.println("O Control And Collection Site foi registado!");
 
     }
 

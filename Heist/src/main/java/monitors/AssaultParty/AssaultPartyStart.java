@@ -5,12 +5,10 @@
  */
 package monitors.AssaultParty;
 import interfaces.GeneralRepositoryInterface;
-import interfaces.MuseumInterface;
 import interfaces.AssaultPartyInterface;
 import interfaces.Register;
 import java.rmi.AlreadyBoundException;
 import java.rmi.NotBoundException;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -63,7 +61,7 @@ public class AssaultPartyStart {
             System.exit(1);
         }
 
-        System.out.println("O stub para a assault Party foi gerado!");
+        System.out.printf("\nO stub para a assault Party %d foi gerado!", PARTY_ID);
 
         try {
             reg.bind("AssaultParty"+PARTY_ID, assaultpartyInterface);
@@ -74,7 +72,7 @@ public class AssaultPartyStart {
             System.out.println("A assault party já está registada: " + e.getMessage());
             System.exit(1);
         }
-        System.out.println("A assault party foi registada!");
+        System.out.printf("\nA assault party %d foi registada!", PARTY_ID);
     }
     
     private static Registry getRegistry(String rmiServerHostname, int rmiServerPort) {

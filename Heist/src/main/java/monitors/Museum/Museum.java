@@ -62,7 +62,7 @@ public class Museum implements MuseumInterface {
             rooms[i] = new Room();
             totalPaitings += rooms[i].paintings;
         }
-        System.out.printf("The museum has %d paitings", totalPaitings);
+        System.out.printf("\nThe museum has %d paitings\n", totalPaitings);
     }
 
     private class Room {

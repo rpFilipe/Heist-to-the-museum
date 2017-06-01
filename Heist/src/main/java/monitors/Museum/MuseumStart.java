@@ -35,15 +35,14 @@ public class MuseumStart {
      * @param args
      */
     public static void main(String[] args) {
-        System.out.println("Starting Monitor");
+        
+        System.out.println("Starting Museum");
         SERVER_PORT = Integer.parseInt(args[0]);
         rmiServerHostname = args[1];
         rmiServerPort = Integer.parseInt(args[2]);
 
         Registry registry = getRegistry(rmiServerHostname, rmiServerPort);
-
         Register reg = getRegister(registry);
-        
         GeneralRepositoryInterface genRepo = getGeneralRepository(registry);
 
         /* instanciação e instalação do gestor de segurança */
@@ -73,7 +72,7 @@ public class MuseumStart {
             System.exit(1);
         }
 
-        System.out.println("O bench foi registado!");
+        System.out.println("O Museum foi registado!");
 
     }
 
@@ -119,5 +118,4 @@ public class MuseumStart {
         }
         return genRepo;
     }
-
 }

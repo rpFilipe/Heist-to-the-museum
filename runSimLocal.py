@@ -87,7 +87,9 @@ if __name__ == '__main__':
     #p = sorted(services)
     #iniciar o RMI register, como tme no exemplo do borges
     servicesPID.append(subprocess.Popen("rmiregistry -J-Djava.rmi.server.useCodebaseOnly=false 22110", shell=True).pid)
-    for s in services:
+    time.sleep(5)
+    for s in services: 
+        print("###################################")
         print("Starting... %s" % s['class'])
         cmd = COMMAND % (FILENAME, s['class'], s['args'])
         try:

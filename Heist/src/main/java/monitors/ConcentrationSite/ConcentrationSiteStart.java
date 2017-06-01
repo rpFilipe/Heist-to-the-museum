@@ -11,7 +11,6 @@ import structures.Constants;
 import interfaces.Register;
 import java.rmi.AlreadyBoundException;
 import java.rmi.NotBoundException;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -38,7 +37,7 @@ public class ConcentrationSiteStart {
      * @param args
      */
     public static void main(String[] args) {
-        
+
         System.out.println("Starting Concentration Site");
         SERVER_PORT = Integer.parseInt(args[0]);
         rmiServerHostname = args[1];
@@ -59,7 +58,7 @@ public class ConcentrationSiteStart {
         try {
             concSiteInterface = (ConcentrationSiteInterface) UnicastRemoteObject.exportObject(concSite, SERVER_PORT);
         } catch (RemoteException e) {
-            System.out.println("Excepção na geração do stub para o Museum: " + e.getMessage());
+            System.out.println("Excepção na geração do stub para o Concentration Site: " + e.getMessage());
             System.exit(1);
         }
 

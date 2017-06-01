@@ -460,6 +460,7 @@ public class GeneralRepository implements GeneralRepositoryInterface {
     @Override
     public void terminateServers(){
         
+        System.out.println("TerminateServers");
         /* Just for test - Put in the file for example */
         String rmiServerHostname = "localhost";
         int rmiServerPort = 4000;
@@ -472,7 +473,7 @@ public class GeneralRepository implements GeneralRepositoryInterface {
         /* Shutdown Concentration Site */
         try
         {
-            ConcentrationSiteInterface concSiteInterface = (ConcentrationSiteInterface) registry.lookup ("ConcentrationSite");
+            ConcentrationSiteInterface concSiteInterface = (ConcentrationSiteInterface) registry.lookup ("concentrationSite");
             concSiteInterface.signalShutdown();
         }
         catch (RemoteException e)
@@ -483,23 +484,6 @@ public class GeneralRepository implements GeneralRepositoryInterface {
         catch (NotBoundException e)
         { 
             System.out.println("Concentration Site is not registered: " + e.getMessage () + "!");
-            Logger.getLogger(GeneralRepository.class.getName()).log(Level.SEVERE, null, e);
-        }
-        
-        /* Shutdown Control And Collection Site */
-        try
-        {
-            ControlAndCollectionSiteInterface contCollSiteInterface = (ControlAndCollectionSiteInterface) registry.lookup ("controlAndCollectionSite");
-            contCollSiteInterface.signalShutdown();
-        }
-        catch (RemoteException e)
-        { 
-            System.out.println("Exception thrown while locating control and collection site: " + e.getMessage () + "!");
-            Logger.getLogger(GeneralRepository.class.getName()).log(Level.SEVERE, null, e);
-        }
-        catch (NotBoundException e)
-        { 
-            System.out.println("Control And Collection Site is not registered: " + e.getMessage () + "!");
             Logger.getLogger(GeneralRepository.class.getName()).log(Level.SEVERE, null, e);
         }
         
@@ -536,6 +520,24 @@ public class GeneralRepository implements GeneralRepositoryInterface {
             }
         }        
         
+        /* Shutdown Museum */
+        try
+        {
+            MuseumInterface museumInterface = (MuseumInterface) registry.lookup ("Museum");
+            museumInterface.signalShutdown();
+        }
+        catch (RemoteException e)
+        { 
+            System.out.println("Exception thrown while locating museum: " + e.getMessage () + "!");
+            Logger.getLogger(GeneralRepository.class.getName()).log(Level.SEVERE, null, e);
+        }
+        catch (NotBoundException e)
+        { 
+            System.out.println("Museum is not registered: " + e.getMessage () + "!");
+            Logger.getLogger(GeneralRepository.class.getName()).log(Level.SEVERE, null, e);
+        }
+        
+        
        /* Shutdown General Repository */
         try {
             reg = (Register) registry.lookup(nameEntryBase);
@@ -564,7 +566,7 @@ public class GeneralRepository implements GeneralRepositoryInterface {
             Logger.getLogger(GeneralRepository.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        //FinalizeLog();
+        FinalizeLog(vc);
         
         System.out.println("General Repository Log written succesfully!!");
     }
