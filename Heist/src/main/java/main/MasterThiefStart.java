@@ -61,15 +61,15 @@ public class MasterThiefStart {
             System.out.printf("MasterThief join: \n");
         } catch (InterruptedException e) {}
 
-        System.out.println("Alert Logger that I have finished!");
+        System.out.println("Alert General Repository to finish!");
 
         try {
-            genRepInterface.signalShutdown();
+            genRepInterface.terminateServers();
         } catch (RemoteException ex) {
             Logger.getLogger(MasterThiefStart.class.getName()).log(Level.SEVERE, null, ex);
         }
          /* print the result */
-         System.out.println("Done!");
+         System.out.println("End operations!!");
       }
 
     private static Registry getRegistry(String rmiServerHostname, int rmiServerPort) {

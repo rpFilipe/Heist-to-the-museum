@@ -80,6 +80,7 @@ public class OrdinaryThievesStart {
                 System.out.printf("OrdinaryThief join: %d\n", i);
             } catch(InterruptedException e) {}
         }
+        
         /* print the result */
         System.out.println("Done!");
     }

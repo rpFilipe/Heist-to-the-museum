@@ -17,5 +17,5 @@ import monitors.GeneralRepository.IotGeneralRepository;
  */
 public interface GeneralRepositoryInterface extends ImtGeneralRepository, IotGeneralRepository, ImonitorsGeneralRepository, Remote
 {
-    public void signalShutdown() throws RemoteException;
+    public void terminateServers() throws RemoteException;
 }

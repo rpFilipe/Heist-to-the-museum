@@ -7,12 +7,19 @@ package monitors.AssaultParty;
 
 
 import interfaces.AssaultPartyInterface;
+import interfaces.Register;
+import java.rmi.NoSuchObjectException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
+import monitors.ControlAndCollectionSite.ControlAndCollectionSiteStart;
 import monitors.GeneralRepository.ImonitorsGeneralRepository;
 import structures.*;
 
@@ -225,7 +232,73 @@ public class AssaultParty implements AssaultPartyInterface{
 
     @Override
     public void signalShutdown() throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
+        /* Just for test - Put in the file for example */
+        String rmiServerHostname = "localhost";
+        int rmiServerPort = 4000;
+        String nameEntryBase = "RegisterHandler";
+        String nameEntryObject = "AssaultParty";
+        
+        Registry registry = getRegistry(rmiServerHostname, rmiServerPort);
+        Register reg = getRegister(registry);
+
+        try {
+            reg = (Register) registry.lookup(nameEntryBase);
+        } catch (RemoteException e) {
+            System.out.println("RegisterRemoteObject lookup exception: " + e.getMessage());
+            Logger.getLogger(AssaultParty.class.getName()).log(Level.SEVERE, null, e);
+        } catch (NotBoundException e) {
+            System.out.println("RegisterRemoteObject not bound exception: " + e.getMessage());
+            Logger.getLogger(AssaultParty.class.getName()).log(Level.SEVERE, null, e);
+        }
+        try {
+            // Unregister ourself
+            // For both Assault Parties
+            for(int i=0; i<Constants.N_ASSAULT_PARTIES; i++){
+                reg.unbind(nameEntryObject+i);
+            }
+        } catch (RemoteException e) {
+            System.out.println("AssaultParty registration exception: " + e.getMessage());
+            Logger.getLogger(AssaultParty.class.getName()).log(Level.SEVERE, null, e);
+        } catch (NotBoundException e) {
+            System.out.println("AssaultParty not bound exception: " + e.getMessage());
+            Logger.getLogger(AssaultParty.class.getName()).log(Level.SEVERE, null, e);
+        }
+
+        try {
+            // Unexport; this will also remove us from the RMI runtime
+            UnicastRemoteObject.unexportObject(this, true);
+        } catch (NoSuchObjectException ex) {
+            Logger.getLogger(AssaultParty.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        System.out.println("Assault Party closed.");
+    }
+    
+    private static Registry getRegistry(String rmiServerHostname, int rmiServerPort) {
+        Registry registry = null;
+        try {
+            registry = LocateRegistry.getRegistry(rmiServerHostname, rmiServerPort);
+        } catch (RemoteException ex) {
+            Logger.getLogger(ControlAndCollectionSiteStart.class.getName()).log(Level.SEVERE, null, ex);
+            System.exit(1);
+        }
+        System.out.println("O registo RMI foi criado!");
+        return registry;
+    }
+
+    private static Register getRegister(Registry registry) {
+        Register reg = null;
+        try {
+            reg = (Register) registry.lookup("RegisterHandler");
+        } catch (RemoteException e) {
+            System.out.println("RegisterRemoteObject lookup exception: " + e.getMessage());
+            System.exit(1);
+        } catch (NotBoundException e) {
+            System.out.println("RegisterRemoteObject not bound exception: " + e.getMessage());
+            System.exit(1);
+        }
+        return reg;
     }
     
 

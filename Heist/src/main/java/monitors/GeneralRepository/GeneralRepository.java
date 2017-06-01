@@ -7,12 +7,25 @@ package monitors.GeneralRepository;
 
 import States.MasterThiefStates;
 import States.OrdinaryThiefState;
+import interfaces.AssaultPartyInterface;
+import interfaces.ConcentrationSiteInterface;
+import interfaces.ControlAndCollectionSiteInterface;
 import interfaces.GeneralRepositoryInterface;
+import interfaces.MuseumInterface;
+import interfaces.Register;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.rmi.NoSuchObjectException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import monitors.ControlAndCollectionSite.ControlAndCollectionSiteStart;
 import structures.Constants;
 import structures.VectorClock;
 
@@ -417,10 +430,143 @@ public class GeneralRepository implements GeneralRepositoryInterface {
         VectorClock returnClk = this.vc.clone();
         return returnClk;
     }
+    
+    private static Registry getRegistry(String rmiServerHostname, int rmiServerPort) {
+        Registry registry = null;
+        try {
+            registry = LocateRegistry.getRegistry(rmiServerHostname, rmiServerPort);
+        } catch (RemoteException ex) {
+            Logger.getLogger(ControlAndCollectionSiteStart.class.getName()).log(Level.SEVERE, null, ex);
+            System.exit(1);
+        }
+        System.out.println("O registo RMI foi criado!");
+        return registry;
+    }
 
+    private static Register getRegister(Registry registry) {
+        Register reg = null;
+        try {
+            reg = (Register) registry.lookup("RegisterHandler");
+        } catch (RemoteException e) {
+            System.out.println("RegisterRemoteObject lookup exception: " + e.getMessage());
+            System.exit(1);
+        } catch (NotBoundException e) {
+            System.out.println("RegisterRemoteObject not bound exception: " + e.getMessage());
+            System.exit(1);
+        }
+        return reg;
+    }
+    
     @Override
-    public void signalShutdown() throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void terminateServers(){
+        
+        /* Just for test - Put in the file for example */
+        String rmiServerHostname = "localhost";
+        int rmiServerPort = 4000;
+        String nameEntryBase = "RegisterHandler";
+        String nameEntryObject = "GeneralRepository";
+        
+        Registry registry = getRegistry(rmiServerHostname, rmiServerPort);
+        Register reg = getRegister(registry);
+        
+        /* Shutdown Concentration Site */
+        try
+        {
+            ConcentrationSiteInterface concSiteInterface = (ConcentrationSiteInterface) registry.lookup ("ConcentrationSite");
+            concSiteInterface.signalShutdown();
+        }
+        catch (RemoteException e)
+        { 
+            System.out.println("Exception thrown while locating concentration site: " + e.getMessage () + "!");
+            Logger.getLogger(GeneralRepository.class.getName()).log(Level.SEVERE, null, e);
+        }
+        catch (NotBoundException e)
+        { 
+            System.out.println("Concentration Site is not registered: " + e.getMessage () + "!");
+            Logger.getLogger(GeneralRepository.class.getName()).log(Level.SEVERE, null, e);
+        }
+        
+        /* Shutdown Control And Collection Site */
+        try
+        {
+            ControlAndCollectionSiteInterface contCollSiteInterface = (ControlAndCollectionSiteInterface) registry.lookup ("controlAndCollectionSite");
+            contCollSiteInterface.signalShutdown();
+        }
+        catch (RemoteException e)
+        { 
+            System.out.println("Exception thrown while locating control and collection site: " + e.getMessage () + "!");
+            Logger.getLogger(GeneralRepository.class.getName()).log(Level.SEVERE, null, e);
+        }
+        catch (NotBoundException e)
+        { 
+            System.out.println("Control And Collection Site is not registered: " + e.getMessage () + "!");
+            Logger.getLogger(GeneralRepository.class.getName()).log(Level.SEVERE, null, e);
+        }
+        
+        /* Shutdown Control And Collection Site */
+        try
+        {
+            ControlAndCollectionSiteInterface contCollSiteInterface = (ControlAndCollectionSiteInterface) registry.lookup ("controlAndCollectionSite");
+            contCollSiteInterface.signalShutdown();
+        }
+        catch (RemoteException e)
+        { 
+            System.out.println("Exception thrown while locating control and collection site: " + e.getMessage () + "!");
+            Logger.getLogger(GeneralRepository.class.getName()).log(Level.SEVERE, null, e);
+        }
+        catch (NotBoundException e)
+        { 
+            System.out.println("Control And Collection Site is not registered: " + e.getMessage () + "!");
+            Logger.getLogger(GeneralRepository.class.getName()).log(Level.SEVERE, null, e);
+        }
+        
+        /* Shutdown Assault Parties */
+        for(int i=0; i<Constants.N_ASSAULT_PARTIES; i++){
+            try{
+                AssaultPartyInterface assaultPartyInterface = (AssaultPartyInterface) registry.lookup ("AssaultParty"+i);
+                assaultPartyInterface.signalShutdown();
+            } catch (RemoteException e) { 
+                System.out.println("Exception thrown while locating assault party: " + e.getMessage () + "!");
+                Logger.getLogger(GeneralRepository.class.getName()).log(Level.SEVERE, null, e);
+            }
+            catch (NotBoundException e)
+            { 
+                System.out.println("AssaultParty"+i+" is not registered: " + e.getMessage () + "!");
+                Logger.getLogger(GeneralRepository.class.getName()).log(Level.SEVERE, null, e);
+            }
+        }        
+        
+       /* Shutdown General Repository */
+        try {
+            reg = (Register) registry.lookup(nameEntryBase);
+        } catch (RemoteException e) {
+            System.out.println("RegisterRemoteObject lookup exception: " + e.getMessage());
+            Logger.getLogger(GeneralRepository.class.getName()).log(Level.SEVERE, null, e);
+        } catch (NotBoundException e) {
+            System.out.println("RegisterRemoteObject not bound exception: " + e.getMessage());
+            Logger.getLogger(GeneralRepository.class.getName()).log(Level.SEVERE, null, e);
+        }
+        try {
+            // Unregister ourself
+            reg.unbind(nameEntryObject);
+        } catch (RemoteException e) {
+            System.out.println("GeneralRepository registration exception: " + e.getMessage());
+            Logger.getLogger(GeneralRepository.class.getName()).log(Level.SEVERE, null, e);
+        } catch (NotBoundException e) {
+            System.out.println("GeneralRepository not bound exception: " + e.getMessage());
+            Logger.getLogger(GeneralRepository.class.getName()).log(Level.SEVERE, null, e);
+        }
+
+        try {
+            // Unexport; this will also remove us from the RMI runtime
+            UnicastRemoteObject.unexportObject(this, true);
+        } catch (NoSuchObjectException ex) {
+            Logger.getLogger(GeneralRepository.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        //FinalizeLog();
+        
+        System.out.println("General Repository Log written succesfully!!");
     }
 
     private class Room {

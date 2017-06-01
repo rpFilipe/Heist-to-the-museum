@@ -64,7 +64,7 @@ public class MuseumStart {
         System.out.println("O stub para o museum foi gerado!");
 
         try {
-            reg.bind("museum", museumInterface);
+            reg.bind("Museum", museumInterface);
         } catch (RemoteException e) {
             System.out.println("Excepção no registo do museum: " + e.getMessage());
             System.exit(1);

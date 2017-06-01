@@ -1,10 +1,17 @@
 package monitors.Museum;
 
 import interfaces.MuseumInterface;
+import interfaces.Register;
+import java.rmi.NoSuchObjectException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import monitors.ControlAndCollectionSite.ControlAndCollectionSiteStart;
 import monitors.GeneralRepository.ImonitorsGeneralRepository;
 import structures.Constants;
 import structures.Pair;
@@ -123,6 +130,69 @@ public class Museum implements MuseumInterface {
 
     @Override
     public void signalShutdown() throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
+        /* Just for test - Put in the file for example */
+        String rmiServerHostname = "localhost";
+        int rmiServerPort = 4000;
+        String nameEntryBase = "RegisterHandler";
+        String nameEntryObject = "Museum";
+        
+        Registry registry = getRegistry(rmiServerHostname, rmiServerPort);
+        Register reg = getRegister(registry);
+
+        try {
+            reg = (Register) registry.lookup(nameEntryBase);
+        } catch (RemoteException e) {
+            System.out.println("RegisterRemoteObject lookup exception: " + e.getMessage());
+            Logger.getLogger(Museum.class.getName()).log(Level.SEVERE, null, e);
+        } catch (NotBoundException e) {
+            System.out.println("RegisterRemoteObject not bound exception: " + e.getMessage());
+            Logger.getLogger(Museum.class.getName()).log(Level.SEVERE, null, e);
+        }
+        try {
+            // Unregister ourself
+            reg.unbind(nameEntryObject);
+        } catch (RemoteException e) {
+            System.out.println("Museum registration exception: " + e.getMessage());
+            Logger.getLogger(Museum.class.getName()).log(Level.SEVERE, null, e);
+        } catch (NotBoundException e) {
+            System.out.println("Museum not bound exception: " + e.getMessage());
+            Logger.getLogger(Museum.class.getName()).log(Level.SEVERE, null, e);
+        }
+
+        try {
+            // Unexport; this will also remove us from the RMI runtime
+            UnicastRemoteObject.unexportObject(this, true);
+        } catch (NoSuchObjectException ex) {
+            Logger.getLogger(Museum.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        System.out.println("Museum closed.");
+    }
+    
+    private static Registry getRegistry(String rmiServerHostname, int rmiServerPort) {
+        Registry registry = null;
+        try {
+            registry = LocateRegistry.getRegistry(rmiServerHostname, rmiServerPort);
+        } catch (RemoteException ex) {
+            Logger.getLogger(ControlAndCollectionSiteStart.class.getName()).log(Level.SEVERE, null, ex);
+            System.exit(1);
+        }
+        System.out.println("O registo RMI foi criado!");
+        return registry;
+    }
+
+    private static Register getRegister(Registry registry) {
+        Register reg = null;
+        try {
+            reg = (Register) registry.lookup("RegisterHandler");
+        } catch (RemoteException e) {
+            System.out.println("RegisterRemoteObject lookup exception: " + e.getMessage());
+            System.exit(1);
+        } catch (NotBoundException e) {
+            System.out.println("RegisterRemoteObject not bound exception: " + e.getMessage());
+            System.exit(1);
+        }
+        return reg;
     }
 }
