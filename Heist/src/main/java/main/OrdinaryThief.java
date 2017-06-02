@@ -35,6 +35,7 @@ public class OrdinaryThief extends Thread {
     private int state;
     private VectorClock myClk;
     private VectorClock receivedClk;
+    private VectorClock clkToSend;
     Pair<VectorClock, Integer> serverResponseInt;
     Pair<VectorClock, Boolean> serverResponseBool;
 
@@ -77,93 +78,89 @@ public class OrdinaryThief extends Thread {
     public void run() {
         try {
             this.state = OrdinaryThiefState.OUTSIDE;
-            myClk.incrementClock();
-            serverResponseBool = concentrationSite.amINeeded(this.id, myClk.clone());
+            this.clkToSend = myClk.incrementClock();
+            serverResponseBool = concentrationSite.amINeeded(this.id, clkToSend);
             myClk.update(serverResponseBool.first);
             boolean amINeeded = serverResponseBool.second;
 
             while (amINeeded) {
 
-                myClk.incrementClock();
-                serverResponseInt = concentrationSite.getPartyId(id, myClk);
+                this.clkToSend = myClk.incrementClock();
+                serverResponseInt = concentrationSite.getPartyId(id, clkToSend);
                 myClk.update(serverResponseInt.first);
                 int partyId = serverResponseInt.second;
 
-                myClk.incrementClock();
-                receivedClk = assaultGroup[partyId].joinParty(id, speed, myClk.clone());
+                this.clkToSend = myClk.incrementClock();
+                receivedClk = assaultGroup[partyId].joinParty(id, speed, clkToSend);
                 myClk.update(receivedClk);
 
                 this.state = OrdinaryThiefState.CRAWLING_INWARDS;
 
-                myClk.incrementClock();
-                receivedClk = genRepo.updateThiefState(id, state, myClk.clone());
+                this.clkToSend = myClk.incrementClock();
+                receivedClk = genRepo.updateThiefState(id, state, clkToSend);
                 myClk.update(receivedClk);
 
-                myClk.incrementClock();
-                receivedClk = concentrationSite.prepareExcursion(this.id, myClk.clone());
+                this.clkToSend = myClk.incrementClock();
+                receivedClk = concentrationSite.prepareExcursion(this.id, clkToSend);
                 myClk.update(receivedClk);
 
-                myClk.incrementClock();
-                receivedClk = assaultGroup[partyId].crawlIn(this.id, myClk.clone());
+                this.clkToSend = myClk.incrementClock();
+                receivedClk = assaultGroup[partyId].crawlIn(this.id, clkToSend);
                 myClk.update(receivedClk);
 
-                myClk.incrementClock();
-                serverResponseInt = assaultGroup[partyId].getTargetRoom(myClk.clone());
+                this.clkToSend = myClk.incrementClock();
+                serverResponseInt = assaultGroup[partyId].getTargetRoom(clkToSend);
                 int roomId = serverResponseInt.second;
                 myClk.update(serverResponseInt.first);
 
                 this.state = OrdinaryThiefState.AT_A_ROOM;
-                myClk.incrementClock();
-                receivedClk = genRepo.updateThiefState(id, state, myClk.clone());
+                this.clkToSend = myClk.incrementClock();
+                receivedClk = genRepo.updateThiefState(id, state, clkToSend);
                 myClk.update(receivedClk);
 
-                /* Isto para todas as mensagens*/
-                myClk.incrementClock();
-                serverResponseBool = museum.rollACanvas(roomId, myClk.clone());
+                this.clkToSend = myClk.incrementClock();
+                serverResponseBool = museum.rollACanvas(roomId, clkToSend);
                 boolean canvas = serverResponseBool.second;
                 myClk.update(serverResponseBool.first);
-                /**
-                 * ************************************
-                 */
 
-                myClk.incrementClock();
-                receivedClk = genRepo.updateThiefCylinder(id, canvas, myClk.clone());
+                this.clkToSend = myClk.incrementClock();
+                receivedClk = genRepo.updateThiefCylinder(id, canvas, clkToSend);
                 myClk.update(receivedClk);
 
-                myClk.incrementClock();
-                receivedClk = assaultGroup[partyId].reverseDirection(myClk.clone());
+                this.clkToSend = myClk.incrementClock();
+                receivedClk = assaultGroup[partyId].reverseDirection(clkToSend);
                 myClk.update(receivedClk);
 
                 this.state = OrdinaryThiefState.CRAWLING_OUTWARDS;
 
-                myClk.incrementClock();
-                receivedClk = genRepo.updateThiefState(id, state, myClk.clone());
+                this.clkToSend = myClk.incrementClock();
+                receivedClk = genRepo.updateThiefState(id, state, clkToSend);
                 myClk.update(receivedClk);
 
-                myClk.incrementClock();
-                receivedClk = assaultGroup[partyId].crawlOut(this.id, myClk.clone());
+                this.clkToSend = myClk.incrementClock();
+                receivedClk = assaultGroup[partyId].crawlOut(this.id, clkToSend);
                 myClk.update(receivedClk);
 
                 this.state = OrdinaryThiefState.OUTSIDE;
 
-                myClk.incrementClock();
-                receivedClk = genRepo.updateThiefState(id, state, myClk.clone());
+                this.clkToSend = myClk.incrementClock();
+                receivedClk = genRepo.updateThiefState(id, state, clkToSend);
                 myClk.update(receivedClk);
 
-                myClk.incrementClock();
-                receivedClk = genRepo.updateThiefCylinder(id, false, myClk.clone());
+                this.clkToSend = myClk.incrementClock();
+                receivedClk = genRepo.updateThiefCylinder(id, false, clkToSend);
                 myClk.update(receivedClk);
 
-                myClk.incrementClock();
-                receivedClk = genRepo.updateThiefSituation(id, 'W', myClk.clone());
+                this.clkToSend = myClk.incrementClock();
+                receivedClk = genRepo.updateThiefSituation(id, 'W', clkToSend);
                 myClk.update(receivedClk);
 
-                myClk.incrementClock();
-                receivedClk = controlAndCollectionSite.handACanvas(id, canvas, roomId, partyId, myClk.clone());
+                this.clkToSend = myClk.incrementClock();
+                receivedClk = controlAndCollectionSite.handACanvas(id, canvas, roomId, partyId, clkToSend);
                 myClk.update(receivedClk);
 
-                myClk.incrementClock();
-                serverResponseBool = concentrationSite.amINeeded(this.id, myClk.clone());
+                this.clkToSend = myClk.incrementClock();
+                serverResponseBool = concentrationSite.amINeeded(this.id, clkToSend);
                 myClk.update(serverResponseBool.first);
                 amINeeded = serverResponseBool.second;
             }

@@ -32,6 +32,7 @@ public class MasterThief extends Thread {
     private ImtGeneralRepository genRepo;
     private VectorClock myClk;
     private VectorClock receivedClk;
+    private VectorClock clkToSend;
     Pair<VectorClock, Integer> serverResponseInt;
     Pair<VectorClock, Boolean> serverResponseBool;
 
@@ -61,83 +62,83 @@ public class MasterThief extends Thread {
     public void run() {
         while (true) {
             try {
-                this.myClk.incrementClock();
+                this.clkToSend = myClk.incrementClock();
                 this.receivedClk = this.genRepo.updateMThiefState(state, this.myClk.clone());
                 this.myClk.update(this.receivedClk);
                 
                 switch (state) {
                     case MasterThiefStates.PLANNING_THE_HEIST:
-                        this.myClk.incrementClock();
-                        this.receivedClk = this.concentrationSite.startOperations(this.myClk.clone());
+                        this.clkToSend = myClk.incrementClock();
+                        this.receivedClk = this.concentrationSite.startOperations(clkToSend);
                         this.myClk.update(this.receivedClk);
                         state = MasterThiefStates.DECIDING_WHAT_TO_DO;
                         break;
                     case MasterThiefStates.DECIDING_WHAT_TO_DO:
                         //int nwating = concentrationSite.getNumberThivesWaiting();
-                        this.myClk.incrementClock();
-                        serverResponseBool = this.controlAndCollectionSite.isHeistCompleted(this.myClk.clone());
+                        this.clkToSend = myClk.incrementClock();
+                        serverResponseBool = this.controlAndCollectionSite.isHeistCompleted(clkToSend);
                         this.myClk.update(serverResponseBool.first);
                         boolean a = serverResponseBool.second;
                         
-                        this.myClk.incrementClock();
-                        serverResponseBool = this.controlAndCollectionSite.waitingNedded(this.myClk.clone());
+                        this.clkToSend = myClk.incrementClock();
+                        serverResponseBool = this.controlAndCollectionSite.waitingNedded(clkToSend);
                         this.myClk.update(serverResponseBool.first);
                         boolean b = serverResponseBool.second;
                         
-                        this.myClk.incrementClock();
-                        serverResponseInt = this.concentrationSite.appraiseSit(a, b, this.myClk.clone());
+                        this.clkToSend = myClk.incrementClock();
+                        serverResponseInt = this.concentrationSite.appraiseSit(a, b, clkToSend);
                         this.myClk.update(serverResponseInt.first);
                         
                         this.state = serverResponseInt.second;
                         break;
                     case MasterThiefStates.ASSEMBLING_A_GROUP:
-                        this.myClk.incrementClock();
-                        serverResponseInt = this.controlAndCollectionSite.getTargetRoom(this.myClk.clone());
+                        this.clkToSend = myClk.incrementClock();
+                        serverResponseInt = this.controlAndCollectionSite.getTargetRoom(clkToSend);
                         int targetRoom = serverResponseInt.second;
                         this.myClk.update(serverResponseInt.first);
                         
-                        this.myClk.incrementClock();
-                        serverResponseInt = this.controlAndCollectionSite.getPartyToDeploy(this.myClk.clone());
+                        this.clkToSend = myClk.incrementClock();
+                        serverResponseInt = this.controlAndCollectionSite.getPartyToDeploy(clkToSend);
                         int partyToDeploy = serverResponseInt.second;
                         this.myClk.update(serverResponseInt.first);
                         
-                        this.myClk.incrementClock();
-                        serverResponseInt = this.museum.getRoomDistance(targetRoom, this.myClk.clone());
+                        this.clkToSend = myClk.incrementClock();
+                        serverResponseInt = this.museum.getRoomDistance(targetRoom, clkToSend);
                         int roomDistance = serverResponseInt.second;
                         this.myClk.update(serverResponseInt.first);
                         
-                        this.myClk.incrementClock();
-                        this.receivedClk = this.assaultParty[partyToDeploy].setRoom(targetRoom, roomDistance, this.myClk.clone());
+                        this.clkToSend = myClk.incrementClock();
+                        this.receivedClk = this.assaultParty[partyToDeploy].setRoom(targetRoom, roomDistance, clkToSend);
                         this.myClk.update(receivedClk);
                         
-                        this.myClk.incrementClock();
-                        this.receivedClk = this.concentrationSite.prepareAssaultParty(partyToDeploy, this.myClk.clone());
+                        this.clkToSend = myClk.incrementClock();
+                        this.receivedClk = this.concentrationSite.prepareAssaultParty(partyToDeploy, clkToSend);
                         this.myClk.update(receivedClk);
                         
-                        this.myClk.incrementClock();
-                        this.receivedClk = this.assaultParty[partyToDeploy].sendAssaultParty(this.myClk.clone());
+                        this.clkToSend = myClk.incrementClock();
+                        this.receivedClk = this.assaultParty[partyToDeploy].sendAssaultParty(clkToSend);
                         this.myClk.update(receivedClk);
                         
                         state = MasterThiefStates.DECIDING_WHAT_TO_DO;
                         break;
                     case MasterThiefStates.WAITING_FOR_GROUP_ARRIVAL:
-                        this.myClk.incrementClock();
-                        this.receivedClk = this.controlAndCollectionSite.takeARest(this.myClk.clone());
+                        this.clkToSend = myClk.incrementClock();
+                        this.receivedClk = this.controlAndCollectionSite.takeARest(clkToSend);
                         this.myClk.update(receivedClk);
                         
-                        this.myClk.incrementClock();
-                        this.receivedClk = this.controlAndCollectionSite.collectCanvas(this.myClk.clone());
+                        this.clkToSend = myClk.incrementClock();
+                        this.receivedClk = this.controlAndCollectionSite.collectCanvas(clkToSend);
                         this.myClk.update(receivedClk);
                         
                         this.state = MasterThiefStates.DECIDING_WHAT_TO_DO;
                         break;
                     case MasterThiefStates.PRESENTING_THE_REPORT:
-                        this.myClk.incrementClock();
-                        this.receivedClk = this.concentrationSite.sumUpResults(this.myClk.clone());
+                        this.clkToSend = myClk.incrementClock();
+                        this.receivedClk = this.concentrationSite.sumUpResults(clkToSend);
                         this.myClk.update(receivedClk);
                         
-                        this.myClk.incrementClock();
-                        this.receivedClk = this.genRepo.FinalizeLog(this.myClk.clone());
+                        this.clkToSend = myClk.incrementClock();
+                        this.receivedClk = this.genRepo.FinalizeLog(clkToSend);
                         this.myClk.update(receivedClk);
                         return;
                 }

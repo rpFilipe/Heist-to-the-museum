@@ -233,30 +233,17 @@ public class AssaultParty implements AssaultPartyInterface{
     @Override
     public void signalShutdown() throws RemoteException {
         
-        /* Just for test - Put in the file for example */
+        /* Just for test - Put in the a file for example */
         String rmiServerHostname = "localhost";
-        int rmiServerPort = 4000;
-        String nameEntryBase = "RegisterHandler";
+        int rmiServerPort = 22110;
         String nameEntryObject = "AssaultParty";
         
         Registry registry = getRegistry(rmiServerHostname, rmiServerPort);
         Register reg = getRegister(registry);
-
-        try {
-            reg = (Register) registry.lookup(nameEntryBase);
-        } catch (RemoteException e) {
-            System.out.println("RegisterRemoteObject lookup exception: " + e.getMessage());
-            Logger.getLogger(AssaultParty.class.getName()).log(Level.SEVERE, null, e);
-        } catch (NotBoundException e) {
-            System.out.println("RegisterRemoteObject not bound exception: " + e.getMessage());
-            Logger.getLogger(AssaultParty.class.getName()).log(Level.SEVERE, null, e);
-        }
+        
         try {
             // Unregister ourself
-            // For both Assault Parties
-            for(int i=0; i<Constants.N_ASSAULT_PARTIES; i++){
-                reg.unbind(nameEntryObject+i);
-            }
+            reg.unbind(nameEntryObject+this.teamId);
         } catch (RemoteException e) {
             System.out.println("AssaultParty registration exception: " + e.getMessage());
             Logger.getLogger(AssaultParty.class.getName()).log(Level.SEVERE, null, e);
@@ -271,8 +258,7 @@ public class AssaultParty implements AssaultPartyInterface{
         } catch (NoSuchObjectException ex) {
             Logger.getLogger(AssaultParty.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        System.out.println("Assault Party closed.");
+        System.out.printf("Assault Party %d closed.\n", this.teamId);
     }
     
     private static Registry getRegistry(String rmiServerHostname, int rmiServerPort) {

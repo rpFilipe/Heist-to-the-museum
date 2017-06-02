@@ -61,7 +61,7 @@ public class AssaultPartyStart {
             System.exit(1);
         }
 
-        System.out.printf("\nO stub para a assault Party %d foi gerado!", PARTY_ID);
+        System.out.printf("O stub para a assault Party %d foi gerado!", PARTY_ID);
 
         try {
             reg.bind("AssaultParty"+PARTY_ID, assaultpartyInterface);
@@ -72,7 +72,7 @@ public class AssaultPartyStart {
             System.out.println("A assault party já está registada: " + e.getMessage());
             System.exit(1);
         }
-        System.out.printf("\nA assault party %d foi registada!", PARTY_ID);
+        System.out.printf("\nA assault party %d foi registada!\n", PARTY_ID);
     }
     
     private static Registry getRegistry(String rmiServerHostname, int rmiServerPort) {

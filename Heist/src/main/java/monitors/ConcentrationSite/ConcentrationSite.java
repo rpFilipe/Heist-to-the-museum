@@ -209,24 +209,14 @@ public class ConcentrationSite implements ConcentrationSiteInterface{
     @Override
     public void signalShutdown() throws RemoteException {
         
-        /* Just for test - Put in the file for example */
+        /* Just for test - Put in a file for example */
         String rmiServerHostname = "localhost";
-        int rmiServerPort = 4000;
-        String nameEntryBase = "RegisterHandler";
-        String nameEntryObject = "ConcentrationSite";
+        int rmiServerPort = 22110;
+        String nameEntryObject = "concentrationSite";
         
         Registry registry = getRegistry(rmiServerHostname, rmiServerPort);
         Register reg = getRegister(registry);
 
-        try {
-            reg = (Register) registry.lookup(nameEntryBase);
-        } catch (RemoteException e) {
-            System.out.println("RegisterRemoteObject lookup exception: " + e.getMessage());
-            Logger.getLogger(ConcentrationSite.class.getName()).log(Level.SEVERE, null, e);
-        } catch (NotBoundException e) {
-            System.out.println("RegisterRemoteObject not bound exception: " + e.getMessage());
-            Logger.getLogger(ConcentrationSite.class.getName()).log(Level.SEVERE, null, e);
-        }
         try {
             // Unregister ourself
             reg.unbind(nameEntryObject);

@@ -62,9 +62,6 @@ public class GeneralRepositoryStart {
         System.out.println("O stub para o general repository foi gerado!");
 
         try {
-            System.out.println(genRepInterface);
-            System.out.println("********************");
-            System.out.println(reg);
             reg.bind("GeneralRepository", genRepInterface);
         } catch (RemoteException e) {
             System.out.println("Excepção no registo do general repository: " + e.getMessage());

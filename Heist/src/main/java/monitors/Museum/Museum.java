@@ -133,22 +133,12 @@ public class Museum implements MuseumInterface {
         
         /* Just for test - Put in the file for example */
         String rmiServerHostname = "localhost";
-        int rmiServerPort = 4000;
-        String nameEntryBase = "RegisterHandler";
+        int rmiServerPort = 22110;
         String nameEntryObject = "Museum";
         
         Registry registry = getRegistry(rmiServerHostname, rmiServerPort);
         Register reg = getRegister(registry);
 
-        try {
-            reg = (Register) registry.lookup(nameEntryBase);
-        } catch (RemoteException e) {
-            System.out.println("RegisterRemoteObject lookup exception: " + e.getMessage());
-            Logger.getLogger(Museum.class.getName()).log(Level.SEVERE, null, e);
-        } catch (NotBoundException e) {
-            System.out.println("RegisterRemoteObject not bound exception: " + e.getMessage());
-            Logger.getLogger(Museum.class.getName()).log(Level.SEVERE, null, e);
-        }
         try {
             // Unregister ourself
             reg.unbind(nameEntryObject);
@@ -166,7 +156,6 @@ public class Museum implements MuseumInterface {
         } catch (NoSuchObjectException ex) {
             Logger.getLogger(Museum.class.getName()).log(Level.SEVERE, null, ex);
         }
-
         System.out.println("Museum closed.");
     }
     

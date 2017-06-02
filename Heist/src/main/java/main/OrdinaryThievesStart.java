@@ -80,7 +80,7 @@ public class OrdinaryThievesStart {
         for(int i = 0; i < ordThieves.size(); i++){
             try {
                 ordThieves.get(i).join();
-                System.out.printf("\nOrdinaryThief join: %d\n", i);
+                System.out.printf("\nOrdinaryThief join: %d", i);
             } catch(InterruptedException e) {}
         }
         

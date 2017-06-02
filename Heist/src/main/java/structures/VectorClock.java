@@ -24,13 +24,16 @@ public class VectorClock implements Cloneable, Serializable {
         clocks = new int[clkSize];
         clockPosition = clkPosition;
     }
-
-    public void incrementClock() {
-        clocks[clockPosition]++;
+    
+    public VectorClock(VectorClock toCopy){
+        this.clocks = new int[toCopy.clocks.length];
+        System.arraycopy(toCopy.clocks, 0, this.clocks, 0, this.clocks.length);
+        this.clockPosition = toCopy.clockPosition;
     }
-
-    public int[] getClocks() {
-        return clocks;
+        
+    public VectorClock incrementClock(){
+        clocks[clockPosition]++;
+        return new VectorClock(this);
     }
 
     public void update(VectorClock vc) {

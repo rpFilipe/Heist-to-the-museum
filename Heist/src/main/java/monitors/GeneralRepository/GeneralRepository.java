@@ -36,7 +36,6 @@ import structures.VectorClock;
  * @author Marc Wagner
  */
 
-
 public class GeneralRepository implements GeneralRepositoryInterface {
 
     private static PrintWriter pw;
@@ -331,11 +330,18 @@ public class GeneralRepository implements GeneralRepositoryInterface {
                 head += "Thief " + Integer.toString(i);
                 head += "      ";
             }
+            head += "               ";
+            head += "VCK";
             pw.println(head);
 
             head = "Stat    ";
             for (int i = 1; i <= N_ORD_THIEVES; i++) {
                 head += "Stat S MD";
+                head += "    ";
+            }
+            
+            for (int i = 0; i <= N_ORD_THIEVES; i++) {
+                head += i;
                 head += "    ";
             }
             pw.println(head);
@@ -410,6 +416,10 @@ public class GeneralRepository implements GeneralRepositoryInterface {
         pw.println("Assault party # Elem # Cv - assault party # (# - 1,2) elem # (# - 1 .. 3) carrying a canvas (0,1)");
         pw.println("Museum Room # NP - room identification (1 .. 5) number of paintings presently hanging on the walls");
         pw.println("Museum Room # DT - room identification (1 .. 5) distance from outside gathering site, a random number between 15 and 30");
+        pw.println("VCK  0 - local clock of the master thief");
+        for(int i=1; i<7; i++){
+            pw.printf("VCK  %d - local clock of the ordinary thief %d\n", i, i);
+        }
         pw.flush();
         pw.close();
         
@@ -460,15 +470,13 @@ public class GeneralRepository implements GeneralRepositoryInterface {
     @Override
     public void terminateServers(){
         
-        System.out.println("TerminateServers");
-        /* Just for test - Put in the file for example */
+        System.out.println("Terminating Monitors...");
+        /* Just for test - Put in a file for example */
         String rmiServerHostname = "localhost";
-        int rmiServerPort = 4000;
-        String nameEntryBase = "RegisterHandler";
+        int rmiServerPort = 22110;
         String nameEntryObject = "GeneralRepository";
         
         Registry registry = getRegistry(rmiServerHostname, rmiServerPort);
-        Register reg = getRegister(registry);
         
         /* Shutdown Concentration Site */
         try
@@ -539,15 +547,7 @@ public class GeneralRepository implements GeneralRepositoryInterface {
         
         
        /* Shutdown General Repository */
-        try {
-            reg = (Register) registry.lookup(nameEntryBase);
-        } catch (RemoteException e) {
-            System.out.println("RegisterRemoteObject lookup exception: " + e.getMessage());
-            Logger.getLogger(GeneralRepository.class.getName()).log(Level.SEVERE, null, e);
-        } catch (NotBoundException e) {
-            System.out.println("RegisterRemoteObject not bound exception: " + e.getMessage());
-            Logger.getLogger(GeneralRepository.class.getName()).log(Level.SEVERE, null, e);
-        }
+        Register reg = getRegister(registry);
         try {
             // Unregister ourself
             reg.unbind(nameEntryObject);

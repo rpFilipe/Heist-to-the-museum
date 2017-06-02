@@ -55,41 +55,27 @@ public class MasterThiefStart {
 
         MasterThief masterThief = new MasterThief(museumInterface, concSiteInterface, 
                 contCollSiteInterface, assaultPartyInterface, genRepInterface);
-        
-        
+         
         System.out.println("Number of Master Thieves: 1 ");
        
         masterThief.start();
         System.out.printf("MasterThief start: \n");
         
-        try {        
-            Thread.sleep(1000);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(MasterThiefStart.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
         try { 
             masterThief.join ();
             System.out.printf("MasterThief join: \n");
         } catch (InterruptedException e) {}
-
+        
+        System.out.println("###############################################");
         System.out.println("Alert General Repository to finish!");
         
-        try {        
-            Thread.sleep(1000);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(MasterThiefStart.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        /*
         try {
             genRepInterface.terminateServers();
         } catch (RemoteException ex) {
             Logger.getLogger(MasterThiefStart.class.getName()).log(Level.SEVERE, null, ex);
         }
-        */
-         /* print the result */
-         System.out.println("End operations!!");
+        
+         System.out.println("End of Operations!!");
       }
 
     private static Registry getRegistry(String rmiServerHostname, int rmiServerPort) {

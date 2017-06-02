@@ -16,6 +16,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import structures.Constants;
 
 /**
  *
@@ -26,6 +27,9 @@ public class ControlAndCollectionSiteStart {
     private static int SERVER_PORT;
     private static String rmiServerHostname;
     private static int rmiServerPort;
+    private static int N_ROOMS; 
+    private static int N_ASSAULT_PARTIES;
+    private static int ASSAULT_PARTY_SIZE;
 
     /**
      * This class will launch one server listening one port and processing the
@@ -36,6 +40,11 @@ public class ControlAndCollectionSiteStart {
     public static void main(String[] args) {
 
         System.out.println("Starting Control And Collection Site");
+        
+        N_ROOMS = Constants.N_ROOMS;
+        N_ASSAULT_PARTIES = Constants.N_ASSAULT_PARTIES;
+        ASSAULT_PARTY_SIZE = Constants.ASSAULT_PARTY_SIZE;
+        
         SERVER_PORT = Integer.parseInt(args[0]);
         rmiServerHostname = args[1];
         rmiServerPort = Integer.parseInt(args[2]);
@@ -51,7 +60,7 @@ public class ControlAndCollectionSiteStart {
             System.setSecurityManager(new SecurityManager());
         }
 
-        ControlAndCollectionSite ccs = new ControlAndCollectionSite(genRepo, SERVER_PORT, SERVER_PORT, SERVER_PORT);
+        ControlAndCollectionSite ccs = new ControlAndCollectionSite(genRepo, N_ROOMS, N_ASSAULT_PARTIES, ASSAULT_PARTY_SIZE);
         ControlAndCollectionSiteInterface ccsInterface = null;
 
         try {

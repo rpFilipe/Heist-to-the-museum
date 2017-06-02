@@ -1,10 +1,13 @@
 package structures;
+
+import java.io.Serializable;
+
 /**
  * Par de valores.
  * @param <T1> tipo 1º valor
  * @param <T2> tipo 2º valor
  */
-public class Pair<T1, T2> {
+public class Pair<T1, T2> implements Serializable {
     /** Primeiro valor */
     public final T1 first;
     /** Segundo valor */
