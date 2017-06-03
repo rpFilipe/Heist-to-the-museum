@@ -58,9 +58,11 @@ services = [{
   }]
 
 COMMAND = '-cp %s:libs/* %s %s'
-COMMAND2 = 'java -Djava.rmi.server.codebase="file://$(pwd)/"\
-                 -Djava.security.policy=java.policy\
-                 %s'
+                 
+COMMAND2 = 'java -Djava.rmi.server.codebase="file://$(pwd)/%s"\
+                -Djava.security.policy=java.policy\
+                %s'
+                 
 USERNAME = "sd0109"
 PASSWORD = "ricasricas"
 FILELOCATION = None
@@ -89,12 +91,12 @@ if __name__ == '__main__':
     servicesPID.append(subprocess.Popen("rmiregistry -J-Djava.rmi.server.useCodebaseOnly=false 22110", shell=True).pid)
     time.sleep(5)
     for s in services: 
-        print("###################################")
+        print("\n###############################################")
         print("Starting... %s" % s['class'])
         cmd = COMMAND % (FILENAME, s['class'], s['args'])
         try:
           #servicesPID.append(subprocess.Popen("./registry-servers.sh %s"% s['class'], shell=True).pid)
-          servicesPID.append(subprocess.Popen(COMMAND2 % cmd, shell=True).pid)
+          servicesPID.append(subprocess.Popen(COMMAND2 % (FILENAME,cmd), shell=True).pid)
           time.sleep(5)
         except ValueError:
             print(ValueError)

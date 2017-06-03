@@ -44,6 +44,7 @@ public class ControlAndCollectionSite implements ControlAndCollectionSiteInterfa
     private int N_ASSAULT_PARTIES;
     private int ASSAULT_PARTY_SIZE;
     private VectorClock vc;
+    private VectorClock clkToSend;
 
     /**
      * Create a Control And Collection Instance.
@@ -85,7 +86,7 @@ public class ControlAndCollectionSite implements ControlAndCollectionSiteInterfa
     @Override
     public synchronized VectorClock takeARest(VectorClock vc) throws RemoteException,InterruptedException{
         this.vc.update(vc);
-        VectorClock returnClk = this.vc.clone();
+        clkToSend = vc.incrementClock();
         masterThiefBusy = false;
         notifyAll();
 
@@ -97,7 +98,7 @@ public class ControlAndCollectionSite implements ControlAndCollectionSiteInterfa
             }
         }
         thiefArrived = false;
-        return returnClk;
+        return clkToSend;
     }
 
     /**
@@ -107,8 +108,8 @@ public class ControlAndCollectionSite implements ControlAndCollectionSiteInterfa
     public synchronized VectorClock collectCanvas(VectorClock vc) throws RemoteException,InterruptedException{
         //canvasToCollect--;
         this.vc.update(vc);
-        VectorClock returnClk = this.vc.clone();
-        return returnClk;
+        clkToSend = vc.incrementClock();
+        return clkToSend;
     }
 
     /**
@@ -124,7 +125,7 @@ public class ControlAndCollectionSite implements ControlAndCollectionSiteInterfa
     public synchronized VectorClock handACanvas(int thiefId, boolean hasCanvas, int roomId, int partyId, VectorClock vc) throws RemoteException, InterruptedException {
         //canvasToCollect++;
         this.vc.update(vc);
-        VectorClock returnClk = this.vc.clone();
+        clkToSend = vc.incrementClock();
         while (masterThiefBusy) {
             try {
                 wait();
@@ -154,7 +155,7 @@ public class ControlAndCollectionSite implements ControlAndCollectionSiteInterfa
             thiefArrived = true;
             notifyAll();
         }
-        return returnClk;
+        return clkToSend;
     }
 
     /**
@@ -165,12 +166,12 @@ public class ControlAndCollectionSite implements ControlAndCollectionSiteInterfa
     @Override
     public synchronized Pair<VectorClock, Integer> getTargetRoom(VectorClock vc) throws RemoteException,InterruptedException {
         this.vc.update(vc);
-        VectorClock returnClk = this.vc.clone();
+        clkToSend = vc.incrementClock();
         int room = chooseTargetRoom();
         if (room != -1) {
             roomStates[room] = RoomStates.BEING_STOLEN;
         }
-        return new Pair(returnClk, room);
+        return new Pair(clkToSend, room);
     }
 
     /**
@@ -181,12 +182,12 @@ public class ControlAndCollectionSite implements ControlAndCollectionSiteInterfa
     @Override
     public synchronized Pair<VectorClock, Integer> getPartyToDeploy(VectorClock vc) throws RemoteException,InterruptedException {
         this.vc.update(vc);
-        VectorClock returnClk = this.vc.clone();
+        clkToSend = vc.incrementClock();
         int party = choosePartyToDeploy();
         if (party != -1) {
             partyStates[party] = PartyStates.DEPLOYED;
         }
-        return new Pair(returnClk, party);
+        return new Pair(clkToSend, party);
     }
 
     private synchronized int chooseTargetRoom() {
@@ -234,11 +235,11 @@ public class ControlAndCollectionSite implements ControlAndCollectionSiteInterfa
     @Override
     public synchronized Pair<VectorClock, Boolean> waitingNedded(VectorClock vc) throws RemoteException,InterruptedException{
         this.vc.update(vc);
-        VectorClock returnClk = this.vc.clone();
+        clkToSend = vc.incrementClock();
         partyToDeploy = choosePartyToDeploy();
         targetRoom = chooseTargetRoom();
         boolean b = (canvasToCollect > 0 || partyToDeploy == -1 || targetRoom == -1);
-        return new Pair(returnClk, b);
+        return new Pair(clkToSend, b);
     }
 
     /**
@@ -249,10 +250,10 @@ public class ControlAndCollectionSite implements ControlAndCollectionSiteInterfa
     @Override
     public synchronized Pair<VectorClock, Boolean> isHeistCompleted(VectorClock vc) throws RemoteException, InterruptedException {
         this.vc.update(vc);
-        VectorClock returnClk = this.vc.clone();
+        clkToSend = vc.incrementClock();
         genRepo.setCollectedCanvas(canvasCollected, vc);
         boolean b = allRoomsEmpty() && allPartiesFree();
-        return new Pair(returnClk, b);
+        return new Pair(clkToSend, b);
     }
 
     @Override

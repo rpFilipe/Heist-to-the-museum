@@ -34,6 +34,7 @@ public class ConcentrationSite implements ConcentrationSiteInterface{
     private int[] thiefAssaultParty;
     private ImonitorsGeneralRepository genRepo;
     private VectorClock vc;
+    private VectorClock clkToSend;
     
     /**
      *  Create a new Concentration Site.
@@ -63,6 +64,7 @@ public class ConcentrationSite implements ConcentrationSiteInterface{
     public synchronized Pair<VectorClock, Boolean> amINeeded(int id, VectorClock vc) throws RemoteException,InterruptedException{
         this.vc.update(vc);
         thievesWaiting.add(id);
+        clkToSend = vc.incrementClock();
         notifyAll();
         
         while(!isNeeded[id] && !resultsReady){
@@ -74,8 +76,8 @@ public class ConcentrationSite implements ConcentrationSiteInterface{
             }
         } isNeeded[id] = false;
         
-        VectorClock returnClk = this.vc.clone();
-        return new Pair(returnClk, !resultsReady);
+        
+        return new Pair(clkToSend, !resultsReady);
     }
     
     /**
@@ -85,6 +87,7 @@ public class ConcentrationSite implements ConcentrationSiteInterface{
     @Override
     public synchronized VectorClock prepareExcursion(int thiefId, VectorClock vc) throws RemoteException,InterruptedException{
         this.vc.update(vc);
+        clkToSend = vc.incrementClock();
         nThievesInParty++;
         if(nThievesInParty == ASSAULT_PARTY_SIZE)
         {
@@ -93,8 +96,7 @@ public class ConcentrationSite implements ConcentrationSiteInterface{
             notifyAll();
         }
         
-        VectorClock returnClk = this.vc.clone();
-        return returnClk;
+        return clkToSend;
     }
     
     /**
@@ -104,6 +106,7 @@ public class ConcentrationSite implements ConcentrationSiteInterface{
     @Override
     public synchronized VectorClock prepareAssaultParty(int partyId, VectorClock vc) throws RemoteException, InterruptedException {
         this.vc.update(vc);
+        clkToSend = vc.incrementClock();
         for (int i = 0; i < ASSAULT_PARTY_SIZE; i++) {
             int thiefToWake = thievesWaiting.poll();
             thiefAssaultParty[thiefToWake] = partyId;
@@ -122,8 +125,7 @@ public class ConcentrationSite implements ConcentrationSiteInterface{
             }
         } partyReady = false;
         
-        VectorClock returnClk = this.vc.clone();
-        return returnClk;
+        return clkToSend;
     }
 
     /**
@@ -132,11 +134,11 @@ public class ConcentrationSite implements ConcentrationSiteInterface{
     @Override
     public synchronized VectorClock sumUpResults(VectorClock vc) throws RemoteException,InterruptedException{
         this.vc.update(vc);
+        clkToSend = vc.incrementClock();
         resultsReady = true;
         notifyAll();
         
-        VectorClock returnClk = this.vc.clone();
-        return returnClk;
+        return clkToSend;
     }
     
     /**
@@ -145,6 +147,7 @@ public class ConcentrationSite implements ConcentrationSiteInterface{
     @Override
     public synchronized VectorClock startOperations(VectorClock vc) throws RemoteException,InterruptedException{
         this.vc.update(vc);
+        clkToSend = vc.incrementClock();
         while(thievesWaiting.size() < N_ORD_THIEVES){
             try {
                 wait();
@@ -154,8 +157,7 @@ public class ConcentrationSite implements ConcentrationSiteInterface{
             }
         }
         
-        VectorClock returnClk = this.vc.clone();
-        return returnClk;
+        return clkToSend;
     }
 
     /**
@@ -166,8 +168,8 @@ public class ConcentrationSite implements ConcentrationSiteInterface{
     @Override
     public synchronized Pair<VectorClock, Integer> getPartyId(int thiefId, VectorClock vc) throws RemoteException,InterruptedException{
         this.vc.update(vc);
-        VectorClock returnClk = this.vc.clone();
-        return new Pair(returnClk, thiefAssaultParty[thiefId]);
+        clkToSend = vc.incrementClock();
+        return new Pair(clkToSend, thiefAssaultParty[thiefId]);
     }
 
     /**
@@ -179,7 +181,7 @@ public class ConcentrationSite implements ConcentrationSiteInterface{
     @Override
     public synchronized Pair<VectorClock, Integer> appraiseSit(boolean isHeistCompleted, boolean isWaitingNedded, VectorClock vc) throws RemoteException,InterruptedException{
         this.vc.update(vc);
-        VectorClock returnClk = this.vc.clone();
+        clkToSend = vc.incrementClock();
         
         if(isHeistCompleted){
             while(thievesWaiting.size() < N_ORD_THIEVES){
@@ -189,11 +191,11 @@ public class ConcentrationSite implements ConcentrationSiteInterface{
                     Logger.getLogger(ConcentrationSite.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            return new Pair(returnClk, MasterThiefStates.PRESENTING_THE_REPORT);
+            return new Pair(clkToSend, MasterThiefStates.PRESENTING_THE_REPORT);
         }
         
         if(isWaitingNedded){            
-            return new Pair(returnClk, MasterThiefStates.WAITING_FOR_GROUP_ARRIVAL);
+            return new Pair(clkToSend, MasterThiefStates.WAITING_FOR_GROUP_ARRIVAL);
         }
         
         while(thievesWaiting.size() < ASSAULT_PARTY_SIZE){
@@ -203,7 +205,7 @@ public class ConcentrationSite implements ConcentrationSiteInterface{
                 Logger.getLogger(ConcentrationSite.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        return new Pair(returnClk, MasterThiefStates.ASSEMBLING_A_GROUP);
+        return new Pair(clkToSend, MasterThiefStates.ASSEMBLING_A_GROUP);
     }
 
     @Override

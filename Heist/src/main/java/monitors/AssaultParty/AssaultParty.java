@@ -45,6 +45,7 @@ public class AssaultParty implements AssaultPartyInterface{
     private ImonitorsGeneralRepository genRepo;
     private int ASSAULT_PARTY_SIZE;
     private VectorClock vc;
+    private VectorClock clkToSend;
 
     /**
      * Create a new Assault Party
@@ -68,11 +69,11 @@ public class AssaultParty implements AssaultPartyInterface{
     @Override
     public synchronized VectorClock sendAssaultParty(VectorClock vc) {
         this.vc.update(vc);
-        VectorClock returnClk = this.vc.clone();
+        clkToSend = vc.incrementClock();
         thiefCrawlongIdx = crawlingQueue.peek().id;
         notifyAll();
         
-        return returnClk;
+        return clkToSend;
     }
 
     /**
@@ -82,7 +83,7 @@ public class AssaultParty implements AssaultPartyInterface{
     @Override
     public synchronized VectorClock crawlIn(int id, VectorClock vc) throws RemoteException, InterruptedException {
         this.vc.update(vc);
-        VectorClock returnClk = this.vc.clone();
+        clkToSend = vc.incrementClock();
         
         while (!roomReached) {
             while (thiefCrawlongIdx != id && !roomReached) {
@@ -95,7 +96,7 @@ public class AssaultParty implements AssaultPartyInterface{
             }
 
             if (roomReached) {
-                return returnClk;
+                return clkToSend;
             }
             
             currentThiefInfo = crawlingQueue.poll();
@@ -115,7 +116,7 @@ public class AssaultParty implements AssaultPartyInterface{
             }
             notifyAll();
         }
-        return returnClk;
+        return clkToSend;
     }
 
     /**
@@ -125,7 +126,7 @@ public class AssaultParty implements AssaultPartyInterface{
     @Override
     public synchronized VectorClock crawlOut(int id, VectorClock vc) throws RemoteException, InterruptedException {
         this.vc.update(vc);
-        VectorClock returnClk = this.vc.clone();
+        clkToSend = vc.incrementClock();
         
         while (!outsideReached) {
             while (thiefCrawlongIdx != id && !outsideReached) {
@@ -138,7 +139,7 @@ public class AssaultParty implements AssaultPartyInterface{
             }
 
             if (outsideReached) {
-                return returnClk;
+                return clkToSend;
             }
 
             currentThiefInfo = crawlingQueue.poll();
@@ -158,7 +159,7 @@ public class AssaultParty implements AssaultPartyInterface{
             }
             notifyAll();
         }
-        return returnClk;
+        return clkToSend;
     }
 
     /**
@@ -169,14 +170,14 @@ public class AssaultParty implements AssaultPartyInterface{
     @Override
     public synchronized VectorClock joinParty(int id, int speed, VectorClock vc) throws RemoteException, InterruptedException {
         this.vc.update(vc);
-        VectorClock returnClk = this.vc.clone();
+        clkToSend = vc.incrementClock();
         
         ThiefInfo ti = new ThiefInfo(id, speed, positionInArray);
         crawlingQueue.add(ti);
         positionInArray++;
         genRepo.updateThiefSituation(id, 'P',vc);
         
-        return returnClk;
+        return clkToSend;
     }
 
     /**
@@ -187,7 +188,7 @@ public class AssaultParty implements AssaultPartyInterface{
     @Override
     public VectorClock setRoom(int id, int distance,VectorClock vc) throws RemoteException, InterruptedException {
         this.vc.update(vc);
-        VectorClock returnClk = this.vc.clone();
+        clkToSend = vc.incrementClock();
         this.roomDistance = distance;
         this.roomReached = false;
         this.outsideReached = false;
@@ -200,7 +201,7 @@ public class AssaultParty implements AssaultPartyInterface{
         positionInArray = 0;
         genRepo.setRoomIdAP(teamId, roomId,vc);
         
-        return returnClk;
+        return clkToSend;
     }
 
     /**
@@ -210,8 +211,8 @@ public class AssaultParty implements AssaultPartyInterface{
     @Override
     public synchronized Pair< VectorClock, Integer> getTargetRoom(VectorClock vc) {
         this.vc.update(vc);
-        VectorClock returnClk = this.vc.clone();
-        return new Pair(returnClk,this.roomId);
+        clkToSend = vc.incrementClock();
+        return new Pair(clkToSend,this.roomId);
     }
 
     /**
@@ -220,14 +221,14 @@ public class AssaultParty implements AssaultPartyInterface{
     @Override
     public synchronized VectorClock reverseDirection(VectorClock vc) {
         this.vc.update(vc);
-        VectorClock returnClk = this.vc.clone();
+        clkToSend = vc.incrementClock();
         nThievesReadyToReturn++;
         //outsideReached = false;
         if (nThievesReadyToReturn == ASSAULT_PARTY_SIZE) {
             thiefCrawlongIdx = crawlingQueue.peek().id;
             notifyAll();
         }
-        return returnClk;
+        return clkToSend;
     }
 
     @Override

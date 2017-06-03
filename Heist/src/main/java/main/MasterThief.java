@@ -63,7 +63,7 @@ public class MasterThief extends Thread {
         while (true) {
             try {
                 this.clkToSend = myClk.incrementClock();
-                this.receivedClk = this.genRepo.updateMThiefState(state, this.myClk.clone());
+                this.receivedClk = this.genRepo.updateMThiefState(state, clkToSend);
                 this.myClk.update(this.receivedClk);
                 
                 switch (state) {

@@ -34,6 +34,7 @@ public class Museum implements MuseumInterface {
     private int totalPaitings;
     private ImonitorsGeneralRepository genRepo;
     private VectorClock vc;
+    private VectorClock clkToSend;
 
     /**
      * Constructor to create a new Museum
@@ -109,23 +110,22 @@ public class Museum implements MuseumInterface {
     @Override
     public Pair<VectorClock, Boolean> rollACanvas(int room, VectorClock vc) throws RemoteException, InterruptedException {
         this.vc.update(vc);
-        VectorClock returnClk = this.vc.clone();
+        clkToSend = vc.incrementClock();
         boolean returnValue = rooms[room].rollACanvas();
-        return new Pair(returnClk, returnValue);
+        return new Pair(clkToSend, returnValue);
     }
 
     /**
      * This method returns the distance of a room to the outside.
-     *
      * @param id of the room
      * @return
      */
     @Override
     public Pair<VectorClock, Integer> getRoomDistance(int id, VectorClock vc) {
         this.vc.update(vc);
-        VectorClock returnClk = this.vc.clone();
+        clkToSend = vc.incrementClock();
         int returnValue = rooms[id].getDistance();
-        return new Pair(returnClk, returnValue);
+        return new Pair(clkToSend, returnValue);
     }
 
     @Override
