@@ -14,6 +14,9 @@ import java.util.logging.Logger;
 import monitors.ControlAndCollectionSite.ControlAndCollectionSiteStart;
 import monitors.GeneralRepository.ImonitorsGeneralRepository;
 import structures.Constants;
+import static structures.Constants.getHost;
+import static structures.Constants.getNameEntry;
+import static structures.Constants.getPort;
 import structures.Pair;
 import structures.VectorClock;
 
@@ -131,10 +134,11 @@ public class Museum implements MuseumInterface {
     @Override
     public void signalShutdown() throws RemoteException {
         
-        /* Just for test - Put in the file for example */
-        String rmiServerHostname = "localhost";
-        int rmiServerPort = 22110;
-        String nameEntryObject = "Museum";
+        String xmlFile = Constants.xmlFile;
+        
+        String rmiServerHostname = getHost("Rmi", xmlFile);
+        int rmiServerPort = getPort("Rmi", xmlFile);
+        String nameEntryObject = getNameEntry("Museum", xmlFile);
         
         Registry registry = getRegistry(rmiServerHostname, rmiServerPort);
         Register reg = getRegister(registry);
@@ -173,8 +177,9 @@ public class Museum implements MuseumInterface {
 
     private static Register getRegister(Registry registry) {
         Register reg = null;
+        String xmlFile = Constants.xmlFile;
         try {
-            reg = (Register) registry.lookup("RegisterHandler");
+            reg = (Register) registry.lookup(getNameEntry("Rmi", xmlFile));
         } catch (RemoteException e) {
             System.out.println("RegisterRemoteObject lookup exception: " + e.getMessage());
             System.exit(1);

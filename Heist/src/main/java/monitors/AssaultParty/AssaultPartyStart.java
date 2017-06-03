@@ -17,6 +17,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import monitors.ControlAndCollectionSite.ControlAndCollectionSiteStart;
 import monitors.GeneralRepository.ImonitorsGeneralRepository;
+import structures.Constants;
+import static structures.Constants.getNameEntry;
 
 /**
  *
@@ -64,7 +66,9 @@ public class AssaultPartyStart {
         System.out.printf("O stub para a assault Party %d foi gerado!", PARTY_ID);
 
         try {
-            reg.bind("AssaultParty"+PARTY_ID, assaultpartyInterface);
+            String xmlFile = Constants.xmlFile;
+            String nameEntryObject = getNameEntry("AssaultParty"+PARTY_ID, xmlFile);
+            reg.bind(nameEntryObject, assaultpartyInterface);
         } catch (RemoteException e) {
             System.out.println("Excepção no registo da assautl party: " + e.getMessage());
             System.exit(1);
@@ -89,8 +93,10 @@ public class AssaultPartyStart {
     
     private static Register getRegister(Registry registry) {
         Register reg = null;
+        String xmlFile = Constants.xmlFile;
+        String nameEntryObject = getNameEntry("Rmi", xmlFile);
         try {
-            reg = (Register) registry.lookup("RegisterHandler");
+            reg = (Register) registry.lookup(nameEntryObject);
         } catch (RemoteException e) {
             System.out.println("RegisterRemoteObject lookup exception: " + e.getMessage());
             System.exit(1);
@@ -104,8 +110,9 @@ public class AssaultPartyStart {
 
     private static GeneralRepositoryInterface getGeneralRepository(Registry registry) {
         GeneralRepositoryInterface genRepo = null;
+        String xmlFile = Constants.xmlFile;
         /* look for the remote object by name in the remote host registry */
-        String nameEntry = "GeneralRepository";
+        String nameEntry = getNameEntry("GeneralRepository", xmlFile);
 
         try {
             /* Locate General Repository */

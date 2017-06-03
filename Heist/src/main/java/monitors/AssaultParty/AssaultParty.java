@@ -22,6 +22,9 @@ import java.util.stream.IntStream;
 import monitors.ControlAndCollectionSite.ControlAndCollectionSiteStart;
 import monitors.GeneralRepository.ImonitorsGeneralRepository;
 import structures.*;
+import static structures.Constants.getHost;
+import static structures.Constants.getNameEntry;
+import static structures.Constants.getPort;
 
 /**
  *
@@ -234,17 +237,18 @@ public class AssaultParty implements AssaultPartyInterface{
     @Override
     public void signalShutdown() throws RemoteException {
         
-        /* Just for test - Put in the a file for example */
-        String rmiServerHostname = "localhost";
-        int rmiServerPort = 22110;
-        String nameEntryObject = "AssaultParty";
+        String xmlFile = Constants.xmlFile;
+        
+        String rmiServerHostname = getHost("Rmi", xmlFile);
+        int rmiServerPort = getPort("Rmi", xmlFile);
+        String nameEntryObject = getNameEntry("AssaultParty"+this.teamId, xmlFile);
         
         Registry registry = getRegistry(rmiServerHostname, rmiServerPort);
         Register reg = getRegister(registry);
         
         try {
             // Unregister ourself
-            reg.unbind(nameEntryObject+this.teamId);
+            reg.unbind(nameEntryObject);
         } catch (RemoteException e) {
             System.out.println("AssaultParty registration exception: " + e.getMessage());
             Logger.getLogger(AssaultParty.class.getName()).log(Level.SEVERE, null, e);
@@ -276,8 +280,10 @@ public class AssaultParty implements AssaultPartyInterface{
 
     private static Register getRegister(Registry registry) {
         Register reg = null;
+        String xmlFile = Constants.xmlFile;
+        String nameEntryObject = getNameEntry("Rmi", xmlFile);
         try {
-            reg = (Register) registry.lookup("RegisterHandler");
+            reg = (Register) registry.lookup(nameEntryObject);
         } catch (RemoteException e) {
             System.out.println("RegisterRemoteObject lookup exception: " + e.getMessage());
             System.exit(1);

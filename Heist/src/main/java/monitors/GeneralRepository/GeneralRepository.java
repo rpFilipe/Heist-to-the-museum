@@ -32,6 +32,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import monitors.ControlAndCollectionSite.ControlAndCollectionSiteStart;
 import structures.Constants;
+import static structures.Constants.getHost;
+import static structures.Constants.getNameEntry;
+import static structures.Constants.getPort;
 import structures.VectorClock;
 
 /**
@@ -518,16 +521,17 @@ public class GeneralRepository implements GeneralRepositoryInterface {
         
         System.out.println("Terminating Monitors...");
         /* Just for test - Put in a file for example */
-        String rmiServerHostname = "localhost";
-        int rmiServerPort = 22110;
-        String nameEntryObject = "GeneralRepository";
+        String xmlFile = Constants.xmlFile;
+        String rmiServerHostname = getHost("Rmi", xmlFile);
+        int rmiServerPort = getPort("Rmi", xmlFile);
+        String nameEntryObject = getNameEntry("GeneralRepository", xmlFile); 
         
         Registry registry = getRegistry(rmiServerHostname, rmiServerPort);
         
         /* Shutdown Concentration Site */
         try
         {
-            ConcentrationSiteInterface concSiteInterface = (ConcentrationSiteInterface) registry.lookup ("concentrationSite");
+            ConcentrationSiteInterface concSiteInterface = (ConcentrationSiteInterface) registry.lookup (getNameEntry("ConcentrationSite", xmlFile));
             concSiteInterface.signalShutdown();
         }
         catch (RemoteException e)
@@ -544,7 +548,7 @@ public class GeneralRepository implements GeneralRepositoryInterface {
         /* Shutdown Control And Collection Site */
         try
         {
-            ControlAndCollectionSiteInterface contCollSiteInterface = (ControlAndCollectionSiteInterface) registry.lookup ("controlAndCollectionSite");
+            ControlAndCollectionSiteInterface contCollSiteInterface = (ControlAndCollectionSiteInterface) registry.lookup (getNameEntry("ControlAndCollectionSite", xmlFile));
             contCollSiteInterface.signalShutdown();
         }
         catch (RemoteException e)
@@ -561,7 +565,7 @@ public class GeneralRepository implements GeneralRepositoryInterface {
         /* Shutdown Assault Parties */
         for(int i=0; i<Constants.N_ASSAULT_PARTIES; i++){
             try{
-                AssaultPartyInterface assaultPartyInterface = (AssaultPartyInterface) registry.lookup ("AssaultParty"+i);
+                AssaultPartyInterface assaultPartyInterface = (AssaultPartyInterface) registry.lookup (getNameEntry("AssaultParty"+i, xmlFile));
                 assaultPartyInterface.signalShutdown();
             } catch (RemoteException e) { 
                 System.out.println("Exception thrown while locating assault party: " + e.getMessage () + "!");
@@ -577,7 +581,7 @@ public class GeneralRepository implements GeneralRepositoryInterface {
         /* Shutdown Museum */
         try
         {
-            MuseumInterface museumInterface = (MuseumInterface) registry.lookup ("Museum");
+            MuseumInterface museumInterface = (MuseumInterface) registry.lookup (getNameEntry("Museum", xmlFile));
             museumInterface.signalShutdown();
         }
         catch (RemoteException e)

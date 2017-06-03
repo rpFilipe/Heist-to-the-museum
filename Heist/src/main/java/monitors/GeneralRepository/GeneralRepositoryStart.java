@@ -16,6 +16,8 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import monitors.ControlAndCollectionSite.ControlAndCollectionSiteStart;
+import structures.Constants;
+import static structures.Constants.getNameEntry;
 
 /**
  *
@@ -62,7 +64,8 @@ public class GeneralRepositoryStart {
         System.out.println("O stub para o general repository foi gerado!");
 
         try {
-            reg.bind("GeneralRepository", genRepInterface);
+            String xmlFile = Constants.xmlFile;
+            reg.bind(getNameEntry("GeneralRepository", xmlFile), genRepInterface);
         } catch (RemoteException e) {
             System.out.println("Excepção no registo do general repository: " + e.getMessage());
             System.exit(1);
@@ -87,8 +90,9 @@ public class GeneralRepositoryStart {
 
     private static Register getRegister(Registry registry) {
         Register reg = null;
+        String xmlFile = Constants.xmlFile;
         try {
-            reg = (Register) registry.lookup("RegisterHandler");
+            reg = (Register) registry.lookup(getNameEntry("Rmi", xmlFile));
         } catch (RemoteException e) {
             System.out.println("RegisterRemoteObject lookup exception: " + e.getMessage());
             System.exit(1);
@@ -97,6 +101,5 @@ public class GeneralRepositoryStart {
             System.exit(1);
         }
         return reg;
-
     }
 }

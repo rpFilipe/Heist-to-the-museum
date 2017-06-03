@@ -17,6 +17,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import structures.Constants;
+import static structures.Constants.getNameEntry;
 
 /**
  *
@@ -50,9 +51,7 @@ public class ControlAndCollectionSiteStart {
         rmiServerPort = Integer.parseInt(args[2]);
 
         Registry registry = getRegistry(rmiServerHostname, rmiServerPort);
-
         Register reg = getRegister(registry);
-        
         GeneralRepositoryInterface genRepo = getGeneralRepository(registry);
 
         /* instanciação e instalação do gestor de segurança */
@@ -73,7 +72,9 @@ public class ControlAndCollectionSiteStart {
         System.out.println("O stub para o Control And Collection Site foi gerado!");
 
         try {
-            reg.bind("controlAndCollectionSite", ccsInterface);
+            String xmlFile = Constants.xmlFile;
+            String nameEntryObject = getNameEntry("ControlAndCollectionSite", xmlFile);
+            reg.bind(nameEntryObject, ccsInterface);
         } catch (RemoteException e) {
             System.out.println("Excepção no registo do Control And Collection Site: " + e.getMessage());
             System.exit(1);
@@ -100,8 +101,10 @@ public class ControlAndCollectionSiteStart {
 
     private static Register getRegister(Registry registry) {
         Register reg = null;
+        String xmlFile = Constants.xmlFile;
+        String nameEntryObject = getNameEntry("Rmi", xmlFile);
         try {
-            reg = (Register) registry.lookup("RegisterHandler");
+            reg = (Register) registry.lookup(nameEntryObject);
         } catch (RemoteException e) {
             System.out.println("RegisterRemoteObject lookup exception: " + e.getMessage());
             System.exit(1);
@@ -116,7 +119,8 @@ public class ControlAndCollectionSiteStart {
     private static GeneralRepositoryInterface getGeneralRepository(Registry registry) {
         GeneralRepositoryInterface genRepo = null;
         /* look for the remote object by name in the remote host registry */
-        String nameEntry = "GeneralRepository";
+        String xmlFile = Constants.xmlFile;
+        String nameEntry = getNameEntry("GeneralRepository", xmlFile);
 
         try {
             /* Locate General Repository */

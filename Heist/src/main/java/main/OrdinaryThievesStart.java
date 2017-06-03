@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import structures.Constants;
+import static structures.Constants.getNameEntry;
 
 /**
  *
@@ -102,8 +103,9 @@ public class OrdinaryThievesStart {
 
     private static Register getRegister(Registry registry) {
         Register reg = null;
+        String xmlFile = Constants.xmlFile;
         try {
-            reg = (Register) registry.lookup("RegisterHandler");
+            reg = (Register) registry.lookup(getNameEntry("Rmi", xmlFile));
         } catch (RemoteException e) {
             System.out.println("RegisterRemoteObject lookup exception: " + e.getMessage());
             System.exit(1);
@@ -117,7 +119,8 @@ public class OrdinaryThievesStart {
     private static GeneralRepositoryInterface getGeneralRepository(Registry registry) {
         GeneralRepositoryInterface genRepo = null;
         /* look for the remote object by name in the remote host registry */
-        String nameEntry = "GeneralRepository";
+        String xmlFile = Constants.xmlFile;
+        String nameEntry = getNameEntry("GeneralRepository", xmlFile);
 
         try {
             /* Locate General Repository */
@@ -133,7 +136,8 @@ public class OrdinaryThievesStart {
     private static ConcentrationSiteInterface getConcentrationSite(Registry registry) {
         ConcentrationSiteInterface concSite = null;
         /* look for the remote object by name in the remote host registry */
-        String nameEntry = "concentrationSite";
+        String xmlFile = Constants.xmlFile;
+        String nameEntry = getNameEntry("ConcentrationSite", xmlFile);
 
         try {
             /* Locate General Repository */
@@ -149,7 +153,8 @@ public class OrdinaryThievesStart {
     private static ControlAndCollectionSiteInterface getControlAndCollectionSite(Registry registry) {
         ControlAndCollectionSiteInterface contCollSite = null;
         /* look for the remote object by name in the remote host registry */
-        String nameEntry = "controlAndCollectionSite";
+        String xmlFile = Constants.xmlFile;
+        String nameEntry = getNameEntry("ControlAndCollectionSite", xmlFile);
 
         try {
             /* Locate General Repository */
@@ -165,8 +170,9 @@ public class OrdinaryThievesStart {
     private static MuseumInterface getMuseum(Registry registry) {
         MuseumInterface museum = null;
         /* look for the remote object by name in the remote host registry */
-        String nameEntry = "Museum";
-
+        String xmlFile = Constants.xmlFile;
+        String nameEntry = getNameEntry("Museum", xmlFile);
+        
         try {
             /* Locate General Repository */
             museum = (MuseumInterface) registry.lookup(nameEntry);

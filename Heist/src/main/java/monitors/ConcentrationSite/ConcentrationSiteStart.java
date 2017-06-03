@@ -19,6 +19,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import monitors.ControlAndCollectionSite.ControlAndCollectionSiteStart;
 import monitors.GeneralRepository.ImonitorsGeneralRepository;
+import static structures.Constants.getNameEntry;
 
 /**
  *
@@ -65,7 +66,9 @@ public class ConcentrationSiteStart {
         System.out.println("O stub para o concentration site foi gerado!");
 
         try {
-            reg.bind("concentrationSite", concSiteInterface);
+            String xmlFile = Constants.xmlFile;
+            String nameEntryObject = getNameEntry("ConcentrationSite", xmlFile);
+            reg.bind(nameEntryObject, concSiteInterface);
         } catch (RemoteException e) {
             System.out.println("Excepção no registo do concentration site: " + e.getMessage());
             System.exit(1);
@@ -91,8 +94,9 @@ public class ConcentrationSiteStart {
 
     private static Register getRegister(Registry registry) {
         Register reg = null;
+        String xmlFile = Constants.xmlFile;
         try {
-            reg = (Register) registry.lookup("RegisterHandler");
+            reg = (Register) registry.lookup(getNameEntry("Rmi", xmlFile));
         } catch (RemoteException e) {
             System.out.println("RegisterRemoteObject lookup exception: " + e.getMessage());
             System.exit(1);
@@ -106,7 +110,8 @@ public class ConcentrationSiteStart {
     private static GeneralRepositoryInterface getGeneralRepository(Registry registry) {
         GeneralRepositoryInterface genRepo = null;
         /* look for the remote object by name in the remote host registry */
-        String nameEntry = "GeneralRepository";
+        String xmlFile = Constants.xmlFile;
+        String nameEntry = getNameEntry("GeneralRepository", xmlFile);
 
         try {
             /* Locate General Repository */
