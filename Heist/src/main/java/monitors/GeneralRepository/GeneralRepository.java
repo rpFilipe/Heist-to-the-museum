@@ -345,9 +345,6 @@ public class GeneralRepository implements GeneralRepositoryInterface {
         String s = sw.toString();
         StringBuffer buf = sw.getBuffer();
         buf.setLength(0);
-        System.out.println("***********************");
-        System.out.println(s);
-        System.out.println("***********************");
         clockLine.put(vc, s);
         vClocks.add(vc);
         
