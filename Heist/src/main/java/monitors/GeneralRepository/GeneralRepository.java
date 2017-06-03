@@ -15,7 +15,9 @@ import interfaces.MuseumInterface;
 import interfaces.Register;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.rmi.NoSuchObjectException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -28,6 +30,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.SortedSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import monitors.ControlAndCollectionSite.ControlAndCollectionSiteStart;
@@ -47,6 +50,7 @@ import structures.VectorClock;
 public class GeneralRepository implements GeneralRepositoryInterface {
 
     private static PrintWriter pw;
+    private static StringWriter sw;
     private final File log;
     String filename;
     private int masterThiefState;
@@ -62,6 +66,7 @@ public class GeneralRepository implements GeneralRepositoryInterface {
     private boolean DEBUG = false;
     private VectorClock vc;
     private VectorClock clkToSend;
+    private HashMap<VectorClock, String> clockLine;
     private final ArrayList<VectorClock> vClocks;
 
     /**
@@ -80,6 +85,7 @@ public class GeneralRepository implements GeneralRepositoryInterface {
         partyElement = new int[N_ASSAULT_PARTIES][ASSAULT_PARTY_SIZE];
         this.vc = new VectorClock(7, 0); // 1 master + 6 ordinary
         vClocks = new ArrayList<>();
+        clockLine = new HashMap<>();
 
         for (int i = 0; i < roomId.length; i++) {
             roomId[i] = -1;
@@ -100,10 +106,10 @@ public class GeneralRepository implements GeneralRepositoryInterface {
 
     private synchronized void FirstLine(VectorClock vc) {
         Thief currentT;
-        pw.printf("\n%4d", masterThiefState);
+        sw.write(String.format("\n%4d", masterThiefState));
         for (int i = 0; i < N_ORD_THIEVES; i++) {
             currentT = thiefMap.get(i);
-            pw.printf("    %4d %1c %2d", currentT.state, currentT.situation, currentT.speed);
+            sw.write(String.format("    %4d %1c %2d", currentT.state, currentT.situation, currentT.speed));
         }
         
         /* Vector Clocks - Assignment 3 */
@@ -112,37 +118,37 @@ public class GeneralRepository implements GeneralRepositoryInterface {
         for (int i = 0; i <= Constants.N_ORD_THIEVES; i++) {
             write = write + String.format("   %2d", clocks[i]);
         }
-        pw.printf(write);
-        pw.flush();
+        sw.write(write);
+        sw.write("\n");
         
         /* Add to the vector clock array list the clock */
-        VectorClock vcTmp = new VectorClock(write, vc.getClocks());
-        vClocks.add(vcTmp);
+        //VectorClock vcTmp = new VectorClock(write, vc.getClocks());
+        //vClocks.add(vcTmp);
     }
 
     private synchronized void SecondLine() {
         Thief currentT;
-        pw.printf("   ");
+        sw.write("   ");
         for (int i = 0; i < N_ASSAULT_PARTIES; i++) {
             if (roomId[i] == -1) {
-                pw.printf("     ");
+                sw.write("     ");
             } else {
-                pw.printf(" %3d ", roomId[i] + 1);
+                sw.write(String.format(" %3d ", roomId[i] + 1));
             }
             for (int j = 0; j < ASSAULT_PARTY_SIZE; j++) {
                 if (partyElement[i][j] == -1) {
-                    pw.printf("           ");
+                    sw.write("           ");
                 } else {
                     currentT = thiefMap.get(partyElement[i][j]);
-                    pw.printf(" %2d %3d %2d ", currentT.id + 1, currentT.position, currentT.canvas);
+                    sw.write(String.format(" %2d %3d %2d ", currentT.id + 1, currentT.position, currentT.canvas));
                 }
             }
         }
-        pw.printf(" ");
+        sw.write(" ");
         for (Room room : rooms) {
-            pw.printf("    %2d %2d", room.paitings_left, room.distance);
+            sw.write(String.format("    %2d %2d", room.paitings_left, room.distance));
         }
-        pw.println();
+        sw.write("\n");
     }
 
     /**
@@ -334,30 +340,17 @@ public class GeneralRepository implements GeneralRepositoryInterface {
         if (DEBUG) {
             return;
         }
-        
         FirstLine(vc);
-        pw.println();
         SecondLine();
-    }
-    
-    public synchronized void orderClocks(){
-        System.out.println("Ordering clocks...");
+        String s = sw.toString();
+        StringBuffer buf = sw.getBuffer();
+        buf.setLength(0);
+        System.out.println("***********************");
+        System.out.println(s);
+        System.out.println("***********************");
+        clockLine.put(vc, s);
+        vClocks.add(vc);
         
-        Map<Integer, VectorClock> tab = new Hashtable<>();
-
-        for (int i = 0; i < this.vClocks.size(); i++) {
-            tab.put(i, vClocks.get(i));
-        }
-
-        ArrayList<Map.Entry<Integer, VectorClock>> l = new ArrayList(tab.entrySet());
-
-        Collections.sort(l, (Map.Entry<Integer, VectorClock> o1, Map.Entry<Integer, VectorClock> o2) -> o1.getValue().compareTo(o2.getValue()));
-
-        for (int i = 0; i < l.size(); i++) {
-            pw.printf(l.get(l.size()-i-1).getValue().getText());
-        }
-
-        vClocks.clear();
     }
 
     private synchronized void InitializeLog() {
@@ -366,6 +359,7 @@ public class GeneralRepository implements GeneralRepositoryInterface {
         }
         try {
             pw = new PrintWriter(log);
+            sw = new StringWriter();
             pw.println("                               Heist to the Museum - Description of the internal state ");
             pw.println();
 
@@ -435,6 +429,7 @@ public class GeneralRepository implements GeneralRepositoryInterface {
         } catch (FileNotFoundException ex) {
             System.out.println(ex);
         }
+        System.out.println("Log Initiated");
     }
 
     /**
@@ -444,10 +439,17 @@ public class GeneralRepository implements GeneralRepositoryInterface {
     public synchronized VectorClock FinalizeLog(VectorClock vc) {
         this.vc.update(vc);
         clkToSend = vc.incrementClock();
-        
         if (DEBUG) {
             return clkToSend;
         }
+        
+        
+        Collections.sort(vClocks, (VectorClock t, VectorClock t1) -> t.compareTo(t1));
+        
+        vClocks.forEach((v) -> {
+            Object o = clockLine.get(v);
+            pw.printf((String)o);
+        });
         
         // Order clocks
         //orderClocks(); 
@@ -471,7 +473,12 @@ public class GeneralRepository implements GeneralRepositoryInterface {
         }
         pw.flush();
         pw.close();
-        
+        try {
+            sw.close();
+        } catch (IOException ex) {
+            Logger.getLogger(GeneralRepository.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        System.out.println("log Completed");
         return clkToSend;
     }
 
@@ -594,10 +601,7 @@ public class GeneralRepository implements GeneralRepositoryInterface {
             System.out.println("Museum is not registered: " + e.getMessage () + "!");
             Logger.getLogger(GeneralRepository.class.getName()).log(Level.SEVERE, null, e);
         }        
-        
-        // order Clocks and then shutdown general rep
-        orderClocks();
-        
+               
         try {
             Thread.sleep(1000);                 //1000 milliseconds is one second.
         } catch(InterruptedException ex) {
@@ -623,9 +627,6 @@ public class GeneralRepository implements GeneralRepositoryInterface {
         } catch (NoSuchObjectException ex) {
             Logger.getLogger(GeneralRepository.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        FinalizeLog(vc);
-        
         System.out.println("General Repository Log written succesfully!!");
     }
 
