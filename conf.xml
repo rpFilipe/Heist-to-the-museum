@@ -1,8 +1,8 @@
 <conf>
   <role id="Rmi">
 	<nameEntry>RegisterHandler</nameEntry>
-    <host>localhost</host>
-    <port>22110</port>
+    <host>l040101-ws01.ua.pt</host>
+    <port>22190</port>
   </role>
   <role id="GeneralRepository">
 	<nameEntry>GeneralRepository</nameEntry>

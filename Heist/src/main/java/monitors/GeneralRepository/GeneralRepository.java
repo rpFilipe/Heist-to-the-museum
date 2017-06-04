@@ -355,6 +355,7 @@ public class GeneralRepository implements GeneralRepositoryInterface {
         SecondLine();
         String s = sw.toString();
         StringBuffer buf = sw.getBuffer();
+        System.out.println("PRINTING LINE TO FILE");
         buf.setLength(0);
         clockLine.put(vc, s);
         vClocks.add(vc);
