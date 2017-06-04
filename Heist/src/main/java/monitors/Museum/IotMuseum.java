@@ -10,17 +10,19 @@ import structures.Pair;
 import structures.VectorClock;
 
 /**
- *
- * @author Ricardo Filipe
- * @author Marc Wagner
+ * @author Ricardo Filipe 72727
+ * @author Tiago Henriques 73046
+ * @author Miguel Oliveira 72638
  */
 public interface IotMuseum {
 
     /**
      * This method is used to get a canvas from a room.
-     * @param roomId
-     * @return true if the room still has canvas to be stolen.
+     * @param roomId room Identifier
+     * @param vc VectorClock.
+     * @return Pair
+     * @throws java.rmi.RemoteException exception
+     * @throws java.lang.InterruptedException exception
      */
     public Pair<VectorClock, Boolean> rollACanvas(int roomId, VectorClock vc)throws RemoteException,InterruptedException;
-    
 }

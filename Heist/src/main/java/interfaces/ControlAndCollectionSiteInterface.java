@@ -11,12 +11,13 @@ import monitors.ControlAndCollectionSite.ImtControlAndCollectionSite;
 import monitors.ControlAndCollectionSite.IotControlAndCollectionSite;
 
 /**
- *
- * @author Ricardo Filipe
+ * @author Ricardo Filipe 72727
+ * @author Tiago Henriques 73046
+ * @author Miguel Oliveira 72638
  */
 public interface ControlAndCollectionSiteInterface extends ImtControlAndCollectionSite, IotControlAndCollectionSite, Remote{
-        /**
-     * This function is used for the log to signal the referee site to shutdown.
+    /**
+     * This function is used for the log to signal the ControlAndCollectionSite to shutdown.
      * 
      * @throws RemoteException may throw during a execution of a remote method call
      */

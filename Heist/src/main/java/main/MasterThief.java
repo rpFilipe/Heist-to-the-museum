@@ -18,9 +18,9 @@ import structures.Pair;
 import structures.VectorClock;
 
 /**
- *
- * @author Ricardo Filipe
- * @author Marc Wagner
+ * @author Ricardo Filipe 72727
+ * @author Tiago Henriques 73046
+ * @author Miguel Oliveira 72638
  */
 public class MasterThief extends Thread {
 
@@ -74,7 +74,6 @@ public class MasterThief extends Thread {
                         state = MasterThiefStates.DECIDING_WHAT_TO_DO;
                         break;
                     case MasterThiefStates.DECIDING_WHAT_TO_DO:
-                        //int nwating = concentrationSite.getNumberThivesWaiting();
                         this.clkToSend = myClk.incrementClock();
                         serverResponseBool = this.controlAndCollectionSite.isHeistCompleted(clkToSend);
                         this.myClk.update(serverResponseBool.first);

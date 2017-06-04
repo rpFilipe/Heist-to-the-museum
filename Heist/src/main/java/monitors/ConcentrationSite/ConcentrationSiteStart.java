@@ -22,8 +22,9 @@ import monitors.GeneralRepository.ImonitorsGeneralRepository;
 import static structures.Constants.getNameEntry;
 
 /**
- *
- * @author Ricardo Filipe
+ * @author Ricardo Filipe 72727
+ * @author Tiago Henriques 73046
+ * @author Miguel Oliveira 72638
  */
 public class ConcentrationSiteStart {
 
@@ -34,8 +35,7 @@ public class ConcentrationSiteStart {
     /**
      * This class will launch one server listening one port and processing the
      * events.
-     *
-     * @param args
+     * @param args args
      */
     public static void main(String[] args) {
 
@@ -80,6 +80,12 @@ public class ConcentrationSiteStart {
         System.out.println("O concentration site foi registado!");
     }
     
+    /**
+     * This function is used to register it with the local registry service.
+     * @param rmiServerHostname Rmi Server Host Name.
+     * @param rmiServerPort Rmi Server port.
+     * @return registry.
+     */
     private static Registry getRegistry(String rmiServerHostname, int rmiServerPort) {
         Registry registry = null;
         try {
@@ -92,6 +98,11 @@ public class ConcentrationSiteStart {
         return registry;
     }
 
+    /**
+    This function us used to return a reference, a stub, for the remote object associated with the specified name.
+    * @param registry registry.
+    * @return the register reg.
+    */
     private static Register getRegister(Registry registry) {
         Register reg = null;
         String xmlFile = Constants.xmlFile;
@@ -107,6 +118,11 @@ public class ConcentrationSiteStart {
         return reg;
     }
 
+    /**
+    This function us used to return a reference, a stub, for the remote object associated with the specified name.
+    * @param registry registry.
+    * @return the general repository interface.
+    */
     private static GeneralRepositoryInterface getGeneralRepository(Registry registry) {
         GeneralRepositoryInterface genRepo = null;
         /* look for the remote object by name in the remote host registry */

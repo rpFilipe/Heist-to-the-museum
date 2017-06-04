@@ -22,8 +22,9 @@ import structures.Constants;
 import static structures.Constants.getNameEntry;
 
 /**
- *
- * @author Ricardo Filipe
+ * @author Ricardo Filipe 72727
+ * @author Tiago Henriques 73046
+ * @author Miguel Oliveira 72638
  */
 public class OrdinaryThievesStart {
 
@@ -37,7 +38,7 @@ public class OrdinaryThievesStart {
     /**
      * Start the Ordinary Thief Life.
      *
-     * @param args
+     * @param args args
      */
     public static void main(String args[]) {
         
@@ -89,6 +90,12 @@ public class OrdinaryThievesStart {
         System.out.println("Done Ordinary Thieves!!");
     }
 
+    /**
+     * This function is used to register it with the local registry service.
+     * @param rmiServerHostname Rmi Server Host Name.
+     * @param rmiServerPort Rmi Server port.
+     * @return registry.
+     */
     private static Registry getRegistry(String rmiServerHostname, int rmiServerPort) {
         Registry registry = null;
         try {
@@ -101,6 +108,11 @@ public class OrdinaryThievesStart {
         return registry;
     }
 
+    /**
+    This function us used to return a reference, a stub, for the remote object associated with the specified name.
+    * @param registry registry.
+    * @return the register reg.
+    */
     private static Register getRegister(Registry registry) {
         Register reg = null;
         String xmlFile = Constants.xmlFile;
@@ -116,6 +128,11 @@ public class OrdinaryThievesStart {
         return reg;
     }
 
+    /**
+    This function us used to return a reference, a stub, for the remote object associated with the specified name.
+    * @param registry registry.
+    * @return the general repository interface.
+    */
     private static GeneralRepositoryInterface getGeneralRepository(Registry registry) {
         GeneralRepositoryInterface genRepo = null;
         /* look for the remote object by name in the remote host registry */
@@ -133,6 +150,11 @@ public class OrdinaryThievesStart {
         return genRepo;
     }
     
+    /**
+    This function us used to return a reference, a stub, for the remote object associated with the specified name.
+    * @param registry registry.
+    * @return the concentration site interface
+    */
     private static ConcentrationSiteInterface getConcentrationSite(Registry registry) {
         ConcentrationSiteInterface concSite = null;
         /* look for the remote object by name in the remote host registry */
@@ -140,7 +162,7 @@ public class OrdinaryThievesStart {
         String nameEntry = getNameEntry("ConcentrationSite", xmlFile);
 
         try {
-            /* Locate General Repository */
+            /* Locate concentration site */
             concSite = (ConcentrationSiteInterface) registry.lookup(nameEntry);
         } catch (RemoteException ex) {
             System.err.print("Deu bronca ConcentrationSite");
@@ -150,6 +172,11 @@ public class OrdinaryThievesStart {
         return concSite;
     }
     
+    /**
+    This function us used to return a reference, a stub, for the remote object associated with the specified name.
+    * @param registry registry.
+    * @return the control and collection site interface.
+    */
     private static ControlAndCollectionSiteInterface getControlAndCollectionSite(Registry registry) {
         ControlAndCollectionSiteInterface contCollSite = null;
         /* look for the remote object by name in the remote host registry */
@@ -157,7 +184,7 @@ public class OrdinaryThievesStart {
         String nameEntry = getNameEntry("ControlAndCollectionSite", xmlFile);
 
         try {
-            /* Locate General Repository */
+            /* Locate control and collection site */
             contCollSite = (ControlAndCollectionSiteInterface) registry.lookup(nameEntry);
         } catch (RemoteException ex) {
             System.err.print("Deu bronca ControlAndCollectionSite");
@@ -167,6 +194,11 @@ public class OrdinaryThievesStart {
         return contCollSite;
     }
     
+    /**
+    This function us used to return a reference, a stub, for the remote object associated with the specified name.
+    * @param registry registry.
+    * @return the museum interface.
+    */
     private static MuseumInterface getMuseum(Registry registry) {
         MuseumInterface museum = null;
         /* look for the remote object by name in the remote host registry */
@@ -174,7 +206,7 @@ public class OrdinaryThievesStart {
         String nameEntry = getNameEntry("Museum", xmlFile);
         
         try {
-            /* Locate General Repository */
+            /* Locate Museum */
             museum = (MuseumInterface) registry.lookup(nameEntry);
         } catch (RemoteException ex) {
             System.err.print("Deu bronca Museum");
@@ -184,13 +216,19 @@ public class OrdinaryThievesStart {
         return museum;
     }
     
+    /**
+    This function us used to return a reference, a stub, for the remote object associated with the specified name.
+    * @param registry registry.
+    * @param assParty Assault Party String identifier.
+    * @return the assault party interface.
+    */
     private static AssaultPartyInterface getAssaultParty(Registry registry, String assParty) {
         AssaultPartyInterface assaultParty = null;
         /* look for the remote object by name in the remote host registry */
         String nameEntry = assParty;
 
         try {
-            /* Locate General Repository */
+            /* Locate Assault Party */
             assaultParty = (AssaultPartyInterface) registry.lookup(nameEntry);
         } catch (RemoteException ex) {
             System.err.print("Deu bronca AssaultParty");

@@ -10,24 +10,29 @@ import structures.Pair;
 import structures.VectorClock;
 
 /**
- *
- * @author Ricardo Filipe
+ * @author Ricardo Filipe 72727
+ * @author Tiago Henriques 73046
+ * @author Miguel Oliveira 72638
  */
 public interface IotAssaultParty {
 
     /**
      * Method to Thieves crawl from the Concentration Site to the Museum interior.
      * @param id of the Ordinary Thief that invoked the method.
-     * @param vc
-     * @return 
+     * @param vc VectorClock
+     * @return VectorClock
+     * @throws java.rmi.RemoteException exception
+     * @throws java.lang.InterruptedException exception
      */
     public VectorClock crawlIn(int id, VectorClock vc) throws RemoteException,InterruptedException;
 
     /**
      * Method to Thieves crawl from the Museum to the Concentration Site.
      * @param id of the Ordinary Thief that invoked the method.
-     * @param vc
-     * @return 
+     * @param vc VectorClock
+     * @return VectorClock
+     * @throws java.rmi.RemoteException exception
+     * @throws java.lang.InterruptedException exception
      */
     public VectorClock crawlOut(int id, VectorClock vc) throws RemoteException,InterruptedException;
 
@@ -35,22 +40,28 @@ public interface IotAssaultParty {
      * Method to add a Ordinary Thief joins this Assault Party.
      * @param id of the Ordinary Thief that invoked the method.
      * @param speed maximum crawling distance per step.
-     * @param vc
-     * @return 
+     * @param vc VectorClock
+     * @return VectorClock
+     * @throws java.rmi.RemoteException exception
+     * @throws java.lang.InterruptedException exception
      */
     public VectorClock joinParty(int id, int speed, VectorClock vc) throws RemoteException,InterruptedException;
 
     /**
      * Method to change the direction in crawling.
-     * @param vc
-     * @return 
+     * @param vc VectorClock
+     * @return VectorClock
+     * @throws java.rmi.RemoteException exception
+     * @throws java.lang.InterruptedException exception
      */
     public VectorClock reverseDirection(VectorClock vc) throws RemoteException,InterruptedException;
 
     /**
      * Get the current target room assigned to this Assault Party.
-     * @param vc
-     * @return Room id
+     * @param vc VectorClock.
+     * @return Pair.
+     * @throws java.rmi.RemoteException exception
+     * @throws java.lang.InterruptedException exception
      */
     public Pair< VectorClock, Integer> getTargetRoom(VectorClock vc) throws RemoteException,InterruptedException;
 }

@@ -26,11 +26,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.SortedSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import monitors.ControlAndCollectionSite.ControlAndCollectionSiteStart;
@@ -41,12 +37,10 @@ import static structures.Constants.getPort;
 import structures.VectorClock;
 
 /**
- * General Repository Instance.
- *
- * @author Ricardo Filipe
- * @author Marc Wagner
+ * @author Ricardo Filipe 72727
+ * @author Tiago Henriques 73046
+ * @author Miguel Oliveira 72638
  */
-
 public class GeneralRepository implements GeneralRepositoryInterface {
 
     private static PrintWriter pw;
@@ -154,9 +148,12 @@ public class GeneralRepository implements GeneralRepositoryInterface {
     /**
      * Update the State of the Ordinary Thief and print the updated Status in
      * the log file.
-     *
      * @param thiefId Id of the Ordinary Thief
      * @param state updated State
+     * @param vc VectorClock
+     * @return VectorClock
+     * @throws java.rmi.RemoteException exception
+     * @throws java.lang.InterruptedException exception
      */
     @Override
     public synchronized VectorClock updateThiefState(int thiefId, int state, VectorClock vc) throws RemoteException,InterruptedException{
@@ -171,8 +168,9 @@ public class GeneralRepository implements GeneralRepositoryInterface {
 
     /**
      * Method to update state the Master Thief in the General Repository.
-     *
      * @param state Current state the Master Thief.
+     * @param vc VectorClock
+     * @return VectorClock
      */
     @Override
     public synchronized VectorClock updateMThiefState(int state, VectorClock vc) {
@@ -186,9 +184,10 @@ public class GeneralRepository implements GeneralRepositoryInterface {
 
     /**
      * Method to update state the Thief's situation in the General Repository.
-     *
      * @param thiefId Id of the Thief.
      * @param situation Current situation.
+     * @param vc VectorClock
+     * @return VectorClock
      */
     @Override
     public synchronized VectorClock updateThiefSituation(int thiefId, char situation, VectorClock vc) {
@@ -204,9 +203,10 @@ public class GeneralRepository implements GeneralRepositoryInterface {
     /**
      * Method to set the target room to a specific Assault Party in the General
      * Repository.
-     *
      * @param partyId Id of the Party.
      * @param room target room of the Assault Party.
+     * @param vc VectorClock
+     * @return VectorClock
      */
     @Override
     public synchronized VectorClock setRoomIdAP(int partyId, int room, VectorClock vc) {
@@ -220,8 +220,9 @@ public class GeneralRepository implements GeneralRepositoryInterface {
     /**
      * Method to set the number of painting stolen in the entire heist in the
      * General Repository.
-     *
      * @param toalCanvas Number of canvas "borrowed" from the Museum.
+     * @param vc VectorClock
+     * @return VectorClock
      */
     @Override
     public synchronized VectorClock setCollectedCanvas(int toalCanvas, VectorClock vc) {
@@ -234,10 +235,11 @@ public class GeneralRepository implements GeneralRepositoryInterface {
 
     /**
      * Method to set the Room attributes in the General Repository.
-     *
      * @param roomId Id of the Room.
      * @param distance Distance from the outside to the Room.
      * @param paitings Number of paintings present on the room.
+     * @param vc VectorClock
+     * @return VectorClock
      */
     @Override
     public synchronized VectorClock setRoomAtributes(int roomId, int distance, int paitings, VectorClock vc) {
@@ -250,9 +252,10 @@ public class GeneralRepository implements GeneralRepositoryInterface {
 
     /**
      * Method to add the Ordinary Thief attributes in the General Repository.
-     *
      * @param thiefId Id of the Thief.
      * @param speed Maximum displacement of the Thief.
+     * @param vc VectorClock
+     * @return VectorClock
      */
     @Override
     public synchronized VectorClock addThief(int thiefId, int speed, VectorClock vc) {
@@ -267,10 +270,11 @@ public class GeneralRepository implements GeneralRepositoryInterface {
     /**
      * Method to put a Ordinary Thief a specified Assault Party in the General
      * Repository.
-     *
      * @param partyId Id of the Assault Party.
      * @param thiefId Id of the Thief.
      * @param elemId Thief Id in the Assault Party.
+     * @param vc VectorClock
+     * @return VectorClock
      */
     @Override
     public synchronized VectorClock setPartyElement(int partyId, int thiefId, int elemId, VectorClock vc) {
@@ -284,8 +288,9 @@ public class GeneralRepository implements GeneralRepositoryInterface {
     /**
      * Method to clear the elements of a Assault Party in the General
      * Repository.
-     *
      * @param partyId Id of the Assault Party.
+     * @param vc VectorClock
+     * @return VectorClock
      */
     @Override
     public synchronized VectorClock clearParty(int partyId, VectorClock vc) {
@@ -303,9 +308,10 @@ public class GeneralRepository implements GeneralRepositoryInterface {
     /**
      * Method to update the position of a Ordinary Thief in the General
      * Repository.
-     *
      * @param thiefId Id of the Thief thar Invoked the method.
      * @param position Current position of the Thief.
+     * @param vc VectorClock
+     * @return VectorClock
      */
     @Override
     public synchronized VectorClock updateThiefPosition(int thiefId, int position, VectorClock vc) {
@@ -321,9 +327,10 @@ public class GeneralRepository implements GeneralRepositoryInterface {
     /**
      * Method to update the contents of a Ordinary Thief cylinder in the General
      * Repository.
-     *
      * @param thiefId Id of the thief that invoked the method.
      * @param hasCanvas the state of the thief cylinder.
+     * @param vc VectorClock
+     * @return VectorClock
      */
     @Override
     public synchronized VectorClock updateThiefCylinder(int thiefId, boolean hasCanvas, VectorClock vc) {
@@ -336,6 +343,10 @@ public class GeneralRepository implements GeneralRepositoryInterface {
         return clkToSend;
     }
 
+    /**
+     * Print status.
+     * @param vc VectorClock
+     */
     private synchronized void printStatus(VectorClock vc) {
         if (DEBUG) {
             return;
@@ -347,9 +358,11 @@ public class GeneralRepository implements GeneralRepositoryInterface {
         buf.setLength(0);
         clockLine.put(vc, s);
         vClocks.add(vc);
-        
     }
 
+    /**
+     * Initialize Log.
+     */
     private synchronized void InitializeLog() {
         if (DEBUG) {
             return;
@@ -431,6 +444,8 @@ public class GeneralRepository implements GeneralRepositoryInterface {
 
     /**
      * Method to finalize the log.
+     * @param vc VectorClock
+     * @return VectorClock
      */
     @Override
     public synchronized VectorClock FinalizeLog(VectorClock vc) {
@@ -439,18 +454,13 @@ public class GeneralRepository implements GeneralRepositoryInterface {
         if (DEBUG) {
             return clkToSend;
         }
-        
-        
+
         Collections.sort(vClocks, (VectorClock t, VectorClock t1) -> t.compareTo(t1));
         
         vClocks.forEach((v) -> {
             Object o = clockLine.get(v);
             pw.printf((String)o);
         });
-        
-        // Order clocks
-        //orderClocks(); 
-        // Dá bronca a ordenar aqui..
         
         pw.printf("My friends, tonight's effort produced %2d priceless paintings!", canvasCollected);
         pw.println("\nLegend:");
@@ -481,9 +491,10 @@ public class GeneralRepository implements GeneralRepositoryInterface {
 
     /**
      * Method to set the number of paintings in the General Repository.
-     *
      * @param id Id of the Room
      * @param paitings Number of paintings in the Room.
+     * @param vc VectorClock
+     * @return VectorClock
      */
     @Override
     public synchronized VectorClock setRoomCanvas(int id, int paitings, VectorClock vc) {
@@ -494,6 +505,12 @@ public class GeneralRepository implements GeneralRepositoryInterface {
         return clkToSend;
     }
     
+    /**
+     * This function is used to register it with the local registry service.
+     * @param rmiServerHostname Rmi Server Host Name.
+     * @param rmiServerPort Rmi Server port.
+     * @return registry.
+     */
     private static Registry getRegistry(String rmiServerHostname, int rmiServerPort) {
         Registry registry = null;
         try {
@@ -506,10 +523,16 @@ public class GeneralRepository implements GeneralRepositoryInterface {
         return registry;
     }
 
+    /**
+    This function us used to return a reference, a stub, for the remote object associated with the specified name.
+    * @param registry registry.
+    * @return the register reg.
+    */
     private static Register getRegister(Registry registry) {
         Register reg = null;
+        String xmlFile = Constants.xmlFile;
         try {
-            reg = (Register) registry.lookup("RegisterHandler");
+            reg = (Register) registry.lookup(getNameEntry("Rmi", xmlFile));
         } catch (RemoteException e) {
             System.out.println("RegisterRemoteObject lookup exception: " + e.getMessage());
             System.exit(1);
@@ -520,8 +543,12 @@ public class GeneralRepository implements GeneralRepositoryInterface {
         return reg;
     }
     
+    /**
+     * This function is used for order the General Repository Monitor to shutdown all other Monitors and himself as well.
+     * @throws RemoteException may throw during a execution of a remote method call
+     */
     @Override
-    public void terminateServers(){
+    public void terminateServers() throws RemoteException{
         
         System.out.println("Terminating Monitors...");
         /* Just for test - Put in a file for example */
@@ -598,12 +625,6 @@ public class GeneralRepository implements GeneralRepositoryInterface {
             System.out.println("Museum is not registered: " + e.getMessage () + "!");
             Logger.getLogger(GeneralRepository.class.getName()).log(Level.SEVERE, null, e);
         }        
-               
-        try {
-            Thread.sleep(1000);                 //1000 milliseconds is one second.
-        } catch(InterruptedException ex) {
-            Thread.currentThread().interrupt();
-        }
         
        /* Shutdown General Repository */
         Register reg = getRegister(registry);

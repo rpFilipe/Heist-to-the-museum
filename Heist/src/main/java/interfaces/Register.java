@@ -6,10 +6,15 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 /**
+ * @author Ricardo Filipe 72727
+ * @author Tiago Henriques 73046
+ * @author Miguel Oliveira 72638
+ */
+
+/**
  *  This data type defines the operational interface of a remote object of type RegisterRemoteObject.
  *  It provides the functionality to register remote objects in the local registry service.
  */
-
 public interface Register extends Remote
 {
   /**
@@ -22,7 +27,6 @@ public interface Register extends Remote
    *                            service fails
    *    @throws AlreadyBoundException if the name is already in use
    */
-
    public void bind (String name, Remote ref) throws RemoteException, AlreadyBoundException;
 
  /**
@@ -34,7 +38,6 @@ public interface Register extends Remote
    *                            service fails
    *    @throws NotBoundException if the name is not in use
    */
-
    public void unbind (String name) throws RemoteException, NotBoundException;
 
   /**
@@ -47,6 +50,5 @@ public interface Register extends Remote
    *    @throws RemoteException if either the invocation of the remote method, or the communication with the registry
    *                            service fails
    */
-
    public void rebind (String name, Remote ref) throws RemoteException;
 }

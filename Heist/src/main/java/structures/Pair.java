@@ -3,6 +3,12 @@ package structures;
 import java.io.Serializable;
 
 /**
+ * @author Ricardo Filipe 72727
+ * @author Tiago Henriques 73046
+ * @author Miguel Oliveira 72638
+ */
+
+/**
  * Par de valores.
  * @param <T1> tipo 1º valor
  * @param <T2> tipo 2º valor

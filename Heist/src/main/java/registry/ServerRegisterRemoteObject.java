@@ -8,6 +8,14 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import structures.Constants;
+import static structures.Constants.getNameEntry;
+
+/**
+ * @author Ricardo Filipe 72727
+ * @author Tiago Henriques 73046
+ * @author Miguel Oliveira 72638
+ */
 
 /**
  * This data type instantiates and registers a remote object that enables the
@@ -20,10 +28,8 @@ public class ServerRegisterRemoteObject {
      * Main task.
      * @param args No arguments are going to be used;
      */
-
     public static void main(String[] args) {
         /* get location of the registry service */
-
         String rmiRegHostName;                      // nome do sistema onde está localizado o serviço de registos RMI
         int rmiRegPortNumb;                         // port de escuta do serviço
 
@@ -50,7 +56,8 @@ public class ServerRegisterRemoteObject {
         System.out.println("Stub was generated!");
 
         /* register it with the local registry service */
-        String nameEntry = "RegisterHandler";
+        String xmlFile = Constants.xmlFile;
+        String nameEntry = getNameEntry("Rmi", xmlFile);
         Registry registry = null;
 
         try {

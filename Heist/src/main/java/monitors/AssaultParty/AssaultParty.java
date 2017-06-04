@@ -27,9 +27,9 @@ import static structures.Constants.getNameEntry;
 import static structures.Constants.getPort;
 
 /**
- *
- * @author Ricardo Filipe
- * @author Marc Wagner
+ * @author Ricardo Filipe 72727
+ * @author Tiago Henriques 73046
+ * @author Miguel Oliveira 72638
  */
 public class AssaultParty implements AssaultPartyInterface{
 
@@ -82,6 +82,10 @@ public class AssaultParty implements AssaultPartyInterface{
     /**
      * Method to Thieves crawl from the Concentration Site to the Museum interior.
      * @param id of the Ordinary Thief that invoked the method.
+     * @param vc VectorClock
+     * @throws java.rmi.RemoteException exception
+     * @throws java.lang.InterruptedException exception
+     * @return clkToSend VectorClock
      */
     @Override
     public synchronized VectorClock crawlIn(int id, VectorClock vc) throws RemoteException, InterruptedException {
@@ -125,6 +129,10 @@ public class AssaultParty implements AssaultPartyInterface{
     /**
      * Method to Thieves crawl from the Museum to the Concentration Site.
      * @param id of the Ordinary Thief that invoked the method.
+     * @param vc VectorClock
+     * @throws java.rmi.RemoteException exception
+     * @throws java.lang.InterruptedException exception
+     * @return clkToSend VectorClock
      */
     @Override
     public synchronized VectorClock crawlOut(int id, VectorClock vc) throws RemoteException, InterruptedException {
@@ -169,6 +177,10 @@ public class AssaultParty implements AssaultPartyInterface{
      * Method to add a Ordinary Thief joins this Assault Party.
      * @param id of the Ordinary Thief that invoked the method.
      * @param speed maximum crawling distance per step.
+     * @param vc VectorClock
+     * @throws java.rmi.RemoteException exception
+     * @throws java.lang.InterruptedException exception
+     * @return clkToSend VectorClock
      */
     @Override
     public synchronized VectorClock joinParty(int id, int speed, VectorClock vc) throws RemoteException, InterruptedException {
@@ -187,6 +199,10 @@ public class AssaultParty implements AssaultPartyInterface{
      *  Method to set the target room parameters to this Assault Party.
      * @param id id of the Room.
      * @param distance from the Concentration Site to the Room.
+     * @param vc VectorClock
+     * @return clkToSend VectorClock
+     * @throws java.rmi.RemoteException exception
+     * @throws java.lang.InterruptedException exception
      */
     @Override
     public VectorClock setRoom(int id, int distance,VectorClock vc) throws RemoteException, InterruptedException {
@@ -209,7 +225,8 @@ public class AssaultParty implements AssaultPartyInterface{
 
     /**
      * Get the current target room assigned to this Assault Party.
-     * @return Room id
+     * @param vc VectorClock
+     * @return a Pair
      */
     @Override
     public synchronized Pair< VectorClock, Integer> getTargetRoom(VectorClock vc) {
@@ -220,6 +237,8 @@ public class AssaultParty implements AssaultPartyInterface{
 
     /**
      * Method to change the direction in crawling.
+     * @param vc VectorClock
+     * @return clkToSend VectorClock
      */
     @Override
     public synchronized VectorClock reverseDirection(VectorClock vc) {
@@ -234,6 +253,10 @@ public class AssaultParty implements AssaultPartyInterface{
         return clkToSend;
     }
 
+    /**
+     * This function is used for the log to signal the AssaultParty to shutdown.
+     * @throws RemoteException may throw during a execution of a remote method call
+     */
     @Override
     public void signalShutdown() throws RemoteException {
         
@@ -266,6 +289,12 @@ public class AssaultParty implements AssaultPartyInterface{
         System.out.printf("Assault Party %d closed.\n", this.teamId);
     }
     
+    /**
+     * This function is used to register it with the local registry service.
+     * @param rmiServerHostname Rmi Server Host Name.
+     * @param rmiServerPort Rmi Server port.
+     * @return registry.
+     */
     private static Registry getRegistry(String rmiServerHostname, int rmiServerPort) {
         Registry registry = null;
         try {
@@ -278,6 +307,11 @@ public class AssaultParty implements AssaultPartyInterface{
         return registry;
     }
 
+    /**
+    This function us used to return a reference, a stub, for the remote object associated with the specified name.
+    * @param registry registry.
+    * @return the register reg.
+    */
     private static Register getRegister(Registry registry) {
         Register reg = null;
         String xmlFile = Constants.xmlFile;
@@ -294,7 +328,6 @@ public class AssaultParty implements AssaultPartyInterface{
         return reg;
     }
     
-
     private class ThiefInfo {
 
         private int id, speed, distance, positionInArray;

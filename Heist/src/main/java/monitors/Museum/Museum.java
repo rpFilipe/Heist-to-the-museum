@@ -21,9 +21,9 @@ import structures.Pair;
 import structures.VectorClock;
 
 /**
- *
- * @author Ricardo Filipe
- * @author Marc Wagner
+ * @author Ricardo Filipe 72727
+ * @author Tiago Henriques 73046
+ * @author Miguel Oliveira 72638
  */
 public class Museum implements MuseumInterface {
 
@@ -43,13 +43,6 @@ public class Museum implements MuseumInterface {
      * Constructor to create a new Museum
      *
      * @param genRepo General Repository Instance
-     * @param N_ROOMS Number of Rooms in the simulation.
-     * @param MAX_ROOM_DISTANCE Maximum distance a Room can be in the
-     * simulation.
-     * @param MIN_ROOM_DISTANCE Minimum distance a Room can be in the
-     * simulation.
-     * @param MAX_PAITING_PER_ROOM Maximum number of paintings in a given Room.
-     * @param MIN_PAITING_PER_ROOM Minimum number of paintings in a given Room.
      */
     public Museum(ImonitorsGeneralRepository genRepo){
         this.N_ROOMS = Constants.N_ROOMS;
@@ -106,9 +99,9 @@ public class Museum implements MuseumInterface {
 
     /**
      * This method is used to get a canvas from a room.
-     *
-     * @param room
-     * @return true if the room still has canvas to be stolen.
+     * @param room room Id
+     * @param vc VectorClock
+     * @return Pair
      */
     @Override
     public Pair<VectorClock, Boolean> rollACanvas(int room, VectorClock vc) throws RemoteException, InterruptedException {
@@ -121,7 +114,8 @@ public class Museum implements MuseumInterface {
     /**
      * This method returns the distance of a room to the outside.
      * @param id of the room
-     * @return
+     * @param vc VectorClock.
+     * @return Pair
      */
     @Override
     public Pair<VectorClock, Integer> getRoomDistance(int id, VectorClock vc) {
@@ -131,6 +125,10 @@ public class Museum implements MuseumInterface {
         return new Pair(clkToSend, returnValue);
     }
 
+    /**
+     * This function is used for the log to signal the Museum to shutdown.
+     * @throws RemoteException may throw during a execution of a remote method call
+     */
     @Override
     public void signalShutdown() throws RemoteException {
         
@@ -163,6 +161,12 @@ public class Museum implements MuseumInterface {
         System.out.println("Museum closed.");
     }
     
+    /**
+     * This function is used to register it with the local registry service.
+     * @param rmiServerHostname Rmi Server Host Name.
+     * @param rmiServerPort Rmi Server port.
+     * @return registry.
+     */
     private static Registry getRegistry(String rmiServerHostname, int rmiServerPort) {
         Registry registry = null;
         try {
@@ -175,6 +179,11 @@ public class Museum implements MuseumInterface {
         return registry;
     }
 
+    /**
+    This function us used to return a reference, a stub, for the remote object associated with the specified name.
+    * @param registry registry.
+    * @return the register reg.
+    */
     private static Register getRegister(Registry registry) {
         Register reg = null;
         String xmlFile = Constants.xmlFile;

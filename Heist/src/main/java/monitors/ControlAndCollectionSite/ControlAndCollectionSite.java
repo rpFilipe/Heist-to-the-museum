@@ -26,9 +26,9 @@ import structures.Pair;
 import structures.VectorClock;
 
 /**
- *
- * @author Ricardo Filipe
- * @author Marc Wagner
+ * @author Ricardo Filipe 72727
+ * @author Tiago Henriques 73046
+ * @author Miguel Oliveira 72638
  */
 public class ControlAndCollectionSite implements ControlAndCollectionSiteInterface {
 
@@ -86,6 +86,10 @@ public class ControlAndCollectionSite implements ControlAndCollectionSiteInterfa
     /**
      * Method to send the Master Thief to a idle state waiting for a Ordinary
      * Thief to return from the Museum.
+     * @param vc VectorClock
+     * @return VectorClock
+     * @throws java.rmi.RemoteException exception
+     * @throws java.lang.InterruptedException exception
      */
     @Override
     public synchronized VectorClock takeARest(VectorClock vc) throws RemoteException,InterruptedException{
@@ -107,6 +111,10 @@ public class ControlAndCollectionSite implements ControlAndCollectionSiteInterfa
 
     /**
      * Method to get the canvas from the Ordinary Thief.
+     * @param vc VectorClock
+     * @return VectorClock
+     * @throws java.rmi.RemoteException exception
+     * @throws java.lang.InterruptedException exception
      */
     @Override
     public synchronized VectorClock collectCanvas(VectorClock vc) throws RemoteException,InterruptedException{
@@ -124,6 +132,10 @@ public class ControlAndCollectionSite implements ControlAndCollectionSiteInterfa
      * @param hasCanvas Content of the cylinder.
      * @param roomId Id of the Room that was being target.
      * @param partyId Id of the Assault Party that Ordinary Thief belonged to.
+     * @param vc VectorClock
+     * @return VectorClock
+     * @throws java.rmi.RemoteException exception
+     * @throws java.lang.InterruptedException exception
      */
     @Override
     public synchronized VectorClock handACanvas(int thiefId, boolean hasCanvas, int roomId, int partyId, VectorClock vc) throws RemoteException, InterruptedException {
@@ -164,8 +176,10 @@ public class ControlAndCollectionSite implements ControlAndCollectionSiteInterfa
 
     /**
      * Method to get the next Room to target.
-     *
-     * @return Id of the target Room.
+     * @param vc VectorClock
+     * @return Pair
+     * @throws java.rmi.RemoteException exception
+     * @throws java.lang.InterruptedException exception
      */
     @Override
     public synchronized Pair<VectorClock, Integer> getTargetRoom(VectorClock vc) throws RemoteException,InterruptedException {
@@ -180,8 +194,10 @@ public class ControlAndCollectionSite implements ControlAndCollectionSiteInterfa
 
     /**
      * Method to get the Assault Party to be deployed..
-     *
-     * @return Id of the Assault Party to be prepared.
+     * @param vc VectorClock
+     * @return Pair
+     * @throws java.rmi.RemoteException exception
+     * @throws java.lang.InterruptedException exception
      */
     @Override
     public synchronized Pair<VectorClock, Integer> getPartyToDeploy(VectorClock vc) throws RemoteException,InterruptedException {
@@ -233,8 +249,10 @@ public class ControlAndCollectionSite implements ControlAndCollectionSiteInterfa
 
     /**
      * Check if all the MasterThief can rest for a bit.
-     *
-     * @return MasterThief has to wait
+     * @param vc VectorClock
+     * @return Pair
+     * @throws java.rmi.RemoteException exception
+     * @throws java.lang.InterruptedException exception
      */
     @Override
     public synchronized Pair<VectorClock, Boolean> waitingNedded(VectorClock vc) throws RemoteException,InterruptedException{
@@ -248,8 +266,10 @@ public class ControlAndCollectionSite implements ControlAndCollectionSiteInterfa
 
     /**
      * Check if all the Rooms have been cleared.
-     *
-     * @return heist completed
+     * @param vc VectorClock
+     * @return Pair
+     * @throws java.rmi.RemoteException exception
+     * @throws java.lang.InterruptedException exception
      */
     @Override
     public synchronized Pair<VectorClock, Boolean> isHeistCompleted(VectorClock vc) throws RemoteException, InterruptedException {
@@ -260,6 +280,10 @@ public class ControlAndCollectionSite implements ControlAndCollectionSiteInterfa
         return new Pair(clkToSend, b);
     }
 
+    /**
+     * This function is used for the log to signal the control and collection site to shutdown.
+     * @throws RemoteException may throw during a execution of a remote method call
+     */
     @Override
     public void signalShutdown() throws RemoteException {
         
@@ -293,6 +317,12 @@ public class ControlAndCollectionSite implements ControlAndCollectionSiteInterfa
         System.out.println("Control And Collection Site closed.");
     }
     
+    /**
+     * This function is used to register it with the local registry service.
+     * @param rmiServerHostname Rmi Server Host Name.
+     * @param rmiServerPort Rmi Server port.
+     * @return registry.
+     */
     private static Registry getRegistry(String rmiServerHostname, int rmiServerPort) {
         Registry registry = null;
         try {
@@ -305,6 +335,11 @@ public class ControlAndCollectionSite implements ControlAndCollectionSiteInterfa
         return registry;
     }
 
+    /**
+    This function us used to return a reference, a stub, for the remote object associated with the specified name.
+    * @param registry registry.
+    * @return the register reg.
+    */
     private static Register getRegister(Registry registry) {
         Register reg = null;
         String xmlFile = Constants.xmlFile;

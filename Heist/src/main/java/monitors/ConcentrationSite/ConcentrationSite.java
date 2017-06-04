@@ -23,9 +23,9 @@ import structures.Pair;
 import structures.VectorClock;
 
 /**
- *
- * @author Ricardo Filipe
- * @author Marc Wagner
+ * @author Ricardo Filipe 72727
+ * @author Tiago Henriques 73046
+ * @author Miguel Oliveira 72638
  */
 public class ConcentrationSite implements ConcentrationSiteInterface{
     private int N_ORD_THIEVES;
@@ -42,9 +42,9 @@ public class ConcentrationSite implements ConcentrationSiteInterface{
     
     /**
      *  Create a new Concentration Site.
-     * @param genRepo
-     * @param n_ord_thieves
-     * @param assault_party_size
+     * @param genRepo general repository
+     * @param n_ord_thieves number of ordinary thieves
+     * @param assault_party_size assault party size
      */
     public ConcentrationSite(ImonitorsGeneralRepository genRepo, int n_ord_thieves, int assault_party_size) {
         N_ORD_THIEVES = n_ord_thieves;
@@ -62,7 +62,10 @@ public class ConcentrationSite implements ConcentrationSiteInterface{
     /**
      * Method to check if the Ordinary Thief id needed.
      * @param id of the Ordinary Thief.
-     * @return is the Ordinary Thief needed.
+     * @param vc VectorClock
+     * @return Pair
+     * @throws java.rmi.RemoteException exception
+     * @throws java.lang.InterruptedException exception
      */
     @Override
     public synchronized Pair<VectorClock, Boolean> amINeeded(int id, VectorClock vc) throws RemoteException,InterruptedException{
@@ -80,13 +83,16 @@ public class ConcentrationSite implements ConcentrationSiteInterface{
             }
         } isNeeded[id] = false;
         
-        
         return new Pair(clkToSend, !resultsReady);
     }
     
     /**
      * Method to signal thar the Ordinary Thief has joined the Assault Party.
      * @param thiefId Id of the Ordinary Thief.
+     * @param vc VectorClock
+     * @return VectorClock
+     * @throws java.rmi.RemoteException exception
+     * @throws java.lang.InterruptedException exception
      */
     @Override
     public synchronized VectorClock prepareExcursion(int thiefId, VectorClock vc) throws RemoteException,InterruptedException{
@@ -106,6 +112,10 @@ public class ConcentrationSite implements ConcentrationSiteInterface{
     /**
      * Wake up the Ordinary Thieves necessary to join the Assault Party.
      * @param partyId Id of the target Assault Party.
+     * @param vc VectorClock
+     * @return VectorClock
+     * @throws java.rmi.RemoteException exception
+     * @throws java.lang.InterruptedException exception
      */
     @Override
     public synchronized VectorClock prepareAssaultParty(int partyId, VectorClock vc) throws RemoteException, InterruptedException {
@@ -134,6 +144,10 @@ public class ConcentrationSite implements ConcentrationSiteInterface{
 
     /**
      * Notify that the assault has ended.
+     * @param vc VectorClock
+     * @return VectorClock
+     * @throws java.rmi.RemoteException exception
+     * @throws java.lang.InterruptedException exception 
      */
     @Override
     public synchronized VectorClock sumUpResults(VectorClock vc) throws RemoteException,InterruptedException{
@@ -147,6 +161,10 @@ public class ConcentrationSite implements ConcentrationSiteInterface{
     
     /**
      * Wait for all the Ordinary Thieves to be Outside and start the assault.
+     * @param vc VectorClock
+     * @return VectorClock
+     * @throws java.rmi.RemoteException exception
+     * @throws java.lang.InterruptedException exception
      */
     @Override
     public synchronized VectorClock startOperations(VectorClock vc) throws RemoteException,InterruptedException{
@@ -167,7 +185,10 @@ public class ConcentrationSite implements ConcentrationSiteInterface{
     /**
      * Get the id of the Assault Party associated with a Ordinary Thief.
      * @param thiefId Id of the Thief.
-     * @return the Assault Party id.
+     * @param vc VectorClock
+     * @return Pair
+     * @throws java.rmi.RemoteException exception
+     * @throws java.lang.InterruptedException exception
      */
     @Override
     public synchronized Pair<VectorClock, Integer> getPartyId(int thiefId, VectorClock vc) throws RemoteException,InterruptedException{
@@ -177,10 +198,13 @@ public class ConcentrationSite implements ConcentrationSiteInterface{
     }
 
     /**
-     *
-     * @param isHeistCompleted
-     * @param isWaitingNedded
-     * @return
+     * Appraise sit.
+     * @param isHeistCompleted is Heist Completed ?
+     * @param isWaitingNedded is the thief waiting needed ?
+     * @param vc VectorClock
+     * @return Pair
+     * @throws java.rmi.RemoteException exception
+     * @throws java.lang.InterruptedException exception
      */
     @Override
     public synchronized Pair<VectorClock, Integer> appraiseSit(boolean isHeistCompleted, boolean isWaitingNedded, VectorClock vc) throws RemoteException,InterruptedException{
@@ -211,7 +235,11 @@ public class ConcentrationSite implements ConcentrationSiteInterface{
         }
         return new Pair(clkToSend, MasterThiefStates.ASSEMBLING_A_GROUP);
     }
-
+    
+    /**
+     * This function is used for the log to signal the ConcentrationSite to shutdown.
+     * @throws RemoteException may throw during a execution of a remote method call
+     */
     @Override
     public void signalShutdown() throws RemoteException {
         
@@ -245,6 +273,12 @@ public class ConcentrationSite implements ConcentrationSiteInterface{
         System.out.println("Concentration Site closed.");
     }
     
+    /**
+     * This function is used to register it with the local registry service.
+     * @param rmiServerHostname Rmi Server Host Name.
+     * @param rmiServerPort Rmi Server port.
+     * @return registry.
+     */
     private static Registry getRegistry(String rmiServerHostname, int rmiServerPort) {
         Registry registry = null;
         try {
@@ -257,6 +291,11 @@ public class ConcentrationSite implements ConcentrationSiteInterface{
         return registry;
     }
 
+    /**
+    This function us used to return a reference, a stub, for the remote object associated with the specified name.
+    * @param registry registry.
+    * @return the register reg.
+    */
     private static Register getRegister(Registry registry) {
         Register reg = null;
         String xmlFile = Constants.xmlFile;

@@ -19,8 +19,9 @@ import javax.xml.parsers.*;
 import org.xml.sax.SAXException;
 
 /**
- *
- * @author Tiago Henriques
+ * @author Ricardo Filipe 72727
+ * @author Tiago Henriques 73046
+ * @author Miguel Oliveira 72638
  */
 public final class Constants {
     public static final int N_ROOMS = 5;

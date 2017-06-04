@@ -11,12 +11,13 @@ import monitors.AssaultParty.ImtAssaultParty;
 import monitors.AssaultParty.IotAssaultParty;
 
 /**
- *
- * @author ASUS
+ * @author Ricardo Filipe 72727
+ * @author Tiago Henriques 73046
+ * @author Miguel Oliveira 72638
  */
 public interface AssaultPartyInterface extends ImtAssaultParty, IotAssaultParty, Remote {
     /**
-     * This function is used for the log to signal the referee site to shutdown.
+     * This function is used for the log to signal the AssaultParty to shutdown.
      * 
      * @throws RemoteException may throw during a execution of a remote method call
      */
