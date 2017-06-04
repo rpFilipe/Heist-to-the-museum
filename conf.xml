@@ -6,32 +6,20 @@
   </role>
   <role id="GeneralRepository">
 	<nameEntry>GeneralRepository</nameEntry>
-    <host>localhost</host>
-    <port>4100</port>
   </role>
   <role id="AssaultParty0">
 	<nameEntry>AssaultParty0</nameEntry>
-    <host>localhost</host>
-    <port>4200</port>
   </role>
   <role id="AssaultParty1">
 	<nameEntry>AssaultParty1</nameEntry>
-    <host>localhost</host>
-    <port>4300</port>
   </role>
   <role id="ControlAndCollectionSite">
 	<nameEntry>controlAndCollectionSite</nameEntry>
-    <host>localhost</host>
-    <port>4400</port>
   </role>
   <role id="ConcentrationSite">
 	<nameEntry>concentrationSite</nameEntry>
-    <host>localhost</host>
-    <port>4500</port>
   </role>
   <role id="Museum">
 	<nameEntry>Museum</nameEntry>
-    <host>localhost</host>
-    <port>4600</port>
   </role>
 </conf>
