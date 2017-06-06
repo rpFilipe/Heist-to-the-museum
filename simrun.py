@@ -98,7 +98,7 @@ def execServices():
         cmd = COMMAND % (FILENAME, s['class'], s['args'])
         stdin, stdout, stderr = ssh.exec_command(COMMAND2 % (s['machine'],FILENAME,cmd))
         print(COMMAND2 % (s['machine'],FILENAME,cmd))
-        time.sleep(10)
+        time.sleep(5)
         if classname == 'GeneralRepositoryStart':
           grService = stdout.channel
           LOGFILENAME = s['args'].split(' ')[1]
@@ -120,7 +120,7 @@ def retrieveLog():
   print ('Retrieving the logfile')
   ssh.connect(services[1]['machine'], username=USERNAME, password=PASSWORD)
   sftp = ssh.open_sftp()
-  sftp.chdir("/home/sd0109/")
+  sftp.chdir("/home/sd0109/Public/")
   sftp.get(LOGFILENAME, LOGFILENAME)
   ssh.close()
 
